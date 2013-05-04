@@ -1,0 +1,97 @@
+
+apply plugin: 'checkstyle'
+//checkstyleMain checkstyleTest
+
+apply plugin: 'findbugs'
+//findbugsMain findbugsTest
+
+/*
+ * To get quality metrics for our code base, we can use JDepend. JDepend traverses
+ * the generated class files in our project and generates design quality metrics.
+ */
+apply plugin: 'jdepend'
+//jdependMain jdependTest
+
+//apply plugin: 'pmd'
+
+
+apply plugin: 'groovy'
+apply plugin: 'codenarc'
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+checkstyle {
+  ignoreFailures = true
+  configFile = file('codequality/checkstyle.xml')
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+//plugin findbugs variable
+findbugs {
+  ignoreFailures = true
+
+  // Change base directory for FindBugs reports.
+  reportsDir = file("${reporting.baseDir}/findbugs-output")
+}
+
+//task name from plugin findbugs
+findbugsMain {
+  reports {
+    html {
+      enabled = true
+      destination = "${findbugs.reportsDir}/findbugs.html"
+    }
+    // Only one report (xml or html) can be active.
+    xml.enabled = !html.enabled
+  }
+}
+
+//task name from plugin findbugs
+findbugsTest {
+  reports {
+    html {
+      enabled = true
+      destination = "${findbugs.reportsDir}/findbugs-test.html"
+    }
+    // Only one report (xml or html) can be active.
+    xml.enabled = !html.enabled
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////
+jdepend {
+  toolVersion = '2.9.1'
+  reportsDir = file("${reporting.baseDir}/jdepend-output")
+}
+
+jdependMain {
+  reports {
+    text {
+      enabled = 'true'
+      destination = file("${jdepend.reportsDir}/jdepend.txt")
+    }
+    xml { enabled = !text.enabled }
+  }
+}
+////////////////////////////////////////////////////////////////////////////////////
+codenarc {
+  // Change version of CodeNarc.
+  toolVersion = 0.17
+  // Change name of configuration file. Default value is file('config/codenarc/codenarc.xml')
+  configFile = file('codequality/rules.groovy')
+  ignoreFailures = true
+}
+
+//codenarcMain {
+tasks.withType(CodeNarc) { task ->
+  reports {
+    // Enable text format.
+    text.enabled = true
+    // Configure XML output.
+    xml {
+      enabled = true
+      // Change destination file.
+      destination = file("${codenarc.reportsDir}/${task.name}-codenarc.xml")
+      println "${destination}"
+    }
+  }
+}

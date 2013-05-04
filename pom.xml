@@ -1,0 +1,219 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.logic.forward.conclusion</groupId>
+    <artifactId>forward-conclusion</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>forward-conclusion</name>
+    <url>https://github.com/haghard/forward-conclusion.git</url>
+
+    <developers>
+        <developer>
+            <id>haghard</id>
+            <name>Vadim Bondarev</name>
+            <email>haghard84@gmail.com</email>
+            <url>https://github.com/haghard/forward-conclusion.git</url>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <properties/>
+        </developer>
+    </developers>
+
+    <mailingLists>
+        <mailingList>
+            <name>developers list</name>
+            <subscribe></subscribe>
+            <unsubscribe></unsubscribe>
+            <post></post>
+            <archive></archive>
+        </mailingList>
+    </mailingLists>
+
+    <scm>
+        <connection>scm:git:git://github.com/haghard/forward-conclusion.git</connection>
+        <url>scm:git:git://github.com/haghard/forward-conclusion.git</url>
+    </scm>
+
+
+    <properties>
+        <version.guava>14.0</version.guava>
+        <version.java>1.7</version.java>
+        <version.guice>3.0</version.guice>
+        <version.mockito>1.9.0</version.mockito>
+        <version.fest-assert>1.4</version.fest-assert>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.maven-compiler-plugin>2.3.2</version.maven-compiler-plugin>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${version.mockito}</version>
+            <scope>test</scope>
+        </dependency>
+
+		<dependency>
+      	    <groupId>org.easytesting</groupId>
+      		<artifactId>fest-assert</artifactId>
+      		<version>${version.fest-assert}</version>
+      		<scope>test</scope>
+    	</dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.12</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--Guice staff-->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${version.guice}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+            <version>${version.guice}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>${version.guice}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${version.guava}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>com.google.guiceberry</groupId>
+          <artifactId>guiceberry</artifactId>
+          <version>3.1.0</version>
+        </dependency>
+        <!--
+        <dependency>
+          <groupId>com.google.testing</groupId>
+          <artifactId>tl4j-junit4-1</artifactId>
+          <version>2.1.3</version>
+        </dependency>
+        -->
+        <dependency>
+		  <groupId>org.codehaus.groovy</groupId>
+	      <artifactId>groovy-all</artifactId>
+		  <version>2.1.1</version>
+		</dependency>
+		
+		<dependency>
+      		<groupId>cglib</groupId>
+      		<artifactId>cglib-nodep</artifactId>
+      		<version>2.2.2</version>
+    	</dependency>
+            
+    </dependencies>  
+      <build>
+        <finalName>forward-conclusion</finalName>
+        <plugins>
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-compiler-plugin</artifactId>
+               <version>${version.maven-compiler-plugin}</version>
+               <configuration>
+                   <source>${version.java}</source>
+                   <target>${version.java}</target>
+                   <optimize>true</optimize>
+               </configuration>
+           </plugin>
+           <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-surefire-plugin</artifactId>
+        		<version>2.14</version>
+				<!--					
+					if execution block count 2 when
+					interception happens beetwen them and -Dtest= pass validation on conformity with result  
+					
+					mvn -Dtest="ru.logic.forward.conclusion.ParallelStrategyExecutionTest" test run 0 tests
+					
+					if only one block when
+					interception happens beetwen block and -Dtest="" set 					  
+					
+					mvn -Dtest="ru.logic.forward.conclusion.ParallelStrategyExecutionTest" test run 1 tests
+				 -->
+         		<executions>
+        	       <execution>
+                    <id>default-test</id>
+                      <goals>
+                        <goal>test</goal>
+                      </goals>
+                      <configuration>
+                        <includes>
+			              <include>**/*Test.java</include>
+			          	</includes>
+			        	<excludes>
+			              <exclude>**/GuiceTest*</exclude>
+			          	</excludes>
+            	      </configuration>
+          		   </execution>
+				   <execution>
+                    <id>guice-test</id>
+                      <goals>
+                        <goal>test</goal>
+                      </goals>
+                      <configuration>
+                        <includes>
+			              <include>**/GuiceTest*</include>
+			          	</includes>
+			        	<excludes>
+			              <exclude>**/*Test.java</exclude>
+			          	</excludes>
+            	     </configuration>
+          		   </execution>
+         		</executions>
+      		</plugin>
+        </plugins>
+    </build>
+	<reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.9.1</version>
+        <configuration>
+          <suppressionsLocation>${basedir}/checkstyle-formatter-configuration-eclipse.xml</suppressionsLocation>
+          <suppressionsFileExpression>${basedir}/checkstyle-formatter-configuration-eclipse.xml</suppressionsFileExpression>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>  
+</project>

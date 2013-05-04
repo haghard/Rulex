@@ -1,0 +1,45 @@
+
+class CIUtils {
+  private CIUtils(){}
+  /**
+   * Blocking invocation of a script (set of commands) on shell.
+   * The standard output and error are directed to the script's output and error
+   * respectively.
+   *
+   * @param script the shell script to execute
+   * @param doFailOnNonZeroExitCode if the script should
+   * fail upon script non-zero exit code. Default is true.
+   * @return the process exit code
+   */
+  static int execShellWithException(String scriptBody, doFailOnNonZeroExitCode = true) {
+    def process = ["/bin/bash", "-s"].execute()
+    process.withWriter { 
+      it.write(scriptBody) 
+    }
+    process.consumeProcessOutput(System.out, System.err)
+    def final code = process.waitFor()
+    if (doFailOnNonZeroExitCode && code != 0) {
+      throw new StatusException("Command [${scriptBody}] failed with exit code ${code}.", code)
+    }
+    code
+  }
+}
+
+class StatusException extends RuntimeException {
+  public final int status
+  StatusException(String message, int status0) {
+    super("[Status ${status0}]: ${message}")
+    status = status0
+  }
+  StatusException(Throwable cause, int status0) {
+    super(cause)
+    status = status0
+  }
+}
+
+task gitPrintVersion {
+  // do it wrong, and do not fail 
+  doFirst { CIUtils.execShellWithException "git -version", false }
+  // do it right
+  doLast { CIUtils.execShellWithException "git --version", false }
+}
