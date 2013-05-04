@@ -1,0 +1,14 @@
+.settings
+.gradle
+bin
+build
+logs
+.classpath
+.project
+.idea
+/src/test/test.iml
+/src/main/main.iml
+/log/
+/forward-conclusion-diagram.uml
+/src/test/java/ru/logic/forward/conclusion/log/
+/src/test/java/ru/logic/forward/conclusion/scripts/log/
