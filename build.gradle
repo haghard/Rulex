@@ -4,6 +4,7 @@ ext {
   fullName = 'Rulex'
   fullDescription = 'Rulex - Rule Production System Framework'
   teamName = 'Rulex Team'
+  maintainerName = 'Vadim Bondarev/haghard84@gmail.com'
   siteUrl = 'http://xxxx.github.com/Some Framework'
   sourceUrl = 'git://github.com/haghard/Rulex.git'
   githubProjectName = project.name
