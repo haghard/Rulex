@@ -22,7 +22,11 @@ import ru.rulex.conclusion.ParserBuilders.*;
 import ru.rulex.conclusion.execution.ParallelStrategy;
 import java.util.concurrent.*;
 import org.apache.log4j.Logger;
+
+import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static ru.rulex.conclusion.execution.Callables.*;
+import static ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule.$eq;
+import static ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule.$less;
 /** 
  * <pre>
  *                         <b> Classes hierarchy (single object oriented)</b>
@@ -256,7 +260,7 @@ public final class PhraseBuildersFacade {
    * </p>
    * 
    * <pre>
-   * <b>Usage example in {@code EventOrientedPhraseBuildersTest}</b>
+   * <b>Usage example in {@code TestEventOrientedPhraseBuilders}</b>
    * </pre>
    */
   public static abstract class EventOrientedPhrasesBuilder
@@ -292,7 +296,7 @@ public final class PhraseBuildersFacade {
   /**
    *
    * <pre>
-   * <b>Usage example in {@code EventOrientedPhraseBuildersTest}</b>
+   * <b>Usage example in {@code TestEventOrientedPhraseBuilders}</b>
    * </pre>
    *
    */
@@ -330,7 +334,7 @@ public final class PhraseBuildersFacade {
    * The class used for creation, configuration and running evaluation using 
    * Guice managed predicates from {@code GuicefyConclusionPredicates}. 
    * Main usage through
-   * {@code ru.logic.forward.conclusion.guice.AbstractPhrasesAnalyzerModule}
+   * {@code ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule}
    * class static methods.
    * </p>
    * <p/>
@@ -339,8 +343,8 @@ public final class PhraseBuildersFacade {
    * {@code 
    * Injector injector = Guice.createInjector(
    *    $expression(Phrases.ANY_TRUE,
-   *         $more("int condition", 92, intSelector)),
-   *         $less("other int condition", 56, intSelector));
+   *      $less(9, callOn(Model.class).getInteger(), "9 < en.getInput()"),
+   *      $eq("aaaaaaa", callOn(Model.class).getString(), "aaaaaaa eq en.getString()")));
    *
    * final AbstractEventOrientedPhrasesBuilder phraseBuilder = 
    *       injector.getInstance(AbstractEventOrientedPhrasesBuilder.class);
@@ -349,7 +353,7 @@ public final class PhraseBuildersFacade {
    * }
    * </pre>
    * 
-   * <b>More examples in {@code TestGuiceEventOrientedEngineModule} </b>
+   * <b>More examples in {@code GuiceEventOrientedEngineModuleTest} </b>
    * 
    * See Google Guice documentation on <a href=<a
    * href="http://code.google.com/p/google-guice/"> Google Guice DI framework </a>.
@@ -634,7 +638,7 @@ public final class PhraseBuildersFacade {
    * };
    * }
    * </p>
-   *  See usage in {@code ImperativeIterableOrientedPhrasesBuilderTest}
+   *  See usage in {@code TestImperativeIterableOrientedPhrasesBuilder}
    * <b>Class for extending on client side </b>
    */
   //TO DO : replace Delegate.execute(T...) varargs method with typesafe variation base on BiMap for example
