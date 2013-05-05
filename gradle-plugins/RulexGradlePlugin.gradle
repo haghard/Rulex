@@ -3,23 +3,6 @@
  * @author haghard
  *
  */
-class RulexGradlePlugin {
-  private RulexGradlePlugin(){}
-
-  static int execShellWithException(String scriptBody, doFailOnNonZeroExitCode = true) {
-    def process = ["/bin/bash", "-s"].execute()
-    process.withWriter { 
-      it.write(scriptBody) 
-    }
-    process.consumeProcessOutput(System.out, System.err)
-    def final code = process.waitFor()
-    if (doFailOnNonZeroExitCode && code != 0) {
-      throw new StatusException("Command [${scriptBody}] failed with exit code ${code}.", code)
-    }
-    code
-  }
-}
-
 class StatusException extends RuntimeException {
   public final int status
   StatusException(String message, int status0) {
@@ -52,15 +35,8 @@ task runScript(type: ProcessRunTask) {
   doFailOnNonZeroExitCode false
   commandScript = ''
 
-  if (project.hasProperty('scriptBoby')) 
-    commandScript = scriptBoby
+  if (project.hasProperty('scriptBody')) 
+    commandScript = scriptBody
   if (project.hasProperty('doFailOnNonZeroExitCode'))
     doFailOnNonZeroExitCode true
-}
-
-task printDemo {
-  // do it wrong, and do not fail 
-  doFirst { RulexGradlePlugin.execShellWithException "git -version", false }
-  // do it right
-  doLast { RulexGradlePlugin.execShellWithException "git --version", false }
 }
