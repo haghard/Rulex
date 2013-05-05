@@ -29,6 +29,7 @@ import ru.rulex.external.JvmBasedLanguageAdapter;
 import ru.rulex.conclusion.MoreSelectors.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 /**
  * {@code FluentConclusionPredicate} provides a rich interface for manipulating
  * {@code ConclusionPredicate} instances in a chained fashion. A
@@ -274,6 +275,12 @@ public abstract class FluentConclusionPredicate<T> implements
   public static <T, E> ConclusionPredicate<T> fromSelector(
       Selector<T, E> selector, ConclusionPredicate<E> predicate) {
     return new SelectorPredicate<T, E>(predicate, selector);
+  }
+
+  public static <T, E> ConclusionPredicate<T> fromSelector(E selectorArgument, 
+      ConclusionPredicate<E> predicate, Class<T> clazz ) {
+    Selector<T, E> sel = toSelector(selectorArgument);
+    return new SelectorPredicate<T, E>(predicate, sel);
   }
 
   /**

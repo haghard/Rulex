@@ -22,6 +22,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+
 import ru.rulex.conclusion.execution.ParallelStrategy;
 import ru.rulex.conclusion.ConclusionPhrase;
 import ru.rulex.conclusion.ConclusionPredicate;
@@ -38,13 +39,36 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.*;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
-
+import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 public class TestEventOrientedPhraseBuilders {
 
   private static final Logger logger = Logger
       .getLogger(TestEventOrientedPhraseBuilders.class);
-  
+
+  @Test
+  public void testEventOrientedPhrasesBuilderWithProxy() {
+    final ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>() {
+      @Override public boolean apply(Integer argument) {
+        return argument == 11;
+      }
+    };
+
+    final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
+      protected void build() {
+        through(Model.class, "fact: class Model [field-selector, field:getInt() == 10]")
+          .shouldMatch(fromSelector(
+              callOn(Model.class).getInteger(), lambda(intPredicate), Model.class));
+      }
+    };
+    try {
+      assertTrue("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!",
+          builder.async(Model.values(11)).checkedGet(1, TimeUnit.SECONDS));
+    } catch (Exception ex) {
+      fail("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!");
+    }
+  }
+
   /**
    * Test {@code EventOrientedPhrasesBuilder} with 
    * {@code TypeSafeSelectorPredicate<T, E>} 
@@ -109,6 +133,7 @@ public class TestEventOrientedPhraseBuilders {
           .shouldMatch(fromSelector(selector(selector), lambda(lambda)));
       }
     };
+
     try {
       assertEquals("testEventOrientedPhrasesBuilderWithSelector error !!!",
           Boolean.TRUE, builder.async(Model.values(10)).checkedGet(1, TimeUnit.SECONDS));
