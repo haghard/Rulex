@@ -23,6 +23,8 @@ import ru.rulex.conclusion.PhraseErrorCode;
 import ru.rulex.conclusion.PhraseExecutionException;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,13 +36,18 @@ import com.google.common.util.concurrent.ListenableFutureTask;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 /**
- * 
+ *
  * Class for separate parallel execution from algorithm itself.
  *
+ * Used CheckedFuture<T, E> for purpose to translate
+ * {@link InterruptedException}, {@link CancellationException} and
+ * {@link ExecutionException} into application-specific exceptions
+ * using method getChecked()
+ *
  */
-public final class ParallelStrategy<T, X extends Exception> {
+public final class ParallelStrategy<T, E extends Exception> {
 
-  private final ConclusionFunction<Callable<T>, CheckedFuture<T, X>> function;
+  private final ConclusionFunction<Callable<T>, CheckedFuture<T, E>> function;
 
   private static final ListeningExecutorService COMPUTATION_EXECUTOR = createComputationExecutor();
 
@@ -51,20 +58,20 @@ public final class ParallelStrategy<T, X extends Exception> {
         return (X) new PhraseExecutionException(code, line, clause);
       } 
     };
-  }  
+  }
 
-  private ParallelStrategy(ConclusionFunction<Callable<T>, CheckedFuture<T, X>> function) {
+  private ParallelStrategy(ConclusionFunction<Callable<T>, CheckedFuture<T, E>> function) {
     this.function = function;
   }
 
-  private ConclusionFunction<Callable<T>, CheckedFuture<T, X>> function() {
+  private ConclusionFunction<Callable<T>, CheckedFuture<T, E>> function() {
     return function;
   }
 
-  public <B> ConclusionFunction<B, CheckedFuture<T, X>> lift(final ConclusionFunction<B, T> function) {
-    final ParallelStrategy<T, X> self = this;
-    return new ConclusionFunction<B, CheckedFuture<T, X>>() {
-      public CheckedFuture<T, X> apply(final B b) {
+  public <B> ConclusionFunction<B, CheckedFuture<T, E>> lift(final ConclusionFunction<B, T> function) {
+    final ParallelStrategy<T, E> self = this;
+    return new ConclusionFunction<B, CheckedFuture<T, E>>() {
+      public CheckedFuture<T, E> apply(final B b) {
         return self.function().apply(new Callable<T>() {
           public T call() {
             return function.apply(b);
@@ -75,15 +82,15 @@ public final class ParallelStrategy<T, X extends Exception> {
   }
 
   /**
-   * 
-   * @return ParallelStrategy<T, X>
+   * @param function which implement concrete thread strategy
+   * @return instance {@code ParallelStrategy} with has function parameter as delegate
    */
   private static <T, X extends Exception> ParallelStrategy<T, X> strategy(ConclusionFunction<Callable<T>, CheckedFuture<T, X>> function) {
     return new ParallelStrategy<T, X>(function);
   }
 
   /**
-   * @return ParallelStrategy<T, X>
+   * @return ParallelStrategy instance which create single thread for  on every call
    */
   public static <T, X extends CodedException> ParallelStrategy<T, X> separateThreadStrategy() {
     return strategy(new ConclusionFunction<Callable<T>, CheckedFuture<T, X>>() {
@@ -99,11 +106,11 @@ public final class ParallelStrategy<T, X extends Exception> {
 
   /**
    * 
-   * @return ParallelStrategy<T, X> pStrategy
+   * @return ParallelStrategy<T, E> pStrategy
    */
   public static <T, X extends CodedException> ParallelStrategy<T, X> serial() {
     return strategy(new ConclusionFunction<Callable<T>, CheckedFuture<T, X>>() {
-      private ListeningExecutorService ex = MoreExecutors.sameThreadExecutor();
+      private final ListeningExecutorService ex = MoreExecutors.sameThreadExecutor();
       @Override
       public CheckedFuture<T, X> apply(Callable<T> input) {
         Function<Exception, X> mapper = createMapper(PhraseErrorCode.ERROR, new String[] {"sameThreadStrategy"});
@@ -113,7 +120,7 @@ public final class ParallelStrategy<T, X extends Exception> {
   }
 
   /**
-   * @return ParallelStrategy<T, X> pStrategy
+   * @return ParallelStrategy<T, E> pStrategy
    */
   public static <T, X extends CodedException> ParallelStrategy<T, X> listenableFutureStrategy(final ListeningExecutorService es) {
     return strategy(new ConclusionFunction<Callable<T>,  CheckedFuture<T, X>>() {

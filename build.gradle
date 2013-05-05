@@ -28,7 +28,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 // -> in class extends DefaultTask 
-apply from: 'gradle-plugins/CIUtils.gradle'
+apply from: 'gradle-plugins/RulexGradlePlugin.gradle'
 apply from: 'gradle-plugins/checks.gradle'
 
 group = 'ru.rulex.conclusion'
