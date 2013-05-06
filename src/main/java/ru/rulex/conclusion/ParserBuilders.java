@@ -123,7 +123,7 @@ public final class ParserBuilders {
         Object predicate) {
       final ConclusionPredicate<Object> javaPredicate = toJavaPredicate(predicate);
       final Selector javaSelector = toJavaSelector(selector);
-      final ConclusionPredicate<?> predicate0 = fromSelector(javaSelector, javaPredicate);
+      final ConclusionPredicate<?> predicate0 = query(javaSelector, javaPredicate);
       this.phrase.setEventClass(clazz);
       this.phrase.addUnit(new SimpleAssertionUnit(predicate0, description));
     }

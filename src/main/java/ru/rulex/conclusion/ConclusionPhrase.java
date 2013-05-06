@@ -17,7 +17,7 @@
  */
 package ru.rulex.conclusion;
 
-import static ru.rulex.conclusion.FluentConclusionPredicate.fromTypeSafeSelector;
+import static ru.rulex.conclusion.FluentConclusionPredicate.typeSafeQuery;
 import static ru.rulex.conclusion.FluentConclusionPredicate.lambda;
 import static ru.rulex.conclusion.FluentConclusionPredicate.number;
 import ru.rulex.conclusion.execution.ParallelStrategy;
@@ -74,7 +74,7 @@ public final class ConclusionPhrase {
       @SuppressWarnings("unchecked")
       protected void build() {
         rule(pStrategy0, argumentClass, termName).shouldMatch(
-            fromTypeSafeSelector(
+            typeSafeQuery(
                 number(argumentClass, (Class<E>)value.getClass(), methodName),
                 lambda(predicate)));
       }
@@ -93,7 +93,7 @@ public final class ConclusionPhrase {
     return new EventOrientedPhrasesBuilder() {
       protected void build() {
         rule(phraseSettings.<Boolean, PhraseExecutionException> getParallelStrategy(), phraseSettings.getTargetClass(), termName)
-          .shouldMatch(fromTypeSafeSelector(
+          .shouldMatch(typeSafeQuery(
                 number(phraseSettings.getTargetClass(), (Class<E>) phraseSettings
                     .getValue().getClass(), phraseSettings.getAccessorName()),
                 lambda(phraseSettings.getPredicate())));

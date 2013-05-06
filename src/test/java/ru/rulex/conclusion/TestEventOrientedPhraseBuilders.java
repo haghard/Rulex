@@ -46,18 +46,18 @@ public class TestEventOrientedPhraseBuilders {
   private static final Logger logger = Logger
       .getLogger(TestEventOrientedPhraseBuilders.class);
 
+  //TO DO: mock for this case, parallel strategy case
   @Test
   public void testEventOrientedPhrasesBuilderWithProxy() {
     final ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>() {
-      @Override public boolean apply(Integer argument) {
-        return argument == 11;
-      }
+      @Override public boolean apply(Integer argument) { return argument == 11; }
     };
 
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
       protected void build() {
         through(Model.class, "fact: class Model [field-selector, field:getInt() == 10]")
-          .shouldMatch(fromSelector(
+          .shouldMatch(
+            query(
               callOn(Model.class).getInteger(), lambda(intPredicate), Model.class));
       }
     };
@@ -81,14 +81,14 @@ public class TestEventOrientedPhraseBuilders {
         return argument == 11;
       }
     };
-    
+
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
       @Override
       protected void build() {
         through(Model.class, "fact: class Entity [field:getInt() == 11]")
-            .shouldMatch(fromTypeSafeSelector(
-                number(Model.class, Integer.class, Model.INT_ACCESSOR),
-                intPredicate));
+            .shouldMatch(
+              typeSafeQuery(
+                number(Model.class, Integer.class, Model.INT_ACCESSOR), intPredicate));
       }
     };
 
@@ -130,7 +130,8 @@ public class TestEventOrientedPhraseBuilders {
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
       protected void build() {
         through(Model.class, "fact: class Entity [field-selector, field:getInt() == 10]")
-          .shouldMatch(fromSelector(selector(selector), lambda(lambda)));
+          .shouldMatch(
+              query(selector(selector), lambda(lambda)));
       }
     };
 
@@ -156,7 +157,7 @@ public class TestEventOrientedPhraseBuilders {
         new EventOrientedPhrasesBuilder() {
           protected void build() {
             through(Model.class, "fact: class Entity [field-selector, field:getInt() == 10]")
-                .shouldMatch(fromSelector(selector(new Selector<Model, Integer>() {
+                .shouldMatch(query(selector(new Selector<Model, Integer>() {
                   public Integer select(Model input) {
                     assertSame("This selector call should happens in main thread, but is not !!!",
                         mainThread, Thread.currentThread());
@@ -176,7 +177,7 @@ public class TestEventOrientedPhraseBuilders {
         new EventOrientedPhrasesBuilder() {
           protected void build() {
             rule(separateThreadStrategy, Model.class, "fact: class Entity [field-selector, field:getInt() == 10]")
-                .shouldMatch(fromSelector(selector(new Selector<Model, Integer>() {
+                .shouldMatch(query(selector(new Selector<Model, Integer>() {
                   public Integer select(Model input) {
                     assertNotSame("This selector call should not happens in main thread, but it is !!!", 
                         mainThread, Thread.currentThread());
@@ -240,7 +241,7 @@ public class TestEventOrientedPhraseBuilders {
       @Override
       protected void build() {
         through(separateThreadStrategy, Model.class, "fact: class Entity [field-selector, field:getInt() < 100] : consequence:consequence")
-            .fact(fromSelector(selector(selector), lambda(lambda)))
+            .fact(query(selector(selector), lambda(lambda)))
               .consequence(cSupplier);
       }
     };
@@ -274,7 +275,7 @@ public class TestEventOrientedPhraseBuilders {
         through(builderStrategy, Model.class, 
             "fact: class Entity [field-selector, field:getInt() < 100] : consequence:consequence")
             .fact(
-                fromSelector(selector(new Selector<Model, Integer>() {
+                query(selector(new Selector<Model, Integer>() {
                   public Integer select(Model input) {
                     assertNotSame("This Selector call should not happens in main thread, but it is !!!",
                         mainThread, Thread.currentThread());

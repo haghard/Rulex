@@ -272,12 +272,12 @@ public abstract class FluentConclusionPredicate<T> implements
    *
    * @return ConclusionPredicate<T>
    */
-  public static <T, E> ConclusionPredicate<T> fromSelector(
+  public static <T, E> ConclusionPredicate<T> query(
       Selector<T, E> selector, ConclusionPredicate<E> predicate) {
     return new SelectorPredicate<T, E>(predicate, selector);
   }
 
-  public static <T, E> ConclusionPredicate<T> fromSelector(E selectorArgument, 
+  public static <T, E> ConclusionPredicate<T> query(E selectorArgument, 
       ConclusionPredicate<E> predicate, Class<T> clazz ) {
     Selector<T, E> sel = toSelector(selectorArgument);
     return new SelectorPredicate<T, E>(predicate, sel);
@@ -419,7 +419,7 @@ public abstract class FluentConclusionPredicate<T> implements
    *
    * @return ConclusionPredicate<T>
    */
-  public static <T, E> ConclusionPredicate<T> fromTypeSafeSelector(
+  public static <T, E> ConclusionPredicate<T> typeSafeQuery(
       TypeSafeSelector<T, E> typeSafeSelector, ConclusionPredicate<E> predicate) {
     return new TypeSafeSelectorPredicate<T, E>(predicate, typeSafeSelector);
   }
@@ -468,7 +468,7 @@ public abstract class FluentConclusionPredicate<T> implements
    */
   public <T, E extends Number & Comparable<? super E>> FluentConclusionPredicate<T> eq(final Argument<E> argument, 
       final AccessorDescriptor<T> accessorDescriptor) {
-	return bind(fromTypeSafeSelector(MoreSelectors.number(
+	return bind(typeSafeQuery(MoreSelectors.number(
 			new ReflectiveSelector<T, E>(accessorDescriptor.clazz, accessorDescriptor.method)),
 	    new EqualsConclusionPredicates<E>(argument.value)));
   }
@@ -484,7 +484,7 @@ public abstract class FluentConclusionPredicate<T> implements
    */
   public <T, E extends Number & Comparable<? super E>> FluentConclusionPredicate<T> less(
       final Argument<E> argument, final AccessorDescriptor<T> accessorDescriptor) {
-    return bind(fromTypeSafeSelector(MoreSelectors.number(
+    return bind(typeSafeQuery(MoreSelectors.number(
 			new ReflectiveSelector<T, E>(accessorDescriptor.clazz, accessorDescriptor.method)),
         new LessConclusionPredicate<E>(argument.value)));
   }
