@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
+import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
 public class TestParallelStrategyExecution {
 

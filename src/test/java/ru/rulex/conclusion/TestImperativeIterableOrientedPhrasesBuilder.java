@@ -41,6 +41,7 @@ import ru.rulex.conclusion.FluentConclusionPredicate;
 import ru.rulex.conclusion.PhraseExecutionException;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractIterableOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.ImperativeIterableOrientedPhrasesBuilder;
+import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
 public class TestImperativeIterableOrientedPhrasesBuilder {
 

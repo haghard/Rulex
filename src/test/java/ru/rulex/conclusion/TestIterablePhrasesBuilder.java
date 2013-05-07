@@ -33,6 +33,7 @@ import ru.rulex.conclusion.PhraseBuildersFacade.IterableOrientedPhrasesBuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
 public class TestIterablePhrasesBuilder {
 

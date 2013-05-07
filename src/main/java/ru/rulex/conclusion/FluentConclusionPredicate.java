@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import ru.rulex.external.JvmBasedLanguageAdapter;
+import ru.rulex.conclusion.RulexMatchersDsl.AccessorDescriptor;
+import ru.rulex.conclusion.RulexMatchersDsl.Argument;
 import ru.rulex.conclusion.MoreSelectors.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -430,45 +432,7 @@ public abstract class FluentConclusionPredicate<T> implements
       TypeSafeSelector<T, E> typeSafeSelector, ConclusionPredicate<E> predicate) {
     return new TypeSafeSelectorPredicate<T, E>(predicate, typeSafeSelector);
   }
-  
-  /**
-   * Method to simulate value named parameters
-   * Static factory methods are convenient way to simulate named parameters in Java 
-   */
-  public static <T extends Number & Comparable<? super T>> Argument<T> argument(T value) {
-    return new Argument<T>(value);
-  }
-  
-  private static final class Argument<T extends Number & Comparable<? super T>> {
-    private final T value;
-    
-    Argument(T value) {
-      this.value = checkNotNull(value);
-    }
-  }
-  
-  /**
-   * Method to simulate named parameters
-   * 
-   */
-  private static final class AccessorDescriptor<T> {
-    private final Class<T> clazz; 
-    private final String method;
-	  
-    AccessorDescriptor(Class<T> clazz, String method) {
-      this.clazz = checkNotNull(clazz);
-      this.method = checkNotNull(method);
-    }
-  }
 
-  /**
-   * Method to simulate property descriptor parameters
-   * Static factory methods are convenient way to simulate named parameters in Java
-   */
-  public static <T> AccessorDescriptor<T> descriptor(Class<T> clazz, String method) {
-    return new AccessorDescriptor<T>(clazz, method);
-  }  
-  
   /**
    *
    * 
@@ -476,8 +440,8 @@ public abstract class FluentConclusionPredicate<T> implements
   public <T, E extends Number & Comparable<? super E>> FluentConclusionPredicate<T> eq(final Argument<E> argument, 
       final AccessorDescriptor<T> accessorDescriptor) {
 	return bind(typeSafeQuery(MoreSelectors.number(
-			new ReflectiveSelector<T, E>(accessorDescriptor.clazz, accessorDescriptor.method)),
-	    new EqualsConclusionPredicates<E>(argument.value)));
+			new ReflectiveSelector<T, E>(accessorDescriptor.getClazz(), accessorDescriptor.getMethod())),
+	    new EqualsConclusionPredicates<E>(argument.getArgumentClazz())));
   }
   
   /**
@@ -492,13 +456,11 @@ public abstract class FluentConclusionPredicate<T> implements
   public <T, E extends Number & Comparable<? super E>> FluentConclusionPredicate<T> less(
       final Argument<E> argument, final AccessorDescriptor<T> accessorDescriptor) {
     return bind(typeSafeQuery(MoreSelectors.number(
-			new ReflectiveSelector<T, E>(accessorDescriptor.clazz, accessorDescriptor.method)),
-        new LessConclusionPredicate<E>(argument.value)));
+			new ReflectiveSelector<T, E>(accessorDescriptor.getClazz(), accessorDescriptor.getMethod())),
+        new LessConclusionPredicate<E>(argument.getArgumentClazz())));
   }
-  
+
   /**
-   * 
-   * @author haghard
    *
    * @param <T>
    */

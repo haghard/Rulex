@@ -23,8 +23,8 @@ import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.FluentConclusionPredicate;
 
 import static org.junit.Assert.*;
-import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
+import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
 public class TestFluentConclusionPredicate {
 
