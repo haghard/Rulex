@@ -16,7 +16,7 @@
  */
 package ru.rulex.conclusion;
 
-import com.google.common.reflect.Invokable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
@@ -24,12 +24,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.apache.log4j.Logger;
-import ru.rulex.external.JvmBasedLanguageAdapter;
-import ru.rulex.conclusion.MoreSelectors.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
+import org.apache.log4j.Logger;
+
+import ru.rulex.conclusion.MoreSelectors.TypeSafeSelector;
+import ru.rulex.conclusion.delegate.ProxyUtils;
+import ru.rulex.external.JvmBasedLanguageAdapter;
+
+import com.google.common.reflect.Invokable;
 /**
  * {@code FluentConclusionPredicate} provides a rich interface for manipulating
  * {@code ConclusionPredicate} instances in a chained fashion. A
@@ -277,10 +279,16 @@ public abstract class FluentConclusionPredicate<T> implements
     return new SelectorPredicate<T, E>(predicate, selector);
   }
 
+  /**
+   *
+   * @param selectorArgument
+   * @param predicate
+   * @param clazz
+   * @return ConclusionPredicate<T>
+   */
   public static <T, E> ConclusionPredicate<T> query(E selectorArgument, 
       ConclusionPredicate<E> predicate, Class<T> clazz ) {
-    Selector<T, E> sel = toSelector(selectorArgument);
-    return new SelectorPredicate<T, E>(predicate, sel);
+    return new SelectorPredicate<T, E>(predicate, ProxyUtils.<T,E>toSelector(selectorArgument));
   }
 
   /**
