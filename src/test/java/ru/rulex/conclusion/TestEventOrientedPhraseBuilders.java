@@ -22,6 +22,9 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.Matchers;
+
 
 import ru.rulex.conclusion.execution.ParallelStrategy;
 import ru.rulex.conclusion.ConclusionPhrase;
@@ -40,30 +43,26 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.*;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
+import static ru.rulex.conclusion.RulexMatchers.*;
+
 
 public class TestEventOrientedPhraseBuilders {
 
-  private static final Logger logger = Logger
-      .getLogger(TestEventOrientedPhraseBuilders.class);
+  private static final Logger logger = Logger.getLogger(TestEventOrientedPhraseBuilders.class);
 
   //TO DO: mock for this case, parallel strategy case
   @Test
   public void testEventOrientedPhrasesBuilderWithProxy() {
-    final ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>() {
-      @Override public boolean apply(Integer argument) { return argument == 11; }
-    };
-
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
       protected void build() {
-        through(Model.class, "fact: class Model [field-selector, field:getInt() == 10]")
+        through(Model.class, "fact: class Model [field-selector, field:getInteger() == 211]")
           .shouldMatch(
-            query(
-              callOn(Model.class).getInteger(), lambda(intPredicate), Model.class));
+            query(callOn(Model.class).getInteger(), eq(211), Model.class));
       }
     };
     try {
       assertTrue("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!",
-          builder.async(Model.values(11)).checkedGet(1, TimeUnit.SECONDS));
+          builder.async(Model.values(211)).checkedGet(1, TimeUnit.SECONDS));
     } catch (Exception ex) {
       fail("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!");
     }
@@ -76,10 +75,7 @@ public class TestEventOrientedPhraseBuilders {
   @Test
   public void testEventOrientedPhrasesBuilderWithTypeSafeSelector() {
     final ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>() {
-      @Override
-      public boolean apply(Integer argument) {
-        return argument == 11;
-      }
+      @Override public boolean apply(Integer argument) { return argument == 11; }
     };
 
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {

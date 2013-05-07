@@ -277,10 +277,17 @@ public abstract class FluentConclusionPredicate<T> implements
     return new SelectorPredicate<T, E>(predicate, selector);
   }
 
+  /**
+   * 
+   * @param selectorArgument
+   * @param predicate
+   * @param clazz
+   * @return ConclusionPredicate<T>
+   */
   public static <T, E> ConclusionPredicate<T> query(E selectorArgument, 
       ConclusionPredicate<E> predicate, Class<T> clazz ) {
-    Selector<T, E> sel = toSelector(selectorArgument);
-    return new SelectorPredicate<T, E>(predicate, sel);
+    Selector<T, E> selector = toSelector(selectorArgument);
+    return new SelectorPredicate<T, E>(predicate, selector);
   }
 
   /**
