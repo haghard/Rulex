@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.*;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
-import static ru.rulex.conclusion.RulexMatchers.*;
+import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
 
 public class TestEventOrientedPhraseBuilders {
