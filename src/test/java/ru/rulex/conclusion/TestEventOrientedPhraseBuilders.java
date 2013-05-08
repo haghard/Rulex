@@ -51,6 +51,7 @@ public class TestEventOrientedPhraseBuilders {
   private static final Logger logger = Logger.getLogger(TestEventOrientedPhraseBuilders.class);
 
   //TO DO: mock for this case, parallel strategy case
+  //TO DO: replace anonymous predicate usage with RulexMatchersDsl methods
   @Test
   public void testEventOrientedPhrasesBuilderWithProxy() {
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
