@@ -22,9 +22,8 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.Matchers;
-
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import ru.rulex.conclusion.execution.ParallelStrategy;
 import ru.rulex.conclusion.ConclusionPhrase;
@@ -40,11 +39,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import static org.junit.Assert.*;
+
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static ru.rulex.conclusion.RulexMatchersDsl.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 
+import static org.fest.assertions.api.Assertions.*;
 
 public class TestEventOrientedPhraseBuilders {
 
@@ -56,16 +59,29 @@ public class TestEventOrientedPhraseBuilders {
   public void testEventOrientedPhrasesBuilderWithProxy() {
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
       protected void build() {
-        through(Model.class, "fact: class Model [field-selector, field:getInteger() == 211]")
+        through(Model.class, "fact: [getInteger() == 221]")
+          .shouldMatch(callOn(Model.class).getInteger(), eq(221));
+      }
+    };
+    try {
+      assertThat(builder.async(Model.values(221)).checkedGet()).isTrue()
+        .as("testEventOrientedPhrasesBuilderWithProxy error !!!");
+    } catch (Exception ex) {
+      fail("testEventOrientedPhrasesBuilderWithProxy error !!!");
+    }
+
+    final AbstractEventOrientedPhrasesBuilder builder0 = new EventOrientedPhrasesBuilder() {
+      protected void build() {
+        through(Model.class, "fact: [getInteger() == 211]")
           .shouldMatch(
             query(callOn(Model.class).getInteger(), eq(211), Model.class));
       }
     };
     try {
-      assertTrue("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!",
-          builder.async(Model.values(211)).checkedGet(1, TimeUnit.SECONDS));
+      assertThat(builder0.async(Model.values(211)).checkedGet(1, TimeUnit.SECONDS)).isTrue()
+        .as("testEventOrientedPhrasesBuilderWithProxy error !!!");
     } catch (Exception ex) {
-      fail("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!");
+      fail("testEventOrientedPhrasesBuilderWithProxy error !!!");
     }
   }
 
@@ -75,29 +91,25 @@ public class TestEventOrientedPhraseBuilders {
    */
   @Test
   public void testEventOrientedPhrasesBuilderWithTypeSafeSelector() {
-    final ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>() {
-      @Override public boolean apply(Integer argument) { return argument == 11; }
-    };
-
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
       @Override
       protected void build() {
-        through(Model.class, "fact: class Entity [field:getInt() == 11]")
-            .shouldMatch(
-              typeSafeQuery(
-                number(Model.class, Integer.class, Model.INT_ACCESSOR), intPredicate));
+        through(Model.class, "fact: [getInteger() == 11]")
+          .shouldMatch(
+            typeSafeQuery(
+              number(Model.class, Integer.class, Model.INT_ACCESSOR), eq(11)));
       }
     };
 
     try {
-      assertTrue("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!",
-          builder.async(Model.values(11)).checkedGet(1, TimeUnit.SECONDS));
+      assertThat(builder.async(Model.values(11)).checkedGet(1, TimeUnit.SECONDS)).isTrue()
+        .as("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!");
 
-      assertFalse("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!",
-          builder.async(Model.values(12)).checkedGet(1, TimeUnit.SECONDS));
+      assertThat(builder.async(Model.values(12)).checkedGet(1, TimeUnit.SECONDS)).isFalse()
+        .as("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!");
 
-      assertTrue("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!",
-          builder.async(Model.values(11)).checkedGet(1, TimeUnit.SECONDS));
+      assertThat(builder.async(Model.values(11)).checkedGet(1, TimeUnit.SECONDS)).isTrue()
+        .as("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!");
 
     } catch (Exception ex) {
       fail("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!");
@@ -117,24 +129,18 @@ public class TestEventOrientedPhraseBuilders {
         return input.getInteger();
       }
     };
-    
-    final ConclusionPredicate<Integer> lambda = new ConclusionPredicate<Integer>() {
-      public boolean apply(Integer argument) {
-        return argument == 10;
-      }
-    };
 
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
       protected void build() {
-        through(Model.class, "fact: class Entity [field-selector, field:getInt() == 10]")
-          .shouldMatch(
-              query(selector(selector), lambda(lambda)));
+        through(Model.class, "fact: [field:getInteger() == 10]")
+          .shouldMatch( 
+              query(selector, eq(10)));
       }
     };
 
     try {
-      assertEquals("testEventOrientedPhrasesBuilderWithSelector error !!!",
-          Boolean.TRUE, builder.async(Model.values(10)).checkedGet(1, TimeUnit.SECONDS));
+      assertThat(builder.async(Model.values(10)).checkedGet(1, TimeUnit.SECONDS)).isTrue()
+        .as("testEventOrientedPhrasesBuilderWithSelector error !!!");
     } catch (Exception ex) {
       fail("testEventOrientedPhrasesBuilderWithSelector error !!!");
     }
@@ -150,51 +156,31 @@ public class TestEventOrientedPhraseBuilders {
     final ParallelStrategy<Boolean, PhraseExecutionException> separateThreadStrategy =
         ParallelStrategy.separateThreadStrategy();
 
-    AbstractEventOrientedPhrasesBuilder sameThreadBuilder =
-        new EventOrientedPhrasesBuilder() {
-          protected void build() {
-            through(Model.class, "fact: class Entity [field-selector, field:getInt() == 10]")
-                .shouldMatch(query(selector(new Selector<Model, Integer>() {
-                  public Integer select(Model input) {
-                    assertSame("This selector call should happens in main thread, but is not !!!",
-                        mainThread, Thread.currentThread());
-                    return input.getInteger();
-                  }
-                }), lambda(new ConclusionPredicate<Integer>() {
-                  public boolean apply(Integer argument) {
-                    assertSame("This Predicate call should happens in main thread, but is not !!!",
-                        mainThread, Thread.currentThread());
-                    return argument == 10;
-                  }
-                })));
-          }
-        };
+    final Selector<Model, Integer> selector = createSameThMockSelector(mainThread);
+    final ConclusionPredicate<Integer> predicate = createSameThMockPredicate(mainThread);
 
-    AbstractEventOrientedPhrasesBuilder separateThreadBuilder =
-        new EventOrientedPhrasesBuilder() {
-          protected void build() {
-            rule(separateThreadStrategy, Model.class, "fact: class Entity [field-selector, field:getInt() == 10]")
-                .shouldMatch(query(selector(new Selector<Model, Integer>() {
-                  public Integer select(Model input) {
-                    assertNotSame("This selector call should not happens in main thread, but it is !!!", 
-                        mainThread, Thread.currentThread());
-                    return input.getInteger();
-                  }
-                }), lambda(new ConclusionPredicate<Integer>() {
-                  public boolean apply(Integer argument) {
-                    assertNotSame("This selector call should not happens in main thread, but it is !!!",
-                        mainThread, Thread.currentThread());
-                    return argument == 10;
-                  }
-                })));
-          }
-        };
-        
-     assertTrue("testEventOrientedPhrasesBuilderWithParallelStrategy sameThread error !!!",
-       sameThreadBuilder.sync(Model.values(10)));
-     assertTrue("testEventOrientedPhrasesBuilderWithParallelStrategy separateThread error !!!",
-       separateThreadBuilder.sync(Model.values(10)));
+    AbstractEventOrientedPhrasesBuilder sameThreadBuilder = new EventOrientedPhrasesBuilder() {
+      protected void build() {
+        through(Model.class, "fact: [field:getInteger() == 10]")
+          .shouldMatch(query(selector, predicate));
+      }
+    };
+
+    final Selector<Model, Integer> selector0 = createSeparateThMockSelector(mainThread);
+    final ConclusionPredicate<Integer> predicate0 = createSeparateThMockPredicate(mainThread);
+    
+    AbstractEventOrientedPhrasesBuilder separateThreadBuilder = new EventOrientedPhrasesBuilder() {
+      protected void build() {
+        rule(separateThreadStrategy, Model.class, "fact: [field:getInteger() == 10]")
+          .shouldMatch(
+              query( selector0, predicate0));
+      }
+    };
+
+    assertThat(sameThreadBuilder.sync(Model.values(10))).isTrue();
+    assertThat(separateThreadBuilder.sync(Model.values(10))).isTrue();
   }
+
   /**
    * test {@code SingleEventFactConsequenceExecutionPhrasesBuilder} 
    * with {@code SelectorPredicate<T, E>}
@@ -205,28 +191,16 @@ public class TestEventOrientedPhraseBuilders {
     final ParallelStrategy<Boolean, PhraseExecutionException> separateThreadStrategy =
         ParallelStrategy.separateThreadStrategy();
     
-    final Selector<Model, Integer> selector = new Selector<Model, Integer>() {
-      public Integer select(Model input) {
-        assertNotSame("This selector call should not happens in main thread, but it is !!!",
-            mainThread, Thread.currentThread());
-        return input.getInteger();
-      }
-    };
+    final Selector<Model, Integer> selector = createSeparateThMockSelector(mainThread);
     
-    final ConclusionPredicate<Integer> lambda = new ConclusionPredicate<Integer>() {
-      public boolean apply(Integer argument) {
-        assertNotSame("This selector call should not happens in main thread, but it is !!!",
-            mainThread, Thread.currentThread());
-        return argument < 100;
-      }
-    };
-    
+    final ConclusionPredicate<Integer> lambda = createSeparateThMockPredicate(mainThread);
+
     final ConsequenceSupplier cSupplier = new ConsequenceSupplier() {
       public Consequence get() {
         return new Consequence() {
           public void action() {
-            assertNotSame("This Consequence call should not happens in main thread, but it is !!!",
-                mainThread, Thread.currentThread());
+            assertThat(mainThread).isNotSameAs(Thread.currentThread())
+              .as("This Consequence call should not happens in main thread, but it is !!!");
             logger.debug("consequence:consequence");
           }
         };
@@ -237,15 +211,15 @@ public class TestEventOrientedPhraseBuilders {
                       new EventOrientedFactConsequencePhrasesBuilder() {
       @Override
       protected void build() {
-        through(separateThreadStrategy, Model.class, "fact: class Entity [field-selector, field:getInt() < 100] : consequence:consequence")
+        through(separateThreadStrategy, Model.class, "fact: [field:getInt() < 100] : consequence:consequence")
             .fact(query(selector(selector), lambda(lambda)))
               .consequence(cSupplier);
       }
     };
     try {
       CheckedFuture<Boolean, PhraseExecutionException> future = sameThreadBuilder.async(Model.values(10));
-      assertTrue("testEventOrientedFactConsequencePhrasesBuilderWithParallelStrategy error !!!", 
-          future.checkedGet());
+      assertThat(future.checkedGet()).isTrue()
+        .as("testEventOrientedFactConsequencePhrasesBuilderWithParallelStrategy error !!!");
     } catch (Exception ex) {
       ex.printStackTrace();
       fail("testEventOrientedFactConsequencePhrasesBuilderWithParallelStrategy error ex!!!" + ex.getMessage());
@@ -264,24 +238,23 @@ public class TestEventOrientedPhraseBuilders {
     final Thread mainThread = Thread.currentThread();
     final ParallelStrategy<Boolean, PhraseExecutionException> builderStrategy = 
         ParallelStrategy.separateThreadStrategy();
-    
-    AbstractEventOrientedPhrasesBuilder builder = 
-                new EventOrientedFactConsequencePhrasesBuilder() {
+
+    AbstractEventOrientedPhrasesBuilder builder = new EventOrientedFactConsequencePhrasesBuilder() {
       @Override
       protected void build() {
         through(builderStrategy, Model.class, 
-            "fact: class Entity [field-selector, field:getInt() < 100] : consequence:consequence")
+            "fact: [field:getInt() < 100] : consequence:consequence")
             .fact(
                 query(selector(new Selector<Model, Integer>() {
                   public Integer select(Model input) {
-                    assertNotSame("This Selector call should not happens in main thread, but it is !!!",
-                        mainThread, Thread.currentThread());
+                    assertThat(mainThread).isNotSameAs(Thread.currentThread())
+                      .as("This Selector call should not happens in main thread, but it is !!!");
                     throw new RuntimeException("ExpectedRuntimeException");
                   }
                 }),lambda(new ConclusionPredicate<Integer>() {
                   public boolean apply(Integer argument) {
-                    assertNotSame("This Predicate call should not happens in main thread, but it is !!!",
-                        mainThread, Thread.currentThread());
+                    assertThat(mainThread).isNotSameAs(Thread.currentThread())
+                      .as("This Predicate call should not happens in main thread, but it is !!!");
                     return argument < 100;
                   }
                 })))
@@ -289,8 +262,8 @@ public class TestEventOrientedPhraseBuilders {
                 public Consequence get() {
                   return new Consequence() {
                     public void action() {
-                      assertNotSame("This Consequence call should not happens in main thread, but it is !!!",
-                          mainThread, Thread.currentThread());
+                      assertThat(mainThread).isNotSameAs(Thread.currentThread())
+                        .as("This Consequence call should not happens in main thread, but it is !!!");
                       logger.debug("consequence:consequence");
                     }
                   };
@@ -343,4 +316,61 @@ public class TestEventOrientedPhraseBuilders {
         fail("testSingleEventValidationExecutionPhrasesWithSettings error " + e.getMessage());
       }
   }
+
+  private ConclusionPredicate<Integer> createSameThMockPredicate(
+      final Thread mainThread) {
+    final ConclusionPredicate<Integer> predicate = mock(ConclusionPredicate.class);
+    when(predicate.apply(any(Integer.class))).then(new Answer<Boolean>() {
+      @Override
+      public Boolean answer(InvocationOnMock invocation) throws Throwable {
+        assertThat(mainThread).isEqualTo(Thread.currentThread())
+          .as("This Predicate call should happens in main thread, but is not !!!");
+        return invocation.getArguments()[0].equals(10);
+      }
+    });
+    return predicate;
+  }
+
+  private ConclusionPredicate<Integer> createSeparateThMockPredicate(
+      final Thread mainThread) {
+    final ConclusionPredicate<Integer> predicate = mock(ConclusionPredicate.class);
+    when(predicate.apply(any(Integer.class))).then(new Answer<Boolean>() {
+      @Override
+      public Boolean answer(InvocationOnMock invocation) throws Throwable {
+        assertThat(mainThread).isNotSameAs(Thread.currentThread())
+          .as("This Predicate call should happens in separate thread, but is not !!!");
+        return invocation.getArguments()[0].equals(10);
+      }
+    });
+    return predicate;
+  }
+
+  private Selector<Model, Integer> createSameThMockSelector(
+      final Thread mainThread) {
+    final Selector<Model, Integer> selector = mock(Selector.class);
+    when(selector.select(any(Model.class))).thenAnswer(new Answer<Integer>() {
+      @Override
+      public Integer answer(InvocationOnMock invocation) throws Throwable {
+        assertThat(mainThread).isEqualTo(Thread.currentThread())
+          .as("This selector call should happens in main thread, but is not !!!");
+        return ((Model)invocation.getArguments()[0]).getInteger();
+      }
+    });
+    return selector;
+  }
+
+  private Selector<Model, Integer> createSeparateThMockSelector(
+      final Thread mainThread) {
+    final Selector<Model, Integer> selector = mock(Selector.class);
+    when(selector.select(any(Model.class))).thenAnswer(new Answer<Integer>() {
+      @Override
+      public Integer answer(InvocationOnMock invocation) throws Throwable {
+        assertThat(mainThread).isNotSameAs(Thread.currentThread())
+          .as("This selector call should not happens in main thread, but it is !!!");
+        return ((Model)invocation.getArguments()[0]).getInteger();
+      }
+    });
+    return selector;
+  }
+
 }

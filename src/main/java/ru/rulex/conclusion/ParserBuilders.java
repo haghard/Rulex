@@ -19,9 +19,13 @@ package ru.rulex.conclusion;
 
 import java.util.Map;
 import com.google.common.collect.ImmutableSet;
+
+import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 import ru.rulex.conclusion.delegate.Delegate;
+import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.guice.SimpleAssertionUnit;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
+import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ParserBuilders {
@@ -41,13 +45,16 @@ public final class ParserBuilders {
    * @param <T>
    */
   public interface WithParser<T> {
-
     /**
      * 
      * @param predicate
      */
     void shouldMatch(ConclusionPredicate<T> predicate);
-
+    /**
+     * 
+     * 
+     */
+    <E> void shouldMatch(E argument, ConclusionPredicate<E> predicate);
     /**
      * Method for dynamic languages
      * @param predicate
@@ -60,7 +67,7 @@ public final class ParserBuilders {
      * @param predicate
      * @param selector
      */
-    void shouldMatch(Map<String,Object> map);
+    void shouldMatch(Map<String, Object> map);
 
   }
 
@@ -131,6 +138,14 @@ public final class ParserBuilders {
     private void checkIncomingParams(final Object selector, Object predicate) {
       checkNotNull(selector, "selector is null");
       checkNotNull(predicate, "selector is null");
+    }
+
+    @Override
+    public <E> void shouldMatch(E argument, ConclusionPredicate<E> predicate) {
+      Selector<T, E> selector = ProxyUtils.toSelector(argument);
+      ConclusionPredicate<T> p = new SelectorPredicate<T, E>(predicate, selector);
+      this.phrase.setEventClass(clazz);
+      this.phrase.addUnit(new SimpleAssertionUnit<T>(p, description));
     }
   }
 
