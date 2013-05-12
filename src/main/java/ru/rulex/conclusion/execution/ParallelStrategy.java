@@ -55,6 +55,7 @@ public final class ParallelStrategy<T, E extends Exception> {
   private static <X extends CodedException> Function<Exception, X> createMapper(final ErrorCode code, final String[] line) {
     return new Function<Exception, X>() {
       public X apply(Exception clause) {
+        clause.printStackTrace();
         return (X) new PhraseExecutionException(code, line, clause);
       } 
     };

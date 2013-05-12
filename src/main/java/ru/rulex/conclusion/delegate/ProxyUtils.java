@@ -57,8 +57,7 @@ public class ProxyUtils {
    *
    */
   public static <T, E> Selector<T, E> toSelector(E ignoredValue) {
-    final Invokable<T, E> invokable = ProxyUtils
-        .<T, E>poolInvokable();
+    final Invokable<T, E> invokable = ProxyUtils.<T, E>poolInvokable();
     return Invokable.<T,E>invokableSelector(invokable);
   }
 
@@ -72,7 +71,7 @@ public class ProxyUtils {
     public <T> T imposterise(Class<T> mockedType, Class<?>... ancilliaryTypes);
   }
 
-  public static <T> void putInvokable(Invokable<?, ?> invokable) {
+  public static <T> void pushInvokable(Invokable<?, ?> invokable) {
     threadSafe().pushInvokable(invokable);
   }
 
@@ -97,7 +96,7 @@ public class ProxyUtils {
               @Override
               public Object invoke(Object proxy, Method method, Object[] args)
                   throws Throwable {
-                putInvokable(Invokable.<Object, Boolean> invokableMethod(method, args));
+                pushInvokable(Invokable.<Object, Boolean> invokableMethod(method, args));
                 return true;
               }
         });
@@ -127,7 +126,7 @@ public class ProxyUtils {
   private static class PredicateProxyArgument extends JavaCglibInvocInterceptor {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-      putInvokable(Invokable.<Object, Boolean> invokableMethod(method, args));
+      pushInvokable(Invokable.<Object, Boolean> invokableMethod(method, args));
       return null;
     }
   }

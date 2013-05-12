@@ -77,6 +77,7 @@ public abstract class AbstractPhrase<T> {
 
     @Override
     protected Boolean evaluate() {
+      if  (units.size() == 0) return Boolean.FALSE;
       for (AssertionUnit<T> unit : units) {
         if (!unit.satisfies(conclusionPathTrace, event)) {
           return Boolean.FALSE;

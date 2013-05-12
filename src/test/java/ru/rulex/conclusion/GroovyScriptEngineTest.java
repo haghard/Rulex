@@ -15,10 +15,6 @@
  */
 package ru.rulex.conclusion;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 
 import groovy.lang.Binding;
@@ -28,6 +24,8 @@ import groovy.util.GroovyScriptEngine;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
+
+import static org.junit.Assert.*;
 
 
 public class GroovyScriptEngineTest {
@@ -52,8 +50,7 @@ public class GroovyScriptEngineTest {
       Binding binding = new Binding();
       binding.setVariable("foo", foo);
       gse.run("GroovyExample.groovy", binding);
-      assertTrue("testRunLocalGuiceScripts error !!!",
-          (boolean) binding.getVariable("output"));
+      assertEquals("testRunLocalGuiceScripts error !!!", true, (boolean) binding.getVariable("output"));
     } catch (Exception ex) {
       ex.printStackTrace();
       fail("testRunLocalGuiceBasedScripts error !!!");
@@ -68,8 +65,7 @@ public class GroovyScriptEngineTest {
       Binding binding = new Binding();
       binding.setVariable("foo", foo);
       gse.run("SingleEventGroovyScript.groovy", binding);
-      assertTrue("testNativeRunLocalGuiceBasedScripts error !!!",
-          (boolean) binding.getVariable("output"));
+      assertEquals("testNativeRunLocalGuiceBasedScripts error !!!", true, (boolean) binding.getVariable("output"));
     } catch (Exception ex) {
       ex.printStackTrace();
       fail("testNativeRunLocalGuiceBasedScripts error !!!");
@@ -87,14 +83,12 @@ public class GroovyScriptEngineTest {
       binding.setVariable("list", list);
       binding.setVariable("value", targetId);
       gse.run("ListGroovyScript.groovy", binding);
-      assertTrue("testListRunLocalGuiceBasedScripts null error !!!", 
-          (boolean)binding.getVariable("output"));
+      assertEquals("testListRunLocalGuiceBasedScripts null error !!!", true, (boolean) binding.getVariable("output"));
 
       binding.setVariable("list", list);
       binding.setVariable("value", targetId + 1);
       gse.run("ListGroovyScript.groovy", binding);
-      assertFalse("testListRunLocalGuiceBasedScripts null error !!!", 
-          (boolean)binding.getVariable("output"));
+      assertEquals("testListRunLocalGuiceBasedScripts null error !!!", false, (boolean) binding.getVariable("output"));
       
     } catch (Exception ex) {
       ex.printStackTrace();

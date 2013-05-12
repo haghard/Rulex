@@ -349,12 +349,12 @@ public abstract class FluentConclusionPredicate<T> implements
    * @param <T>
    * @param <E>
    */
-  static class SelectorPredicate<T, E> implements
+  public static class SelectorPredicate<T, E> implements
       ConclusionPredicate<T> {
     private final ConclusionPredicate<E> predicate;
     private final Selector<T, E> selector;
 
-    SelectorPredicate(ConclusionPredicate<E> predicate,
+    public SelectorPredicate(ConclusionPredicate<E> predicate,
                               Selector<T, E> selector) {
       this.predicate = checkNotNull(predicate);
       this.selector = checkNotNull(selector);

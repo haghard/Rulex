@@ -25,6 +25,8 @@ import ru.rulex.conclusion.delegate.Delegate;
 import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.guice.SimpleAssertionUnit;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
+import static ru.rulex.conclusion.RulexMatchersDsl.eq;
+import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -36,6 +38,10 @@ public final class ParserBuilders {
 
   public interface ConsequenceSupplier {
     Consequence get();
+  }
+
+  public interface SimpleWithParser {
+    <T> void shouldMatch(T argument, ConclusionPredicate<T> predicate);
   }
 
   /**
@@ -69,6 +75,28 @@ public final class ParserBuilders {
      */
     void shouldMatch(Map<String, Object> map);
 
+  }
+
+  private static class SimpleWithParserImpl implements SimpleWithParser {
+    private final AbstractPhrase<?> phrase;
+    private final String description;
+
+    SimpleWithParserImpl(AbstractPhrase<?> phrase, String description) {
+      this.phrase = phrase;
+      this.description = description;
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <T> void shouldMatch(T argument, ConclusionPredicate<T> predicate) {
+      Selector<?, T> selector = ProxyUtils.toSelector(argument);
+      ConclusionPredicate<?> p = new SelectorPredicate(predicate, selector);
+      this.phrase.addUnit(new SimpleAssertionUnit(p, description));
+    }
+  }
+
+  public static SimpleWithParser newSimpleWithParser(AbstractPhrase<?> phrase, String desc) {
+    return new SimpleWithParserImpl(phrase, desc);
   }
 
   public static <T> WithParser<T> newWithParser(AbstractPhrase<T> conclusionTask, Class<T> clazz,

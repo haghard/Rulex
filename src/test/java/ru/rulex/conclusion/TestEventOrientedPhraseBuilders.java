@@ -57,19 +57,6 @@ public class TestEventOrientedPhraseBuilders {
   //TO DO: replace anonymous predicate usage with RulexMatchersDsl methods
   @Test
   public void testEventOrientedPhrasesBuilderWithProxy() {
-    final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
-      protected void build() {
-        through(Model.class, "fact: [getInteger() == 221]")
-          .shouldMatch(callOn(Model.class).getInteger(), eq(221));
-      }
-    };
-    try {
-      assertThat(builder.async(Model.values(221)).checkedGet()).isTrue()
-        .as("testEventOrientedPhrasesBuilderWithProxy error !!!");
-    } catch (Exception ex) {
-      fail("testEventOrientedPhrasesBuilderWithProxy error !!!");
-    }
-
     final AbstractEventOrientedPhrasesBuilder builder0 = new EventOrientedPhrasesBuilder() {
       protected void build() {
         through(Model.class, "fact: [getInteger() == 211]")
@@ -89,6 +76,7 @@ public class TestEventOrientedPhraseBuilders {
    * Test {@code EventOrientedPhrasesBuilder} with 
    * {@code TypeSafeSelectorPredicate<T, E>} 
    */
+  // Work very slow 3 time slow
   @Test
   public void testEventOrientedPhrasesBuilderWithTypeSafeSelector() {
     final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder() {
@@ -110,7 +98,6 @@ public class TestEventOrientedPhraseBuilders {
 
       assertThat(builder.async(Model.values(11)).checkedGet(1, TimeUnit.SECONDS)).isTrue()
         .as("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!");
-
     } catch (Exception ex) {
       fail("testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!");
     }

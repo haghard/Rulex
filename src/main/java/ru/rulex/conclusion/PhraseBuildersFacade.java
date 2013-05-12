@@ -293,6 +293,35 @@ public final class PhraseBuildersFacade {
     }
   }
 
+  public static abstract class SimpleEventOrientedPhrasesBuilder
+    extends AbstractEventOrientedBuilderImpl {
+
+    public <T> SimpleEventOrientedPhrasesBuilder() {
+      super(Phrases.ALL_TRUE.withNarrowedType(),
+      ParallelStrategy.<Boolean, PhraseExecutionException>serial());
+      build();
+    }
+
+    /**
+     * method which should be override in all anonymous class instances and
+     * include logic for construction underline engine with predicates.
+     */
+    protected abstract void build();
+
+    public SimpleWithParser as(String description) {
+      return rule(ParallelStrategy.<Boolean, PhraseExecutionException> serial(),
+          description);
+    }
+
+    protected SimpleWithParser rule(
+        ParallelStrategy<Boolean, PhraseExecutionException> pStrategy,
+        String description) {
+      setParallelStrategy(pStrategy);
+      return ParserBuilders.newSimpleWithParser(
+        this.getPhrase(), description);
+    }
+  }
+
   /**
    *
    * <pre>
