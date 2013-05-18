@@ -1,6 +1,6 @@
 package ru.dsl;
 
-public class Section {
+class Section {
   String title
   String body
 }

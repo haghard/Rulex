@@ -26,20 +26,24 @@ import static org.junit.Assert.*;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
 import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
-public class TestFluentConclusionPredicate {
+public class TestFluentConclusionPredicate
+{
 
   /**
    * TODO: 1 ApplyEight(pred, thatTrue, thatFalse) CompositeEight(pred, func,
-   * thatTrue, thatFalse) 
-   * TODO: 2 (NumberSelector val) -> 40 == 40 (true)
+   * thatTrue, thatFalse) TODO: 2 (NumberSelector val) -> 40 == 40 (true)
    */
   @Test
-  public void testFluent() {
-    try {
+  public void testFluent ()
+  {
+    try
+    {
       fluent().apply(1);
-    } catch (IllegalStateException ex) {
+    } catch ( IllegalStateException ex )
+    {
       // expected
-    } catch (Exception e) {
+    } catch ( Exception e )
+    {
       fail("fluent() should be IllegalArgumentException !!!" + e);
     }
 
@@ -66,41 +70,45 @@ public class TestFluentConclusionPredicate {
   }
 
   @Test
-  public void testFluentPredicates() {
-    ConclusionPredicate<Float> predicate = new ConclusionPredicate<Float>() {
+  public void testFluentPredicates ()
+  {
+    ConclusionPredicate<Float> predicate = new ConclusionPredicate<Float>()
+    {
       @Override
-      public boolean apply(Float argument) {
+      public boolean apply ( Float argument )
+      {
         return false;
       }
     };
 
-    ConclusionPredicate<Float> predicate2 = new ConclusionPredicate<Float>() {
+    ConclusionPredicate<Float> predicate2 = new ConclusionPredicate<Float>()
+    {
       @Override
-      public boolean apply(Float argument) {
+      public boolean apply ( Float argument )
+      {
         return argument == 6;
       }
     };
 
-    ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>() {
+    ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>()
+    {
       @Override
-      public boolean apply(Integer argument) {
+      public boolean apply ( Integer argument )
+      {
         return argument == 56;
       }
     };
 
-    assertFalse(
-        " testFluentPredicates 1 error !!!",
-        bind(predicate).and(FluentConclusionPredicate.<Number> always()).apply(
-            6f));
+    assertFalse(" testFluentPredicates 1 error !!!",
+        bind(predicate).and(FluentConclusionPredicate.<Number> always()).apply(6f));
     assertTrue(" testFluentPredicates 2 error !!!",
-        bind(predicate2).and(FluentConclusionPredicate.<Number> always())
-            .apply(6f));
-    assertTrue(" testFluentPredicates 3 error !!!", bind(intPredicate)
-        .apply(56));
+        bind(predicate2).and(FluentConclusionPredicate.<Number> always()).apply(6f));
+    assertTrue(" testFluentPredicates 3 error !!!", bind(intPredicate).apply(56));
   }
 
   @Test
-  public void testCompositionsFluentPredicates() {
+  public void testCompositionsFluentPredicates ()
+  {
     Model mock = Mockito.mock(Model.class);
     Mockito.when(mock.getInteger()).thenReturn(40);
     String accessor = "getInteger";
@@ -108,21 +116,18 @@ public class TestFluentConclusionPredicate {
     assertTrue(
         " testCompositionsFluentPredicates AND error !!!",
         fluent().eq(argument(40), descriptor(Model.class, accessor))
-            .and(fluent().less(argument(39), descriptor(Model.class, accessor)))
-            .apply(mock));
+            .and(fluent().less(argument(39), descriptor(Model.class, accessor))).apply(mock));
 
     assertTrue(
         " testCompositionsFluentPredicates OR error !!!",
         fluent().eq(argument(40), descriptor(Model.class, accessor))
-            .or(fluent().less(argument(41), descriptor(Model.class, accessor)))
-            .apply(mock));
+            .or(fluent().less(argument(41), descriptor(Model.class, accessor))).apply(mock));
 
     assertTrue(
         "testCompositionsFluentPredicates AND AND error !!!",
         fluent().eq(argument(40), descriptor(Model.class, accessor))
             .and(fluent().eq(argument(40), descriptor(Model.class, accessor)))
-            .and(fluent().eq(argument(40), descriptor(Model.class, accessor)))
-            .apply(mock));
+            .and(fluent().eq(argument(40), descriptor(Model.class, accessor))).apply(mock));
 
     assertTrue(
         "testCompositionsFluentPredicates (eq AND (eq AND eq)) OR eq ",
@@ -130,13 +135,14 @@ public class TestFluentConclusionPredicate {
             .eq(argument(40), descriptor(Model.class, accessor))
             .and(
                 fluent().eq(argument(39), descriptor(Model.class, accessor)).and(
-                    bind(new ConclusionPredicate<Model>() {
+                    bind(new ConclusionPredicate<Model>()
+                    {
                       @Override
-                      public boolean apply(Model argument) {
+                      public boolean apply ( Model argument )
+                      {
                         return false;
                       }
-                    })))
-            .or(fluent().eq(argument(40), descriptor(Model.class, accessor)))
+                    }))).or(fluent().eq(argument(40), descriptor(Model.class, accessor)))
             .apply(mock));
 
     assertTrue(
@@ -144,11 +150,6 @@ public class TestFluentConclusionPredicate {
         fluent().eq(argument(39), descriptor(Model.class, accessor))
             .and(fluent().eq(argument(39), descriptor(Model.class, accessor)))
             .and(fluent().eq(argument(39), descriptor(Model.class, accessor)))
-            .or(fluent().eq(argument(40), descriptor(Model.class, accessor)))
-            .apply(mock));
-    
-    //TO DO:
-    //fluent().eq(argument(40), callOn(Entity.class).getFloat())
-    
+            .or(fluent().eq(argument(40), descriptor(Model.class, accessor))).apply(mock));
   }
 }

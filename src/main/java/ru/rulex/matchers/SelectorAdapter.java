@@ -16,16 +16,12 @@
  */
 package ru.rulex.matchers;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import ru.rulex.conclusion.Selector;
 
-public abstract class RulexMatcher<T> extends TypeSafeMatcher<T> {
+public interface SelectorAdapter<T> {
 
-  public RulexMatcher<T> and(Matcher<T> matcher) {
-    return RulexDsl.and(this, matcher);
-  }
+  Selector<T, ?> selector(T value);
 
-  public RulexMatcher<T> or(Matcher<T> matcher) {
-    return RulexDsl.or(this, matcher);
-  }
+  String matcherDisplayName();
+  
 }

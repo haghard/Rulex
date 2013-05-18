@@ -35,78 +35,88 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
-public class TestIterablePhrasesBuilder {
+public class TestIterablePhrasesBuilder
+{
 
-  private final ImmutableList<Model> list = ImmutableList.of(
-      Model.values(121), Model.values(122));
-  private final ImmutableList<Model> failList = ImmutableList.of(
-      Model.values(99), Model.values(1));
-  
-  final ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>() {
-    public boolean apply(Integer argument) {
+  private final ImmutableList<Model> list = ImmutableList.of(Model.values(121), Model.values(122));
+  private final ImmutableList<Model> failList = ImmutableList.of(Model.values(99), Model.values(1));
+
+  final ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>()
+  {
+    public boolean apply ( Integer argument )
+    {
       return argument > 100;
     }
   };
-  
-  final Selector<Model, Integer> intSelector = new Selector<Model, Integer>() {
-    public Integer select(Model input) {
+
+  final Selector<Model, Integer> intSelector = new Selector<Model, Integer>()
+  {
+    public Integer select ( Model input )
+    {
       return input.getInteger();
     }
   };
-  
+
   /**
-   * {@code IterableCollectionPhrasesBuilder} with fromTypeSafeSelector 
+   * {@code IterableCollectionPhrasesBuilder} with fromTypeSafeSelector
    */
   @Test
-  public void testIterableValidationCollectionPhrasesBuilderWithTypeSafeSelector() {
+  public void testIterableValidationCollectionPhrasesBuilderWithTypeSafeSelector ()
+  {
 
-    final AbstractIterableOrientedPhrasesBuilder pBuilder = new IterableOrientedPhrasesBuilder() {
-      @Override protected void build() {
+    final AbstractIterableOrientedPhrasesBuilder pBuilder = new IterableOrientedPhrasesBuilder()
+    {
+      @Override
+      protected void build ()
+      {
         through(Model.class, "simple-where-engine-with-typeSafeSelector")
             .shouldMatch(
-                typeSafeQuery(
-                  number(Model.class, Integer.class, Model.INT_ACCESSOR),
-                  intPredicate))
-            .except(ImmutableSet.<Model> of(Model.values(121)))
-            .iteratorType(Iterators.WHERE);
+                typeSafeQuery(number(Model.class, Integer.class, Model.INT_ACCESSOR), intPredicate))
+            .except(ImmutableSet.<Model> of(Model.values(121))).iteratorType(Iterators.WHERE);
       }
 
       @Override
-      public <T> Boolean sync(Iterable<T> iterable, Runnable callback) {
+      public <T> Boolean sync ( Iterable<T> iterable, Runnable callback )
+      {
         // TODO Auto-generated method stub
         return null;
       }
     };
-    
-    try {
+
+    try
+    {
       assertTrue("error 1", pBuilder.async(list).checkedGet());
       assertTrue("error 2", pBuilder.async(list).checkedGet());
       assertFalse("error 3", pBuilder.async(failList).checkedGet());
-    } catch (Exception ex) {
+    } catch ( Exception ex )
+    {
       fail("testIterableValidationCollectionPhrasesBuilderWithTypeSafeSelector error ex!!!");
     }
   }
-  
+
   /**
    * {@code IterableCollectionPhrasesBuilder} with fromSelector
    */
   @Test
-  public void testIterableValidationCollectionPhrasesBuilderWithSelector() {
-    AbstractIterableOrientedPhrasesBuilder whereEngineBuilder = 
-                new IterableOrientedPhrasesBuilder() {
-      protected void build() {
+  public void testIterableValidationCollectionPhrasesBuilderWithSelector ()
+  {
+    AbstractIterableOrientedPhrasesBuilder whereEngineBuilder = new IterableOrientedPhrasesBuilder()
+    {
+      protected void build ()
+      {
         through(Model.class, "simple-where-engine-selector")
             .shouldMatch(query(intSelector, intPredicate))
-            .except(ImmutableSet.<Model> of(Model.values(121)))
-            .iteratorType(Iterators.WHERE);
+            .except(ImmutableSet.<Model> of(Model.values(121))).iteratorType(Iterators.WHERE);
       }
     };
-    
-    try {
+
+    try
+    {
       assertTrue("error 4", whereEngineBuilder.async(list).checkedGet());
       assertTrue("error 5", whereEngineBuilder.async(list).checkedGet());
       assertFalse("error 6", whereEngineBuilder.async(failList).checkedGet());
-    } catch (Exception ex) {
+    } catch ( Exception ex )
+    {
       fail("testIterableValidationCollectionPhrasesBuilderWithSelector error ex!!!");
     }
   }

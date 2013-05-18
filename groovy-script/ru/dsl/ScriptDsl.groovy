@@ -8,7 +8,7 @@ import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.*
 
 //@CompileStatic
-class SampleDsl {
+class MemoDsl {
 
   def toText
   def fromText
@@ -17,7 +17,7 @@ class SampleDsl {
 
   def static task(Closure closure) {
     def block = closure.clone()
-    def sampleDsl = new SampleDsl()
+    def sampleDsl = new MemoDsl()
     // any method called in closure will be delegated to the sampleDsl class
     block.resolvingStrategy = Closure.DELEGATE_FIRST
     block.delegate = sampleDsl
@@ -29,7 +29,7 @@ class SampleDsl {
   def from(String fromText) { this.fromText = fromText }
 
   def body(String bodyText) { this.body = bodyText }
-  
+
   def methodMissing(String methodName, args) {
     Map<String, Object> section = [title: methodName, body: args[0]]
     sections << section
@@ -38,7 +38,7 @@ class SampleDsl {
   def getText() { doText(this) }
 
   def getXml() { doXml(this) }
-  
+
   def getHtml() { doHtml(this) }
 
   def when(boolean condition, Closure closure) {
@@ -53,7 +53,7 @@ class SampleDsl {
     while(!condition()) closure()
   }
 
-  private static doXml(SampleDsl memoDsl) {
+  private static doXml(MemoDsl memoDsl) {
     def writer = new StringWriter()
     MarkupBuilder xml = new MarkupBuilder(writer)
     xml.memo() {
@@ -68,7 +68,7 @@ class SampleDsl {
     println writer
   }
 
-  private static doHtml(SampleDsl memoDsl) {
+  private static doHtml(MemoDsl memoDsl) {
     def writer = new StringWriter()
     MarkupBuilder xml = new MarkupBuilder(writer)
     xml.html() {
@@ -90,7 +90,7 @@ class SampleDsl {
     println writer
   }
 
-  private static doText(SampleDsl memoDsl) {
+  private static doText(MemoDsl memoDsl) {
     String template = "Memo\nTo: ${memoDsl.toText}\nFrom: ${memoDsl.fromText}\n${memoDsl.body}\n"
     def sectionStrings =""
     for (s in memoDsl.sections) {
@@ -100,44 +100,43 @@ class SampleDsl {
     template += sectionStrings
     println template
   }
+}
 
-  static void main(String[] args) {
-    
-    println SampleDsl.make {
-      to "Nirav Assar"
-      from "Barack Obama"
-      body "How are things? We are doing well. Take care"
-      idea "The economy is key"
-      request "Please vote for me"
-      xml
-    }
+println MemoDsl.task {
+  to "Nirav Assar"
+  from "Barack Obama"
+  body "How are things? We are doing well. Take care"
+  idea "The economy is key"
+  request "Please vote for me"
+  xml
+}
 
-    println SampleDsl.make {
-      to "Nirav Assar1"
-      from "Barack Obama1"
-      body "How are things? We are doing well. Take care"
-      idea "The economy is key"
-      request "Please vote for me"
-      html
-    }
+println MemoDsl.task {
+  to "Nirav Assar1"
+  from "Barack Obama1"
+  body "How are things? We are doing well. Take care"
+  idea "The economy is key"
+  request "Please vote for me"
+  html
+}
 
-    println SampleDsl.make {
-      to "Nirav Assar1"
-      from "Barack Obama1"
-      body "How are things? We are doing well. Take care"
-      idea "The economy is key"
-      request "Please vote for me"
-      text
-    }
+println MemoDsl.task {
+  to "Nirav Assar1"
+  from "Barack Obama1"
+  body "How are things? We are doing well. Take care"
+  idea "The economy is key"
+  request "Please vote for me"
+  text
+}
+/*
+def binding = new Binding([receiver: 'Nirav Assar', sender: 'Barack Obama'])
 
-    def binding = new Binding([receiver: 'Nirav Assar', sender: 'Barack Obama'])
-    
-    def shell = new GroovyShell(binding)
+def shell = new GroovyShell(binding)
 
-    shell.evaluate '''
-    import static ru.dsl.SampleDsl.task;
+shell.evaluate '''
+    import static ru.dsl.MemoDsl.task;
 
-     task {
+    MemoDsl.task {
       to receiver
       from sender
       body "How are things? We are doing well. Take care"
@@ -146,5 +145,4 @@ class SampleDsl {
       text
     }
     '''
-   }
-}
+*/
