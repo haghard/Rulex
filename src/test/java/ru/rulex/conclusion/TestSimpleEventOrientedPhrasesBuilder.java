@@ -62,28 +62,28 @@ public class TestSimpleEventOrientedPhrasesBuilder
     Model model = Model.values(1, 2);
 
     RulexAnalyzer analyzed = Rulex.projection(Model.class).assertThat(matcher).on(model);
-    analyzed.analyze(new AssertionAwareListener()
+    analyzed.analyze(new AssertionAwareListener<Model>()
     {
       @Override
-      public void passed ( Object analysedObject, Matcher<?> matcher )
+      public void passed ( Model analysedObject, Matcher<?> matcher )
       {
         assertThat(true).isTrue();
       }
 
       @Override
-      public void failed ( Object analysedObject, Matcher<?> matcher )
+      public void failed ( Model analysedObject, Matcher<?> matcher )
       {
         System.out.println("failed");
       }
 
       @Override
-      public void filtered ( Object analysedObject, Matcher<?> matcher )
+      public void filtered ( Model analysedObject, Matcher<?> matcher )
       {
         System.out.println("filtered");
       }
 
       @Override
-      public void unexpected ( Object analysedObject, Exception exception )
+      public void unexpected ( Model analysedObject, Exception exception )
       {
         System.out.println("unexpected");
       }
@@ -96,6 +96,11 @@ public class TestSimpleEventOrientedPhrasesBuilder
     });
   }
 
+  /**
+   * Method for creation custom builder with specific type parameter  
+   * @param arg
+   * @return
+   */
   public static <E extends Comparable<? super E>> RulexMatchersBuilder<Model> modelSelector ( final E arg )
   {
     return selector(Model.class, arg);
