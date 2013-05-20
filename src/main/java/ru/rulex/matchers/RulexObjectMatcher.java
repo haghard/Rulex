@@ -28,7 +28,7 @@ import ru.rulex.conclusion.delegate.ProxyUtils;
  * @author haghard
  * @param <T>
  */
-public final class Rulex<T> implements RulexAssertionBuilder<T> , RulexRule<T> , RulexAnalyzer
+public final class RulexObjectMatcher<T> implements RulexAssertionBuilder<T> , RulexRule<T> , RulexAnalyzer
 {
 
   private final Class<T> clazz;
@@ -37,7 +37,7 @@ public final class Rulex<T> implements RulexAssertionBuilder<T> , RulexRule<T> ,
 
   private Iterable<T> iterator;
 
-  private Rulex ( Class<T> clazz)
+  private RulexObjectMatcher ( Class<T> clazz)
   {
     this.clazz = clazz;
   }
@@ -88,7 +88,7 @@ public final class Rulex<T> implements RulexAssertionBuilder<T> , RulexRule<T> ,
 
   public static <T> RulexAssertionBuilder<T> projection ( Class<T> clazz )
   {
-    return new Rulex<T>(clazz);
+    return new RulexObjectMatcher<T>(clazz);
   }
 
   @Override
