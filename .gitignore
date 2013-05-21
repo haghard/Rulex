@@ -13,3 +13,5 @@ logs
 /src/test/java/ru/logic/forward/conclusion/log/
 /src/test/java/ru/logic/forward/conclusion/scripts/log/
 /pom.xml
+/rulex.iml
+/out/

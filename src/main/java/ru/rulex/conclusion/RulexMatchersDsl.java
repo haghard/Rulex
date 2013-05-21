@@ -45,7 +45,7 @@ public final class RulexMatchersDsl {
       @Override
       public boolean apply(T argument) {
         checkNotNull(argument);
-        return value.compareTo(argument) > 0;
+        return value.compareTo(argument) < 0;
       }
     };
   }

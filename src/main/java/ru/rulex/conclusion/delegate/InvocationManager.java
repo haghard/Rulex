@@ -30,13 +30,13 @@ public class InvocationManager {
   private Queue<Invokable<?, ?>> invokableList = new ArrayDeque<Invokable<?, ?>>();
 
   public void pushInvokable(Invokable<?, ?> invokable) {
-    LOG.debug( String.format( "put: man hash:%d invok hash: %d th: %d", this.hashCode(), invokable.hashCode(), Thread.currentThread().hashCode() ));
+    LOG.debug( String.format( "put: man hash:%d invok hash: %d", this.hashCode(), invokable.hashCode() ));
     this.invokableList.offer(invokable);
   }
 
   public Invokable<?, ?> poolInvokable() {
     Invokable<?, ?> invokable = invokableList.poll();
-    LOG.debug( String.format( "poll: man hash: %d inv hash:%d th: %d", this.hashCode(), invokable.hashCode(), Thread.currentThread().hashCode() ));
+    LOG.debug( String.format( "poll: man hash: %d inv hash:%d ", this.hashCode(), invokable.hashCode() ));
     Preconditions.checkNotNull(invokable, "invokable was not setted in InvocationManager");
     return invokable;
   }

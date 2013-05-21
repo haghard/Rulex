@@ -24,7 +24,40 @@ import static org.mockito.Mockito.*;
  */
 public abstract class Model
 {
-   
+   public static Model INSTANCE = new Model() {
+
+    @Override
+    public Integer getInteger ()
+    {
+      return 51;
+    }
+
+    @Override
+    public Integer getOtherInteger ()
+    {
+      return 2;
+    }
+
+    @Override
+    public Float getFloat ()
+    {
+      return 23.6f;
+    }
+
+    @Override
+    public String getString ()
+    {
+      return "qweqwr";
+    }
+
+    @Override
+    public Boolean getBoolean ()
+    {
+      return true;
+    }
+
+   };
+
    public abstract Integer getInteger();
    
    public abstract Integer getOtherInteger();

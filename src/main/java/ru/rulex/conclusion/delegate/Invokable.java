@@ -47,6 +47,7 @@ abstract class Invokable<T, E> {
   abstract Object invokeInternal(T receiver, Object... args)
       throws InvocationTargetException, IllegalAccessException;
 
+  @SuppressWarnings ( "unchecked")
   public final E invoke(T receiver, Object... args)
       throws InvocationTargetException, IllegalAccessException {
     return (E) invokeInternal(receiver, Preconditions.checkNotNull(args));
