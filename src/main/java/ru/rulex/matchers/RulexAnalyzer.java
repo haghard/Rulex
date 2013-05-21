@@ -1,6 +1,6 @@
 package ru.rulex.matchers;
 
-public interface RulexAnalyzer {
-
-  void analyze(AssertionAwareListener listener);
+public interface RulexAnalyzer
+{
+  void analyze( AssertionAwareListener listener );
 }

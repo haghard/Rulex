@@ -18,18 +18,25 @@ package ru.rulex.conclusion.delegate;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+
+import org.apache.log4j.Logger;
+
 import com.google.common.base.Preconditions;
 
 public class InvocationManager {
 
+  private final Logger LOG = Logger.getLogger( getClass() );
+
   private Queue<Invokable<?, ?>> invokableList = new ArrayDeque<Invokable<?, ?>>();
 
   public void pushInvokable(Invokable<?, ?> invokable) {
+    LOG.debug( String.format( "put: man hash:%d invok hash: %d th: %d", this.hashCode(), invokable.hashCode(), Thread.currentThread().hashCode() ));
     this.invokableList.offer(invokable);
   }
 
   public Invokable<?, ?> poolInvokable() {
     Invokable<?, ?> invokable = invokableList.poll();
+    LOG.debug( String.format( "poll: man hash: %d inv hash:%d th: %d", this.hashCode(), invokable.hashCode(), Thread.currentThread().hashCode() ));
     Preconditions.checkNotNull(invokable, "invokable was not setted in InvocationManager");
     return invokable;
   }
