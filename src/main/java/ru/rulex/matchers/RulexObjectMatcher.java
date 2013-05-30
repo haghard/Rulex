@@ -21,28 +21,26 @@ import java.util.Arrays;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
+import ru.rulex.conclusion.RulexMatchersDsl;
 import ru.rulex.conclusion.Selector;
 import com.google.common.collect.Iterables;
 
 import ru.rulex.conclusion.delegate.ProxyUtils;
 
 /**
+ * 
  * @author haghard
  * @param <T>
  */
-public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T> , RulexRule<T> ,
-    RulexAnalyzer
+public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>,
+    RulexRule<T>, RulexAnalyzer
 {
-
   private final Class<T> clazz;
-
   private Matcher<T> assertionMatcher;
-
   private Matcher<T> filterMatcher;
-
   private Iterable<T> iterator;
 
-  private RulexObjectMatcher ( Class<T> clazz )
+  private RulexObjectMatcher( Class<T> clazz )
   {
     this.clazz = clazz;
   }
@@ -54,121 +52,130 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T> , RulexR
    * @param arg
    * @return builder
    */
-  public static <T, E extends Comparable<? super E>> RulexMatchersBuilder<T> selector (
+  public static <T, E extends Comparable<? super E>> RulexMatchersBuilder<T> selector(
       final Class<T> type, final E arg )
   {
-    return new RulexMatchersBuilder<T>(new SelectorAdapter<T>()
+    return new RulexMatchersBuilder<T>( new SelectorAdapter<T>()
     {
       @Override
-      public Selector<T, E> selector ( final T matched )
+      public Selector<T, E> selector( final T matched )
       {
-        return ProxyUtils.toSelector(arg);
+        return ProxyUtils.toSelector( arg );
       }
 
       @Override
-      public String matcherDisplayName ()
+      public String matcherDisplayName()
       {
         return "Selectors(" + type.getClass().getName() + ")";
       }
-    });
+    } );
   }
 
-  public static <T> RulexRuleBuilder<T> projection ( Class<T> clazz )
+  public static <T> RulexRuleBuilder<T> projection( Class<T> clazz )
   {
-    return new RulexObjectMatcher<T>(clazz);
+    return new RulexObjectMatcher<T>( clazz );
   }
 
   @Override
-  public RulexRule<T> assertThat ( Matcher<T> assertionMatcher )
+  public RulexRule<T> assertThat( Matcher<T> assertionMatcher )
   {
     this.assertionMatcher = assertionMatcher;
     return this;
   }
 
   @Override
-  public RulexAnalyzer in ( final Iterable<T> iterator )
+  public RulexAnalyzer in( final Iterable<T> iterable )
   {
-    this.iterator = Iterables.unmodifiableIterable(iterator);
+    this.iterator = Iterables.unmodifiableIterable( iterable );
+    this.filterMatcher = toStatefulMatcher( filterMatcher );
+    this.assertionMatcher = toStatefulMatcher( assertionMatcher );
+
+    return this;
+  }
+
+  private RulexMatcher<T> toStatefulMatcher( Matcher<T> matcher )
+  {
+    if (matcher instanceof RulexMatcher)
+      return ((RulexMatcher<T>) matcher).toStateful();
+    else
+      throw new IllegalArgumentException(
+          "This type can't be adapted to stateful matcher" );
+  }
+
+  @Override
+  public RulexAnalyzer on( final T item )
+  {
+    this.iterator = Iterables.unmodifiableIterable( Arrays.asList( item ) );
     return this;
   }
 
   @Override
-  public RulexAnalyzer on ( final T item )
+  public void analyze( final AssertionAwareListener listener )
   {
-    this.iterator = Iterables.unmodifiableIterable(Arrays.asList(item));
-    return this;
-  }
-
-  @Override
-  public void analyze ( final AssertionAwareListener listener )
-  {
-    if ( listener == null )
+    if (listener == null)
     {
-      throw new IllegalArgumentException("listener cannot be null");
+      throw new IllegalArgumentException( "listener cannot be null" );
     }
 
-    for ( T currentlyAnalysed : iterator )
+    for (T currentlyAnalysed : iterator)
     {
-      doAnalyse(listener, currentlyAnalysed);
+      doAnalyse( listener, currentlyAnalysed );
     }
 
     listener.done();
   }
 
-  private void doAnalyse ( AssertionAwareListener listener, T currentlyAnalysed )
+  private void doAnalyse( AssertionAwareListener listener, T currentlyAnalysed )
   {
     try
     {
-      if ( filterMatcher == null || filterMatcher.matches(currentlyAnalysed) )
+      if (filterMatcher == null || filterMatcher.matches( currentlyAnalysed ))
       {
-        if ( assertionMatcher.matches(currentlyAnalysed) )
+        if (assertionMatcher.matches( currentlyAnalysed ))
         {
-          listener.passed(currentlyAnalysed, assertionMatcher);
-        }
-        else
+          listener.passed( currentlyAnalysed, assertionMatcher );
+        } else
         {
-          listener.failed(currentlyAnalysed, assertionMatcher);
+          listener.failed( currentlyAnalysed, assertionMatcher );
         }
-      }
-      else
+      } else
       {
-        listener.filtered(currentlyAnalysed, filterMatcher);
+        listener.filtered( currentlyAnalysed, filterMatcher );
       }
-    }
-    catch ( Exception e )
+    } catch (Exception e)
     {
-      listener.unexpected(currentlyAnalysed, e);
+      listener.unexpected( currentlyAnalysed, e );
     }
   }
 
   @Override
-  public RulexAssertionBuilder<T> forEach ()
+  public RulexAssertionBuilder<T> forEach()
   {
     this.filterMatcher = trueMatcher();
     return this;
   }
 
   @Override
-  public RulexAssertionBuilder<T> forEach ( Matcher<T> filterMatcher )
+  public RulexAssertionBuilder<T> forEach( Matcher<T> filterMatcher )
   {
     this.filterMatcher = filterMatcher;
     return this;
   }
 
-  private Matcher<T> trueMatcher ()
+  private Matcher<T> trueMatcher()
   {
-    return new RulexMatcher<T>()
+    return new RulexMatcher<T>( null )
     {
       @Override
-      protected boolean matchesSafely ( final T item )
+      protected boolean matchesSafely( final T item )
       {
         return true;
       }
 
       @Override
-      public void describeTo ( final Description description )
+      public void describeTo( final Description description )
       {
-        description.appendText("TRUE");
+        description.appendText( "TRUE" );
       }
     };
   }

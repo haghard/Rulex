@@ -6,7 +6,6 @@ import static ru.rulex.matchers.RulexObjectMatcher.selector;
 
 import org.fest.assertions.api.Assertions;
 import org.hamcrest.Matcher;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -20,121 +19,129 @@ import ru.rulex.matchers.RulexMatchersBuilder;
 public class TestRulexApi
 {
   @Test
-  public void testRulexMatcherChainCalls ()
+  public void testRulexMatcherChainCalls()
   {
-    Model model = Model.values(4, 56.7f);
+    Model model = Model.values( 4, 56.7f );
 
-    RulexMatcher<Model> matcher0 = selector(Model.class, callOn(Model.class).getInteger())
-        .lessThan(5).and(selector(Model.class, callOn(Model.class).getInteger()).lessThan(6));
+    RulexMatcher<Model> matcher0 = selector( Model.class,
+        callOn( Model.class ).getInteger() ).lessThan( 5 ).and(
+        selector( Model.class, callOn( Model.class ).getInteger() )
+            .lessThan( 6 ) );
 
-    assertThat(matcher0.matches(model)).isTrue();
+    assertThat( matcher0.matches( model ) ).isTrue();
 
-    RulexMatcher<Model> matcher = selector(Model.class, callOn(Model.class).getInteger()).lessThan(
-        5).and(selector(Model.class, callOn(Model.class).getFloat()).lessThan(56.8f));
+    RulexMatcher<Model> matcher = selector( Model.class,
+        callOn( Model.class ).getInteger() ).lessThan( 5 ).and(
+        selector( Model.class, callOn( Model.class ).getFloat() ).lessThan(
+            56.8f ) );
 
-    assertThat(matcher.matches(model)).isTrue();
+    assertThat( matcher.matches( model ) ).isTrue();
   }
 
   @Test
-  public void shouldBeEqualsOnSameFields ()
+  public void shouldBeEqualsOnSameFields()
   {
-    RulexMatcher<Model> matcher = selector(Model.class, callOn(Model.class).getInteger()).isEquals(
-        selector(Model.class, callOn(Model.class).getInteger()));
+    RulexMatcher<Model> matcher = selector( Model.class,
+        callOn( Model.class ).getInteger() ).isEquals(
+        selector( Model.class, callOn( Model.class ).getInteger() ) );
 
-    Model model = Model.values(4, 5);
-    assertThat(matcher.matches(model)).isTrue();
+    Model model = Model.values( 4, 5 );
+    assertThat( matcher.matches( model ) ).isTrue();
   }
 
   @Test
-  public void oneIntegerShouldBeLessOtherInteger ()
+  public void oneIntegerShouldBeLessOtherInteger()
   {
-    RulexMatcher<Model> matcher = modelSelector(callOn(Model.class).getInteger()).lessThan(
-        modelSelector(callOn(Model.class).getOtherInteger()));
+    RulexMatcher<Model> matcher = modelSelector(
+        callOn( Model.class ).getInteger() ).lessThan(
+        modelSelector( callOn( Model.class ).getOtherInteger() ) );
 
-    final Model model = Model.values(1, 2);
+    final Model model = Model.values( 1, 2 );
 
     // separate configuration from processing
-    RulexAnalyzer analyzed = RulexObjectMatcher.projection(Model.class).assertThat(matcher)
-        .on(model);
-    analyzed.analyze(new AssertionAwareListener()
+    RulexAnalyzer analyzed = RulexObjectMatcher.projection( Model.class )
+        .assertThat( matcher ).on( model );
+    analyzed.analyze( new AssertionAwareListener()
     {
       @Override
-      public void passed ( Object analysedObject, Matcher<?> matcher )
+      public void passed( Object analysedObject, Matcher<?> matcher )
       {
-        assertThat(analysedObject).isSameAs(model);
+        assertThat( analysedObject ).isSameAs( model );
       }
 
       @Override
-      public void failed ( Object analysedObject, Matcher<?> matcher )
+      public void failed( Object analysedObject, Matcher<?> matcher )
       {
-        Assertions.fail("failed");
+        Assertions.fail( "failed" );
       }
 
       @Override
-      public void filtered ( Object analysedObject, Matcher<?> matcher )
+      public void filtered( Object analysedObject, Matcher<?> matcher )
       {
-        Assertions.fail("failed");
+        Assertions.fail( "failed" );
       }
 
       @Override
-      public void unexpected ( Object analysedObject, Exception exception )
+      public void unexpected( Object analysedObject, Exception exception )
       {
-        Assertions.fail("failed");
+        Assertions.fail( "failed" );
       }
 
       @Override
-      public void done ()
+      public void done()
       {
-        assertThat(true).isTrue();
+        assertThat( true ).isTrue();
       }
-    });
+    } );
   }
 
   @Test
-  public void oneShouldBePassedSecondShouldBeFiltered ()
+  public void oneShouldBePassedSecondShouldBeFiltered()
   {
-    final Model first = Model.values(121);
-    final Model second = Model.values(49);
+    final Model first = Model.values( 121 );
+    final Model second = Model.values( 49 );
 
-    final ImmutableList<Model> list = ImmutableList.of(first, second);
+    final ImmutableList<Model> list = ImmutableList.of( first, second );
 
-    RulexMatcher<Model> filter = modelSelector(callOn(Model.class).getInteger()).lessThan(122);
+    RulexMatcher<Model> filter = modelSelector(
+        callOn( Model.class ).getInteger() ).lessThan( 122 );
 
-    RulexMatcher<Model> matcher = modelSelector(callOn(Model.class).getInteger()).moreThan(50);
+    RulexMatcher<Model> matcher = modelSelector(
+        callOn( Model.class ).getInteger() ).moreThan( 50 );
 
-    RulexObjectMatcher.projection(Model.class).forEach(filter).assertThat(matcher).on(first)
-        .analyze(new AssertionAwareListener()
+    RulexObjectMatcher.projection( Model.class ).forEach( filter )
+        .assertThat( matcher ).in( list ).analyze( new AssertionAwareListener()
         {
           @Override
-          public void passed ( Object analysedObject, Matcher<?> matcher )
+          public void passed( Object analysedObject, Matcher<?> matcher )
           {
-            assertThat(analysedObject).isSameAs(first);
+            assertThat( analysedObject ).isSameAs( first );
           }
 
           @Override
-          public void failed ( Object analysedObject, Matcher<?> matcher )
+          public void failed( Object analysedObject, Matcher<?> matcher )
           {
-            Assertions.fail("failed");
+            assertThat( analysedObject ).isSameAs( second );
           }
 
           @Override
-          public void filtered ( Object analysedObject, Matcher<?> matcher )
+          public void filtered( Object analysedObject, Matcher<?> matcher )
           {
-            assertThat(analysedObject).isSameAs(second);
+            Assertions.fail( "unexpected" );
           }
 
           @Override
-          public void unexpected ( Object analysedObject, Exception exception )
+          public void unexpected( Object analysedObject, Exception exception )
           {
-            Assertions.fail("unexpected");
+            Assertions.fail( "unexpected" );
           }
 
           @Override
-          public void done ()
+          public void done()
           {
-            assertThat(true).isTrue();
+            assertThat( true ).isTrue();
           }
-        });
+        } );
   }
 
   /**
@@ -143,9 +150,9 @@ public class TestRulexApi
    * @param arg
    * @return
    */
-  public static <E extends Comparable<? super E>> RulexMatchersBuilder<Model> modelSelector (
+  public static <E extends Comparable<? super E>> RulexMatchersBuilder<Model> modelSelector(
       final E arg )
   {
-    return selector(Model.class, arg);
+    return selector( Model.class, arg );
   }
 }

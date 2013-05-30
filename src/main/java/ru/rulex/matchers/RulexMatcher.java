@@ -19,13 +19,37 @@ package ru.rulex.matchers;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-public abstract class RulexMatcher<T> extends TypeSafeMatcher<T> {
+public abstract class RulexMatcher<T> extends TypeSafeMatcher<T>
+{
+  private SelectorAdapter<T> adapter;
 
-  public RulexMatcher<T> and(Matcher<T> matcher) {
-    return RulexDsl.and(this, matcher);
+  RulexMatcher( SelectorAdapter<T> adapter )
+  {
+    this.adapter = adapter;
   }
 
-  public RulexMatcher<T> or(Matcher<T> matcher) {
-    return RulexDsl.or(this, matcher);
+  protected SelectorAdapter<T> getAdapter()
+  {
+    return adapter;
+  }
+
+  public void setAdapter( SelectorAdapter<T> adapter )
+  {
+    this.adapter = adapter;
+  }
+
+  public RulexMatcher<T> and( Matcher<T> matcher )
+  {
+    return RulexDsl.and( this, matcher );
+  }
+
+  public RulexMatcher<T> or( Matcher<T> matcher )
+  {
+    return RulexDsl.or( this, matcher );
+  }
+
+  public RulexMatcher<T> toStateful()
+  {
+    return RulexDsl.statefull( this );
   }
 }

@@ -27,146 +27,157 @@ import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
  * @author haghard
  * @param <T>
  */
-@SuppressWarnings ( "unchecked")
+@SuppressWarnings("unchecked")
 public final class RulexMatchersBuilder<T>
 {
-
   private final SelectorAdapter<T> adapter;
 
-  public RulexMatchersBuilder ( SelectorAdapter<T> adapter)
+  public RulexMatchersBuilder( SelectorAdapter<T> adapter )
   {
     this.adapter = adapter;
   }
 
-  public <E extends Number & Comparable<? super E>> RulexMatcher<T> lessThan (
+  public <E extends Number & Comparable<? super E>> RulexMatcher<T> lessThan(
       final RulexMatchersBuilder<T> otherBuilder )
   {
-    return new RulexMatcher<T>()
+    return new RulexMatcher<T>( getAdapter() )
     {
       @Override
-      protected boolean matchesSafely ( final T item )
+      protected boolean matchesSafely( final T item )
       {
-        Selector<T, E> lSelector = (Selector<T, E>) adapter.selector(item);
-        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getAdapter().selector(item);
-        return lSelector.select(item).compareTo(rSelector.select(item)) < 0;
+        Selector<T, E> lSelector = (Selector<T, E>) getAdapter()
+            .selector( item );
+        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getAdapter()
+            .selector( item );
+        return lSelector.select( item ).compareTo( rSelector.select( item ) ) < 0;
       }
 
       @Override
-      public void describeTo ( final Description description )
+      public void describeTo( final Description description )
       {
-        description.appendText(adapter.matcherDisplayName() + " $lessThan "
-            + otherBuilder.getAdapter().matcherDisplayName());
+        description.appendText( adapter.matcherDisplayName() + " $lessThan "
+            + otherBuilder.getAdapter().matcherDisplayName() );
       }
     };
   }
 
-  public <E extends Number & Comparable<? super E>> RulexMatcher<T> lessThan ( final E value )
+  public <E extends Number & Comparable<? super E>> RulexMatcher<T> lessThan(
+      final E value )
   {
-    return new RulexMatcher<T>()
+    return new RulexMatcher<T>( getAdapter() )
     {
       @Override
-      protected boolean matchesSafely ( final T item )
+      protected boolean matchesSafely( final T item )
       {
-        ConclusionPredicate<E> pred = RulexMatchersDsl.<E> lessThan(value);
-        Selector<T, E> selector = (Selector<T, E>) adapter.selector(item);
-        ConclusionPredicate<T> p = new SelectorPredicate<T, E>(pred, selector);
-        return p.apply(item);
+        ConclusionPredicate<E> pred = RulexMatchersDsl.<E> lessThan( value );
+        Selector<T, E> selector = (Selector<T, E>) getAdapter().selector( item );
+        ConclusionPredicate<T> p = new SelectorPredicate<T, E>( pred, selector );
+        return p.apply( item );
       }
 
       @Override
-      public void describeTo ( final Description description )
+      public void describeTo( final Description description )
       {
-        description.appendText(adapter.matcherDisplayName() + " $lessThan " + value);
+        description.appendText( adapter.matcherDisplayName() + " $lessThan "
+            + value );
       }
     };
   }
 
-  public <E extends Comparable<? super E>> RulexMatcher<T> isEquals (
+  public <E extends Comparable<? super E>> RulexMatcher<T> isEquals(
       final RulexMatchersBuilder<T> otherBuilder )
   {
-    return new RulexMatcher<T>()
+    return new RulexMatcher<T>( getAdapter() )
     {
       @Override
-      protected boolean matchesSafely ( T item )
+      protected boolean matchesSafely( T item )
       {
-        Selector<T, E> lSelector = (Selector<T, E>) adapter.selector(item);
-        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getAdapter().selector(item);
-        return lSelector.select(item).compareTo(rSelector.select(item)) == 0;
+        Selector<T, E> lSelector = (Selector<T, E>) getAdapter()
+            .selector( item );
+        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getAdapter()
+            .selector( item );
+        return lSelector.select( item ).compareTo( rSelector.select( item ) ) == 0;
       }
 
       @Override
-      public void describeTo ( Description description )
+      public void describeTo( Description description )
       {
 
       }
     };
   }
 
-  public <E extends Comparable<? super E>> RulexMatcher<T> isEquals ( final E value )
+  public <E extends Comparable<? super E>> RulexMatcher<T> isEquals(
+      final E value )
   {
-    return new RulexMatcher<T>()
+    return new RulexMatcher<T>( getAdapter() )
     {
 
       @Override
-      protected boolean matchesSafely ( T item )
+      protected boolean matchesSafely( T item )
       {
-        ConclusionPredicate<E> pred = RulexMatchersDsl.<E> eq(value);
-        Selector<T, E> selector = (Selector<T, E>) adapter.selector(item);
-        ConclusionPredicate<T> p = new SelectorPredicate<T, E>(pred, selector);
-        return p.apply(item);
+        ConclusionPredicate<E> pred = RulexMatchersDsl.<E> eq( value );
+        Selector<T, E> selector = (Selector<T, E>) getAdapter().selector( item );
+        ConclusionPredicate<T> p = new SelectorPredicate<T, E>( pred, selector );
+        return p.apply( item );
       }
 
       @Override
-      public void describeTo ( Description description )
+      public void describeTo( Description description )
       {
-        description.appendText(adapter.matcherDisplayName() + " $isEquals: " + value);
+        description.appendText( adapter.matcherDisplayName() + " $isEquals: "
+            + value );
       }
     };
   }
 
-  public <E extends Number & Comparable<? super E>> RulexMatcher<T> moreThan ( final E value )
+  public <E extends Number & Comparable<? super E>> RulexMatcher<T> moreThan(
+      final E value )
   {
-    return new RulexMatcher<T>()
+    return new RulexMatcher<T>( getAdapter() )
     {
       @Override
-      protected boolean matchesSafely ( T item )
+      protected boolean matchesSafely( T item )
       {
-        ConclusionPredicate<E> pred = RulexMatchersDsl.<E> greaterThan(value);
-        Selector<T, E> selector = (Selector<T, E>) adapter.selector(item);
-        ConclusionPredicate<T> p = new SelectorPredicate<T, E>(pred, selector);
-        return p.apply(item);
+        ConclusionPredicate<E> pred = RulexMatchersDsl.<E> greaterThan( value );
+        Selector<T, E> selector = (Selector<T, E>) getAdapter().selector( item );
+        ConclusionPredicate<T> p = new SelectorPredicate<T, E>( pred, selector );
+        return p.apply( item );
       }
 
       @Override
-      public void describeTo ( Description description )
+      public void describeTo( Description description )
       {
-        description.appendText(adapter.matcherDisplayName() + " $moreThan: " + value);
+        description.appendText( adapter.matcherDisplayName() + " $moreThan: "
+            + value );
       }
     };
   }
 
-  public <E extends Comparable<? super E>> RulexMatcher<T> moreThan (
+  public <E extends Comparable<? super E>> RulexMatcher<T> moreThan(
       final RulexMatchersBuilder<T> otherBuilder )
   {
-    return new RulexMatcher<T>()
+    return new RulexMatcher<T>( getAdapter() )
     {
       @Override
-      protected boolean matchesSafely ( T item )
+      protected boolean matchesSafely( T item )
       {
-        Selector<T, E> lSelector = (Selector<T, E>) adapter.selector(item);
-        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getAdapter().selector(item);
-        return lSelector.select(item).compareTo(rSelector.select(item)) > 0;
+        Selector<T, E> lSelector = (Selector<T, E>) getAdapter()
+            .selector( item );
+        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getAdapter()
+            .selector( item );
+        return lSelector.select( item ).compareTo( rSelector.select( item ) ) > 0;
       }
 
       @Override
-      public void describeTo ( Description description )
+      public void describeTo( Description description )
       {
 
       }
     };
   }
 
-  private SelectorAdapter<T> getAdapter ()
+  private SelectorAdapter<T> getAdapter()
   {
     return adapter;
   }
