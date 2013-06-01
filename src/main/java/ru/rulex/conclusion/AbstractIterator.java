@@ -20,28 +20,32 @@ import java.util.Iterator;
 /**
  * @param <T>
  */
-public abstract class AbstractIterator<T>
-    implements Iterator<T> {
+public abstract class AbstractIterator<T> implements Iterator<T>
+{
 
   private T current;
 
   protected static final boolean interrupt = false;
 
-  protected AbstractIterator() {
+  protected AbstractIterator()
+  {
   }
 
-  protected final boolean computeNext(T current) {
+  protected final boolean computeNext( T current )
+  {
     this.current = current;
     return true;
   }
 
   @Override
-  public T next() {
+  public T next()
+  {
     return current;
   }
 
   @Override
-  public void remove() {
-    throw new UnsupportedOperationException("Can't remove elements");
+  public void remove()
+  {
+    throw new UnsupportedOperationException( "Can't remove elements" );
   }
 }

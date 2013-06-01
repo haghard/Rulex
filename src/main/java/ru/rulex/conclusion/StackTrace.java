@@ -23,7 +23,8 @@ import java.sql.SQLException;
  * when, for example, you would like to report the trace in a REST xml response.
  * 
  */
-public final class StackTrace {
+public final class StackTrace
+{
 
   /**
    * Given an exception, return the stack trace in a single string.
@@ -33,49 +34,59 @@ public final class StackTrace {
    * @param exception
    * @return
    */
-  public static String getStrackTrace(final Throwable exception) {
+  public static String getStrackTrace( final Throwable exception )
+  {
     StringBuffer buffer = new StringBuffer();
     Throwable cause = exception;
-    while (cause != null) {
+    while (cause != null)
+    {
       StackTraceElement[] elements = cause.getStackTrace();
-      buffer.append(cause.getClass().getCanonicalName());
-      for (StackTraceElement element : elements) {
-        buffer.append("      at ");
-        buffer.append(element.toString());
-        buffer.append('\n');
+      buffer.append( cause.getClass().getCanonicalName() );
+      for (StackTraceElement element : elements)
+      {
+        buffer.append( "      at " );
+        buffer.append( element.toString() );
+        buffer.append( '\n' );
       }
       // todo for batch sql exception
-      if (cause instanceof BatchUpdateException) {
-        getErrorInfo(buffer, (BatchUpdateException) cause);
+      if (cause instanceof BatchUpdateException)
+      {
+        getErrorInfo( buffer, (BatchUpdateException) cause );
       }
-      if (cause instanceof SQLException) {
+      if (cause instanceof SQLException)
+      {
         cause = ((SQLException) cause).getNextException();
-      } else {
+      }
+      else
+      {
         cause = cause.getCause();
       }
 
-      if (cause != null) {
-        buffer.append("Caused by:\n");
+      if (cause != null)
+      {
+        buffer.append( "Caused by:\n" );
       }
     }
 
     return buffer.toString();
   }
 
-  private static void getErrorInfo(StringBuffer buffer,
-      BatchUpdateException error) {
-    if (buffer != null) {
-      buffer.append("Database Error Details:\n");
-      buffer.append("   Error Code: ");
-      buffer.append(error.getErrorCode());
-      buffer.append("\n");
-      buffer.append("   State: ");
-      buffer.append(error.getSQLState());
-      buffer.append("\n");
-      buffer.append("   Batch Update Counts: ");
-      for (int count : error.getUpdateCounts()) {
-        buffer.append("\n");
-        buffer.append(count);
+  private static void getErrorInfo( StringBuffer buffer, BatchUpdateException error )
+  {
+    if (buffer != null)
+    {
+      buffer.append( "Database Error Details:\n" );
+      buffer.append( "   Error Code: " );
+      buffer.append( error.getErrorCode() );
+      buffer.append( "\n" );
+      buffer.append( "   State: " );
+      buffer.append( error.getSQLState() );
+      buffer.append( "\n" );
+      buffer.append( "   Batch Update Counts: " );
+      for (int count : error.getUpdateCounts())
+      {
+        buffer.append( "\n" );
+        buffer.append( count );
       }
     }
   }

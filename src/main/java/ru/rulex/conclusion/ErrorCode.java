@@ -16,6 +16,7 @@
  */
 package ru.rulex.conclusion;
 
-public interface ErrorCode {
+public interface ErrorCode
+{
 
 }

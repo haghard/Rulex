@@ -18,10 +18,13 @@ package ru.rulex.conclusion;
 
 import ru.rulex.conclusion.IteratorBuilderImpl.WhereIteratorElement;
 
-public enum Iterators {
+public enum Iterators
+{
 
-  WHERE {
-    public IteratorElement<Object> getIteratorElement() {
+  WHERE
+  {
+    public IteratorElement<Object> getIteratorElement()
+    {
       return WhereIteratorElement.newBuilder().build();
     }
   };
@@ -29,7 +32,8 @@ public enum Iterators {
   abstract IteratorElement<Object> getIteratorElement();
 
   @SuppressWarnings("unchecked")
-  public <T> IteratorElement<T> withNarrowedType() {
+  public <T> IteratorElement<T> withNarrowedType()
+  {
     return (IteratorElement<T>) this.getIteratorElement();
   }
 

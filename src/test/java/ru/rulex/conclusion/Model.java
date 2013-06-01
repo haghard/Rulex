@@ -24,97 +24,98 @@ import static org.mockito.Mockito.*;
  */
 public abstract class Model
 {
-   public static Model INSTANCE = new Model() {
+  public static Model INSTANCE = new Model()
+  {
 
     @Override
-    public Integer getInteger ()
+    public Integer getInteger()
     {
       return 51;
     }
 
     @Override
-    public Integer getOtherInteger ()
+    public Integer getOtherInteger()
     {
       return 2;
     }
 
     @Override
-    public Float getFloat ()
+    public Float getFloat()
     {
       return 23.6f;
     }
 
     @Override
-    public String getString ()
+    public String getString()
     {
       return "qweqwr";
     }
 
     @Override
-    public Boolean getBoolean ()
+    public Boolean getBoolean()
     {
       return true;
     }
 
-   };
+  };
 
-   public abstract Integer getInteger();
-   
-   public abstract Integer getOtherInteger();
-   
-   public abstract Float getFloat();
-   
-   public abstract String getString();
-   
-   public abstract Boolean getBoolean();
-   
-   public static final String INT_ACCESSOR = "getInteger";
-   
-   public static final String FLOAT_ACCESSOR = "getFloat";
-   
-   public static final String STRING_ACCESSOR = "getString";
-   
-   public static final String BOOLEAN_ACCESSOR = "getBoolean";
-   
-   public static Model values( Integer intValue )
-   {
-      Model mock = mock( Model.class );
-      when( mock.getInteger() ).thenReturn( intValue );
-      return mock;
-   }
-   
-   public static Model values( int i, int f )
-   {
-      Model mock = mock( Model.class );
-      when( mock.getInteger() ).thenReturn( i );
-      when( mock.getOtherInteger() ).thenReturn( f );
-      return mock;
-   }
-   
-   public static Model values( int i, float f )
-   {
-      Model mock = mock( Model.class );
-      when( mock.getInteger() ).thenReturn( i );
-      when( mock.getFloat() ).thenReturn( f );
-      return mock;
-   }
-   
-   public static Model values( int i, float f, String str )
-   {
-      Model mock = mock( Model.class );
-      when( mock.getInteger() ).thenReturn( i );
-      when( mock.getFloat() ).thenReturn( f );
-      when( mock.getString() ).thenReturn( str );
-      return mock;
-   }
-   
-   public static Model values( int i, float f, String str, boolean b )
-   {
-      Model mock = mock( Model.class );
-      when( mock.getInteger() ).thenReturn( i );
-      when( mock.getFloat() ).thenReturn( f );
-      when( mock.getString() ).thenReturn( str );
-      when( mock.getBoolean() ).thenReturn( b );
-      return mock;
-   }
+  public abstract Integer getInteger();
+
+  public abstract Integer getOtherInteger();
+
+  public abstract Float getFloat();
+
+  public abstract String getString();
+
+  public abstract Boolean getBoolean();
+
+  public static final String INT_ACCESSOR = "getInteger";
+
+  public static final String FLOAT_ACCESSOR = "getFloat";
+
+  public static final String STRING_ACCESSOR = "getString";
+
+  public static final String BOOLEAN_ACCESSOR = "getBoolean";
+
+  public static Model values( Integer intValue )
+  {
+    Model mock = mock( Model.class );
+    when( mock.getInteger() ).thenReturn( intValue );
+    return mock;
+  }
+
+  public static Model values( int i, int f )
+  {
+    Model mock = mock( Model.class );
+    when( mock.getInteger() ).thenReturn( i );
+    when( mock.getOtherInteger() ).thenReturn( f );
+    return mock;
+  }
+
+  public static Model values( int i, float f )
+  {
+    Model mock = mock( Model.class );
+    when( mock.getInteger() ).thenReturn( i );
+    when( mock.getFloat() ).thenReturn( f );
+    return mock;
+  }
+
+  public static Model values( int i, float f, String str )
+  {
+    Model mock = mock( Model.class );
+    when( mock.getInteger() ).thenReturn( i );
+    when( mock.getFloat() ).thenReturn( f );
+    when( mock.getString() ).thenReturn( str );
+    return mock;
+  }
+
+  public static Model values( int i, float f, String str, boolean b )
+  {
+    Model mock = mock( Model.class );
+    when( mock.getInteger() ).thenReturn( i );
+    when( mock.getFloat() ).thenReturn( f );
+    when( mock.getString() ).thenReturn( str );
+    when( mock.getBoolean() ).thenReturn( b );
+    return mock;
+  }
 }

@@ -16,101 +16,128 @@
 package ru.rulex.conclusion;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * 
  * Class for represent named parameters
  * 
  */
-public final class RulexMatchersDsl {
+public final class RulexMatchersDsl
+{
 
-  private RulexMatchersDsl() {
+  private RulexMatchersDsl()
+  {
   }
-  
-  public static <T extends Comparable<? super T>> ConclusionPredicate<T> eq(final T value0) {
-    return new ConclusionPredicate<T>() {
-      private final T value = checkNotNull(value0);
+
+  public static <T extends Comparable<? super T>> ConclusionPredicate<T> eq( final T value0 )
+  {
+    return new ConclusionPredicate<T>()
+    {
+      private final T value = checkNotNull( value0 );
 
       @Override
-      public boolean apply(T argument) {
-        checkNotNull(argument);
-        return value.equals(argument);
+      public boolean apply( T argument )
+      {
+        checkNotNull( argument );
+        return value.equals( argument );
       }
     };
   }
 
-  public static <T extends Number & Comparable<? super T>> ConclusionPredicate<T> greaterThan(final T value0) {
-    return new ConclusionPredicate<T>() {
-      private final T value = checkNotNull(value0);
+  public static <T extends Number & Comparable<? super T>> ConclusionPredicate<T> greaterThan(
+      final T value0 )
+  {
+    return new ConclusionPredicate<T>()
+    {
+      private final T value = checkNotNull( value0 );
 
       @Override
-      public boolean apply(T argument) {
-        checkNotNull(argument);
-        return value.compareTo(argument) < 0;
+      public boolean apply( T argument )
+      {
+        checkNotNull( argument );
+        return value.compareTo( argument ) < 0;
       }
     };
   }
 
-  public static <T extends Number & Comparable<? super T>> ConclusionPredicate<T> lessThan(final T value0) {
-    return new ConclusionPredicate<T>() {
-      private final T value = checkNotNull(value0);
+  public static <T extends Number & Comparable<? super T>> ConclusionPredicate<T> lessThan(
+      final T value0 )
+  {
+    return new ConclusionPredicate<T>()
+    {
+      private final T value = checkNotNull( value0 );
 
       @Override
-      public boolean apply(T argument) {
-        checkNotNull(argument);
-        return value.compareTo(argument) > 0;
+      public boolean apply( T argument )
+      {
+        checkNotNull( argument );
+        return value.compareTo( argument ) > 0;
       }
     };
   }
 
-  public static <T extends Number & Comparable<? super T>> ConclusionPredicate<T> greaterOrEq(final T value0) {
-    return new ConclusionPredicate<T>() {
-      private final T value = checkNotNull(value0);
+  public static <T extends Number & Comparable<? super T>> ConclusionPredicate<T> greaterOrEq(
+      final T value0 )
+  {
+    return new ConclusionPredicate<T>()
+    {
+      private final T value = checkNotNull( value0 );
 
       @Override
-      public boolean apply(T argument) {
-        checkNotNull(argument);
-        return value.compareTo(argument) <= 0;
+      public boolean apply( T argument )
+      {
+        checkNotNull( argument );
+        return value.compareTo( argument ) <= 0;
       }
     };
   }
 
-  public static <T extends Number & Comparable<? super T>> ConclusionPredicate<T> lessOrEq(final T value0) {
-    return new ConclusionPredicate<T>() {
-      private final T value = checkNotNull(value0);
+  public static <T extends Number & Comparable<? super T>> ConclusionPredicate<T> lessOrEq(
+      final T value0 )
+  {
+    return new ConclusionPredicate<T>()
+    {
+      private final T value = checkNotNull( value0 );
 
       @Override
-      public boolean apply(T argument) {
-        checkNotNull(argument);
-        return value.compareTo(argument) >= 0;
+      public boolean apply( T argument )
+      {
+        checkNotNull( argument );
+        return value.compareTo( argument ) >= 0;
       }
     };
   }
 
   /**
-   * Method to simulate value named parameters
-   * Static factory methods are convenient way to simulate named parameters in Java 
+   * Method to simulate value named parameters Static factory methods are
+   * convenient way to simulate named parameters in Java
    */
-  public static <T extends Number & Comparable<? super T>> Argument<T> argument(T value) {
-    return new Argument<T>(value);
+  public static <T extends Number & Comparable<? super T>> Argument<T> argument( T value )
+  {
+    return new Argument<T>( value );
   }
 
   /**
-   * Method to simulate property descriptor parameters
-   * Static factory methods are convenient way to simulate named parameters in Java
+   * Method to simulate property descriptor parameters Static factory methods
+   * are convenient way to simulate named parameters in Java
    */
-  public static <T> AccessorDescriptor<T> descriptor(Class<T> clazz, String method) {
-    return new AccessorDescriptor<T>(clazz, method);
+  public static <T> AccessorDescriptor<T> descriptor( Class<T> clazz, String method )
+  {
+    return new AccessorDescriptor<T>( clazz, method );
   }
 
-  static final class Argument<T extends Number & Comparable<? super T>> {
+  static final class Argument<T extends Number & Comparable<? super T>>
+  {
     private final T value;
-    
-    public T getArgumentClazz() {
+
+    public T getArgumentClazz()
+    {
       return value;
     }
 
-    Argument(T value) {
-      this.value = checkNotNull(value);
+    Argument( T value )
+    {
+      this.value = checkNotNull( value );
     }
   }
 
@@ -118,21 +145,25 @@ public final class RulexMatchersDsl {
    * Method to simulate named parameters
    * 
    */
-  static final class AccessorDescriptor<T> {
+  static final class AccessorDescriptor<T>
+  {
     private final Class<T> clazz;
     private final String method;
 
-    public Class<T> getClazz() {
+    public Class<T> getClazz()
+    {
       return clazz;
     }
 
-    public String getMethod() {
+    public String getMethod()
+    {
       return method;
     }
-    
-    AccessorDescriptor(Class<T> clazz, String method) {
-      this.clazz = checkNotNull(clazz);
-      this.method = checkNotNull(method);
+
+    AccessorDescriptor( Class<T> clazz, String method )
+    {
+      this.clazz = checkNotNull( clazz );
+      this.method = checkNotNull( method );
     }
   }
 }

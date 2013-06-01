@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2013 The Conclusions Authors
  * <p/>
@@ -17,11 +16,12 @@
  */
 package ru.rulex.conclusion;
 
-public class AbstractSituationException
-    extends Exception {
+public class AbstractSituationException extends Exception
+{
 
-  public AbstractSituationException(String errorMessage) {
-    super(errorMessage);
+  public AbstractSituationException( String errorMessage )
+  {
+    super( errorMessage );
   }
 
 }

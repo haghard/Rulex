@@ -16,42 +16,50 @@
  */
 package ru.rulex.conclusion;
 
-public class ConclusionStatePathTrace {
+public class ConclusionStatePathTrace
+{
 
   ConclusionState conclusionState = ConclusionState.InitialState;
 
-  private ConclusionStatePathTrace() {
+  private ConclusionStatePathTrace()
+  {
   }
 
-  public static ConclusionStatePathTrace defaultInstance() {
+  public static ConclusionStatePathTrace defaultInstance()
+  {
     return new ConclusionStatePathTrace();
   }
 
-  public void addBlockingError(String format) {
+  public void addBlockingError( String format )
+  {
     conclusionState = ConclusionState.CriticalErrorState;
   }
 
-  public static String getStackTrace(Throwable th) {
+  public static String getStackTrace( Throwable th )
+  {
     StringBuffer buffer = new StringBuffer();
     return buffer.toString();
   }
 
-  public ConclusionState getCurrentState() {
+  public ConclusionState getCurrentState()
+  {
     return conclusionState;
   }
 
-  public boolean isWorkingState() {
+  public boolean isWorkingState()
+  {
     return conclusionState != ConclusionState.CriticalErrorState;
   }
 
-  public enum ConclusionState {
+  public enum ConclusionState
+  {
 
-    InitialState("init"),
-    CriticalErrorState("critical-error");
+    InitialState("init"), CriticalErrorState("critical-error");
 
     private final String message;
 
-    ConclusionState(String message) {
+    ConclusionState( String message )
+    {
       this.message = message;
     }
   }

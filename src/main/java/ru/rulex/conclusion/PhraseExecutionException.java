@@ -17,52 +17,59 @@ package ru.rulex.conclusion;
 
 import java.util.ResourceBundle;
 
-public class PhraseExecutionException extends CodedException {
+public class PhraseExecutionException extends CodedException
+{
 
   private static final ResourceBundle ERROR_TABLE = ResourceBundle
-      .getBundle(PhraseExecutionException.class.getName());
+      .getBundle( PhraseExecutionException.class.getName() );
 
-  public PhraseExecutionException(ErrorCode code, String[] fields,
-      Exception exception) {
-    super(code, fields, exception);
+  public PhraseExecutionException( ErrorCode code, String[] fields, Exception exception )
+  {
+    super( code, fields, exception );
     initResource();
   }
 
-  public PhraseExecutionException(ErrorCode code, String field,
-      Throwable exception) {
-    super(code, field, exception);
+  public PhraseExecutionException( ErrorCode code, String field, Throwable exception )
+  {
+    super( code, field, exception );
     initResource();
   }
 
-  public PhraseExecutionException(ErrorCode code, Throwable exception) {
-    super(code, exception);
+  public PhraseExecutionException( ErrorCode code, Throwable exception )
+  {
+    super( code, exception );
     initResource();
   }
 
-  public PhraseExecutionException(ErrorCode code, Exception exception) {
-    super(code, exception);
-    initResource();
-  }
-  
-  public PhraseExecutionException(ErrorCode code, String field) {
-    super(code, field);
+  public PhraseExecutionException( ErrorCode code, Exception exception )
+  {
+    super( code, exception );
     initResource();
   }
 
-  public PhraseExecutionException(ErrorCode code, String[] fields) {
-    super(code, fields);
+  public PhraseExecutionException( ErrorCode code, String field )
+  {
+    super( code, field );
     initResource();
   }
 
-  public PhraseExecutionException(ErrorCode code) {
-    super(code);
+  public PhraseExecutionException( ErrorCode code, String[] fields )
+  {
+    super( code, fields );
+    initResource();
+  }
+
+  public PhraseExecutionException( ErrorCode code )
+  {
+    super( code );
     initResource();
   }
 
   /**
    * Set the resource bundle table for this subclass of CodedException.
    */
-  private void initResource() {
+  private void initResource()
+  {
     errors = ERROR_TABLE;
   }
 }

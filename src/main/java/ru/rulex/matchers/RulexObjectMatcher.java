@@ -17,14 +17,10 @@
 package ru.rulex.matchers;
 
 import java.util.Arrays;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-
-import ru.rulex.conclusion.RulexMatchersDsl;
 import ru.rulex.conclusion.Selector;
 import com.google.common.collect.Iterables;
-
 import ru.rulex.conclusion.delegate.ProxyUtils;
 
 /**
@@ -32,8 +28,8 @@ import ru.rulex.conclusion.delegate.ProxyUtils;
  * @author haghard
  * @param <T>
  */
-public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>,
-    RulexRule<T>, RulexAnalyzer
+public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRule<T>,
+    RulexAnalyzer
 {
   private final Class<T> clazz;
   private Matcher<T> assertionMatcher;
@@ -98,8 +94,7 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>,
     if (matcher instanceof RulexMatcher)
       return ((RulexMatcher<T>) matcher).toStateful();
     else
-      throw new IllegalArgumentException(
-          "This type can't be adapted to stateful matcher" );
+      throw new IllegalArgumentException( "This type can't be adapted to stateful matcher" );
   }
 
   @Override
@@ -134,15 +129,18 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>,
         if (assertionMatcher.matches( currentlyAnalysed ))
         {
           listener.passed( currentlyAnalysed, assertionMatcher );
-        } else
+        }
+        else
         {
           listener.failed( currentlyAnalysed, assertionMatcher );
         }
-      } else
+      }
+      else
       {
         listener.filtered( currentlyAnalysed, filterMatcher );
       }
-    } catch (Exception e)
+    }
+    catch (Exception e)
     {
       listener.unexpected( currentlyAnalysed, e );
     }

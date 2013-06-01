@@ -16,16 +16,17 @@
  */
 package ru.rulex.conclusion.delegate;
 
-public interface Delegate<T> {
+public interface Delegate<T>
+{
   /**
    * @param collection
    */
-  public void setContent(Iterable<?> collection);
+  public void setContent( Iterable<?> collection );
 
   /**
    * @param arguments
    * @return boolean
    */
   @SuppressWarnings("unchecked")
-  public boolean execute( T... arguments);
+  public boolean execute( T... arguments );
 }

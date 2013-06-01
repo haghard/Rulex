@@ -16,5 +16,6 @@
  */
 package ru.rulex.conclusion;
 
-public interface FunctionalInterface {
+public interface FunctionalInterface
+{
 }

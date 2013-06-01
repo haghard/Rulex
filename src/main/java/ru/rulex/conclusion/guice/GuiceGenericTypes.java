@@ -27,31 +27,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public final class GuiceGenericTypes {
+public final class GuiceGenericTypes
+{
 
   @SuppressWarnings("unchecked")
-  public static <T, E> TypeLiteral<E> newGenericType(Class<E> genericType, TypeLiteral<T> literal) {
-    Type newType = Types.newParameterizedType(genericType, literal.getType());
-    return (TypeLiteral<E>) TypeLiteral.get(newType);
+  public static <T, E> TypeLiteral<E> newGenericType( Class<E> genericType, TypeLiteral<T> literal )
+  {
+    Type newType = Types.newParameterizedType( genericType, literal.getType() );
+    return (TypeLiteral<E>) TypeLiteral.get( newType );
   }
 
   @SuppressWarnings("unchecked")
-  public static <T, E> TypeLiteral<E> newEnclosedGenericType(Class<E> genericType, TypeLiteral<T> literal) {
-    Type newType =
-        Types.newParameterizedTypeWithOwner(GuicefyConclusionPredicates.class, genericType, literal.getType());
-    return (TypeLiteral<E>) TypeLiteral.get(newType);
+  public static <T, E> TypeLiteral<E> newEnclosedGenericType( Class<E> genericType,
+      TypeLiteral<T> literal )
+  {
+    Type newType = Types.newParameterizedTypeWithOwner( GuicefyConclusionPredicates.class,
+        genericType, literal.getType() );
+    return (TypeLiteral<E>) TypeLiteral.get( newType );
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> TypeLiteral<ArrayList<T>> arrayListOf(final Class<T> parameterType) {
-    Type paramType = Types.newParameterizedType(List.class, parameterType);
-    return (TypeLiteral<ArrayList<T>>) TypeLiteral.get(paramType);
+  public static <T> TypeLiteral<ArrayList<T>> arrayListOf( final Class<T> parameterType )
+  {
+    Type paramType = Types.newParameterizedType( List.class, parameterType );
+    return (TypeLiteral<ArrayList<T>>) TypeLiteral.get( paramType );
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> TypeLiteral<ImmutableList<T>> immutableListOf(final Class<T> parameterType) {
-    Type paramType = Types.newParameterizedType(ImmutableList.class, parameterType);
-    return (TypeLiteral<ImmutableList<T>>) TypeLiteral.get(paramType);
+  public static <T> TypeLiteral<ImmutableList<T>> immutableListOf( final Class<T> parameterType )
+  {
+    Type paramType = Types.newParameterizedType( ImmutableList.class, parameterType );
+    return (TypeLiteral<ImmutableList<T>>) TypeLiteral.get( paramType );
   }
 
 }

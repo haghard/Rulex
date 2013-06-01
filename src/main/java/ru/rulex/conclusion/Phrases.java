@@ -19,23 +19,29 @@ package ru.rulex.conclusion;
  * Factory enum for Phrases implementations which we support out-of-the-box.
  * 
  */
-public enum Phrases {
+public enum Phrases
+{
 
-  ALL_TRUE {
-    AbstractPhrase<Object> getConclusionPhrase() {
+  ALL_TRUE
+  {
+    AbstractPhrase<Object> getConclusionPhrase()
+    {
       return AbstractPhrase.all();
     }
   },
 
-  ANY_TRUE {
-    AbstractPhrase<Object> getConclusionPhrase() {
+  ANY_TRUE
+  {
+    AbstractPhrase<Object> getConclusionPhrase()
+    {
       return AbstractPhrase.any();
     }
   };
 
   abstract <T> AbstractPhrase<T> getConclusionPhrase();
 
-  public <T> AbstractPhrase<T> withNarrowedType() {
+  public <T> AbstractPhrase<T> withNarrowedType()
+  {
     return (AbstractPhrase<T>) this.<T> getConclusionPhrase();
   }
 

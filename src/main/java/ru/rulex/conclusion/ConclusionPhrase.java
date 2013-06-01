@@ -24,7 +24,8 @@ import ru.rulex.conclusion.execution.ParallelStrategy;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.EventOrientedPhrasesBuilder;
 
-public final class ConclusionPhrase {
+public final class ConclusionPhrase
+{
   /**
    * 
    * @param value
@@ -35,8 +36,10 @@ public final class ConclusionPhrase {
    * 
    */
   public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(
-      final E value, final Class<T> argumentClass, final String methodName, final ConclusionPredicate<E> predicate) {
-    return phrase("default", value, argumentClass, methodName, predicate);
+      final E value, final Class<T> argumentClass, final String methodName,
+      final ConclusionPredicate<E> predicate )
+  {
+    return phrase( "default", value, argumentClass, methodName, predicate );
   }
 
   /**
@@ -50,10 +53,11 @@ public final class ConclusionPhrase {
    * 
    */
   public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(
-      final String termName, final E value, final Class<T> argumentClass,
-      final String methodName, final ConclusionPredicate<E> predicate) {
-    return phrase(termName, value, argumentClass, methodName, predicate,
-        ParallelStrategy.<Boolean, PhraseExecutionException> serial());
+      final String termName, final E value, final Class<T> argumentClass, final String methodName,
+      final ConclusionPredicate<E> predicate )
+  {
+    return phrase( termName, value, argumentClass, methodName, predicate,
+        ParallelStrategy.<Boolean, PhraseExecutionException> serial() );
   }
 
   /**
@@ -67,36 +71,43 @@ public final class ConclusionPhrase {
    * @return AbstractConclusionExecutionPhrasesBuilder
    */
   public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(
-      final String termName, final E value, final Class<T> argumentClass,
-      final String methodName, final ConclusionPredicate<E> predicate,
-      final ParallelStrategy<Boolean, PhraseExecutionException> pStrategy0) {
-    return new EventOrientedPhrasesBuilder() {
+      final String termName, final E value, final Class<T> argumentClass, final String methodName,
+      final ConclusionPredicate<E> predicate,
+      final ParallelStrategy<Boolean, PhraseExecutionException> pStrategy0 )
+  {
+    return new EventOrientedPhrasesBuilder()
+    {
       @SuppressWarnings("unchecked")
-      protected void build() {
-        rule(pStrategy0, argumentClass, termName).shouldMatch(
-            typeSafeQuery(
-                number(argumentClass, (Class<E>)value.getClass(), methodName),
-                lambda(predicate)));
+      protected void build()
+      {
+        rule( pStrategy0, argumentClass, termName ).shouldMatch(
+            typeSafeQuery( number( argumentClass, (Class<E>) value.getClass(), methodName ),
+                lambda( predicate ) ) );
       }
     };
   }
 
   /**
-   *
-   * @param PhraseSettings<E,T> termSettings
+   * 
+   * @param PhraseSettings
+   *          <E,T> termSettings
    * @return AbstractConclusionExecutionPhrasesBuilder
    * 
    */
   @SuppressWarnings("unchecked")
-  public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(final String termName,
-      final PhraseSettings<E, T> phraseSettings) {
-    return new EventOrientedPhrasesBuilder() {
-      protected void build() {
-        rule(phraseSettings.<Boolean, PhraseExecutionException> getParallelStrategy(), phraseSettings.getTargetClass(), termName)
-          .shouldMatch(typeSafeQuery(
-                number(phraseSettings.getTargetClass(), (Class<E>) phraseSettings
-                    .getValue().getClass(), phraseSettings.getAccessorName()),
-                lambda(phraseSettings.getPredicate())));
+  public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(
+      final String termName, final PhraseSettings<E, T> phraseSettings )
+  {
+    return new EventOrientedPhrasesBuilder()
+    {
+      protected void build()
+      {
+        rule( phraseSettings.<Boolean, PhraseExecutionException> getParallelStrategy(),
+            phraseSettings.getTargetClass(), termName ).shouldMatch(
+            typeSafeQuery(
+                number( phraseSettings.getTargetClass(), (Class<E>) phraseSettings.getValue()
+                    .getClass(), phraseSettings.getAccessorName() ), lambda( phraseSettings
+                    .getPredicate() ) ) );
       }
     };
   }

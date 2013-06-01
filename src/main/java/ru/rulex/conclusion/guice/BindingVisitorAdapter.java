@@ -18,6 +18,7 @@ package ru.rulex.conclusion.guice;
 
 import ru.rulex.conclusion.AbstractPhrase;
 
-public interface BindingVisitorAdapter<T extends BindingVisitor> {
-  public T asVisitor(AbstractPhrase<?> abstractConclusionPhrases);
+public interface BindingVisitorAdapter<T extends BindingVisitor>
+{
+  public T asVisitor( AbstractPhrase<?> abstractConclusionPhrases );
 }

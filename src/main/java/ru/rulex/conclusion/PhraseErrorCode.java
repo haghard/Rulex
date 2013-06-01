@@ -15,6 +15,7 @@
  */
 package ru.rulex.conclusion;
 
-public enum PhraseErrorCode implements ErrorCode {
+public enum PhraseErrorCode implements ErrorCode
+{
   ERROR;
 }

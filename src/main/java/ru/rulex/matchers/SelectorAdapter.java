@@ -18,10 +18,11 @@ package ru.rulex.matchers;
 
 import ru.rulex.conclusion.Selector;
 
-public interface SelectorAdapter<T> {
+public interface SelectorAdapter<T>
+{
 
-  Selector<T, ?> selector(T value);
+  Selector<T, ?> selector( T value );
 
   String matcherDisplayName();
-  
+
 }

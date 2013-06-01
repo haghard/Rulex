@@ -16,31 +16,36 @@
  */
 package ru.rulex.conclusion;
 
-public abstract class AbstractImperativePhrases<T> implements IterablePhrases<T> {
+public abstract class AbstractImperativePhrases<T> implements IterablePhrases<T>
+{
 
-  protected ImperativeAssertUnit<T> imperativeUnit;
+  protected ImperativeAssertUnit<T> assertionUnit;
 
-  protected final ConclusionStatePathTrace conclusionPathTrace = 
-      ConclusionStatePathTrace.defaultInstance();
+  protected final ConclusionStatePathTrace conclusionPathTrace = ConclusionStatePathTrace
+      .defaultInstance();
 
-  public void setIterable(Iterable<T> iterable) {
-    this.imperativeUnit.setIterable(iterable);
+  public void setIterable( Iterable<T> iterable )
+  {
+    this.assertionUnit.setIterable( iterable );
   }
 
-  public static <T> AbstractImperativePhrases<T> delegatePhrases() {
+  public static <T> AbstractImperativePhrases<T> delegatePhrases()
+  {
     return new DefaultImperativePhrases<T>();
   }
 
-  public void setUnit(ImperativeAssertUnit<T> algorithmValidationRuleEntry) {
-    this.imperativeUnit = algorithmValidationRuleEntry;
+  public void setUnit( ImperativeAssertUnit<T> assertionUnit )
+  {
+    this.assertionUnit = assertionUnit;
   }
 
-  private static final class DefaultImperativePhrases<T>
-      extends AbstractImperativePhrases<T> {
+  private static final class DefaultImperativePhrases<T> extends AbstractImperativePhrases<T>
+  {
 
     @Override
-    public Boolean evaluate() {
-      return imperativeUnit.satisfies();
+    public Boolean evaluate()
+    {
+      return assertionUnit.satisfies();
     }
   }
 }

@@ -22,24 +22,28 @@ import java.util.Queue;
 import org.apache.log4j.Logger;
 
 import com.google.common.base.Preconditions;
+
 /**
  * 
  * @author haghard
- *
+ * 
  */
-public class InvocationManager {
+public class InvocationManager
+{
 
-  //private final Logger LOG = Logger.getLogger( getClass() );
+  // private final Logger LOG = Logger.getLogger( getClass() );
 
   private Queue<Invokable<?, ?>> invokableList = new ArrayDeque<Invokable<?, ?>>();
 
-  public void pushInvokable(Invokable<?, ?> invokable) {
-    this.invokableList.offer(invokable);
+  public void pushInvokable( Invokable<?, ?> invokable )
+  {
+    this.invokableList.offer( invokable );
   }
 
-  public Invokable<?, ?> poolInvokable() {
+  public Invokable<?, ?> poolInvokable()
+  {
     Invokable<?, ?> invokable = invokableList.poll();
-    Preconditions.checkNotNull(invokable, "invokable was not setted in InvocationManager");
+    Preconditions.checkNotNull( invokable, "invokable was not setted in InvocationManager" );
     return invokable;
   }
 }

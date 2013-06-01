@@ -15,6 +15,7 @@
  */
 package ru.rulex.conclusion;
 
-public enum IteratorType {
+public enum IteratorType
+{
   Where;
 }

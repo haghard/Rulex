@@ -16,20 +16,25 @@
 package ru.rulex.conclusion;
 
 /**
- * A interface that can supply select needed value of type <code>E</code> from object
- * of type <code>T</code>.
- * Practically, this could be a just anonymous inner class with predefined <code>T, E</code>
- * Anonymous inner example:
- * <pre class="code"><code class="java">
+ * A interface that can supply select needed value of type <code>E</code> from
+ * object of type <code>T</code>. Practically, this could be a just anonymous
+ * inner class with predefined <code>T, E</code> Anonymous inner example:
+ * 
+ * <pre class="code">
+ * <code class="java">
  *  new Selector<Entity, Integer>() {
  *    Integer select(Entity entity){
  *      entity.getValue();
  *    }
  *  }
  * }
- * </code></pre>
+ * </code>
+ * </pre>
+ * 
  * Reflection example:
- * <pre class="code"><code class="java">
+ * 
+ * <pre class="code">
+ * <code class="java">
  *  new Selector<T, E>() {
  *    public E select(T input) {
  *      E returnValue = null;
@@ -43,14 +48,17 @@ package ru.rulex.conclusion;
  *    }
  *  };
  * }
- * </code></pre>
+ * </code>
+ * </pre>
+ * 
  * </p>
  */
-public interface Selector<T, E> extends FunctionalInterface {
+public interface Selector<T, E> extends FunctionalInterface
+{
 
   /**
    * @param argument
    * @return E
    */
-  E select(T argument);
+  E select( T argument );
 }

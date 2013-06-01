@@ -19,21 +19,22 @@ import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.ConclusionStatePathTrace;
 import ru.rulex.conclusion.AssertionUnit;
 
-public class SimpleAssertionUnit<T> implements AssertionUnit<T> {
+public class SimpleAssertionUnit<T> implements AssertionUnit<T>
+{
 
   private final ConclusionPredicate<T> predicate;
 
   private final String description;
 
-  public SimpleAssertionUnit(ConclusionPredicate<T> conclusionPredicate,
-      String exp) {
+  public SimpleAssertionUnit( ConclusionPredicate<T> conclusionPredicate, String exp )
+  {
     this.predicate = conclusionPredicate;
     this.description = exp;
   }
 
   @Override
-  public boolean satisfies(ConclusionStatePathTrace conclusionPathTrace, T event) {
-    return conclusionPathTrace.isWorkingState() ? predicate.apply(event)
-        : false;
+  public boolean satisfies( ConclusionStatePathTrace conclusionPathTrace, T event )
+  {
+    return conclusionPathTrace.isWorkingState() ? predicate.apply( event ) : false;
   }
 }

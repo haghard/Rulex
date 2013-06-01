@@ -17,6 +17,7 @@
  */
 package ru.rulex.conclusion;
 
-public interface ConclusionFunction<IN, OUT> {
-  OUT apply(IN argument);
+public interface ConclusionFunction<IN, OUT>
+{
+  OUT apply( IN argument );
 }

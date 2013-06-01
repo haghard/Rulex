@@ -20,10 +20,11 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.Iterator;
 
-public class IteratorBuilderImpl {
+public class IteratorBuilderImpl
+{
 
-  public static class WhereIteratorElement<T>
-      implements IteratorElement<T> {
+  public static class WhereIteratorElement<T> implements IteratorElement<T>
+  {
     private AssertionUnit<T> conclusionPredicate;
 
     private ImmutableList<T> source;
@@ -31,30 +32,35 @@ public class IteratorBuilderImpl {
     private ImmutableSet<T> excepts;
 
     @Override
-    public Iterator<T> getIterator() {
-      return IteratorsFacade.whereIterator(conclusionPredicate, source, excepts);
+    public Iterator<T> getIterator()
+    {
+      return IteratorsFacade.whereIterator( conclusionPredicate, source, excepts );
     }
 
-
     @Override
-    public void accept(AssertionUnit<T> conclusionPredicate, ImmutableList<T> source,
-                       ImmutableSet<T> excepts) {
+    public void accept( AssertionUnit<T> conclusionPredicate, ImmutableList<T> source,
+        ImmutableSet<T> excepts )
+    {
       this.conclusionPredicate = conclusionPredicate;
       this.source = source;
       this.excepts = excepts;
     }
 
-    public static class IteratorElementBuilder<T> {
+    public static class IteratorElementBuilder<T>
+    {
 
-      private IteratorElementBuilder() {
+      private IteratorElementBuilder()
+      {
       }
 
-      public WhereIteratorElement<T> build() {
+      public WhereIteratorElement<T> build()
+      {
         return new WhereIteratorElement<T>();
       }
     }
 
-    public static <T> IteratorElementBuilder<T> newBuilder() {
+    public static <T> IteratorElementBuilder<T> newBuilder()
+    {
       return new IteratorElementBuilder<T>();
     }
   }

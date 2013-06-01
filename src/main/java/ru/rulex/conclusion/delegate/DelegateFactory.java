@@ -24,40 +24,51 @@ import java.lang.reflect.Array;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toPredicate;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
-public class DelegateFactory {
+public class DelegateFactory
+{
 
-  public static <T> ConclusionPredicate<Delegate<T>> from(T element) {
-    return construct(element);
+  public static <T> ConclusionPredicate<Delegate<T>> from( T element )
+  {
+    return construct( element );
   }
 
-  public static <T> ConclusionPredicate<Delegate<T>> from(T element1, T element2) {
-    return construct(element1, element2);
+  public static <T> ConclusionPredicate<Delegate<T>> from( T element1, T element2 )
+  {
+    return construct( element1, element2 );
   }
 
-  public static <T> ConclusionPredicate<Delegate<T>> from(T element1, T element2, T element3) {
-    return construct(element1, element2, element3);
+  public static <T> ConclusionPredicate<Delegate<T>> from( T element1, T element2, T element3 )
+  {
+    return construct( element1, element2, element3 );
   }
 
-  public static <T> ConclusionPredicate<Delegate<T>> from(T element1, T element2, T element3, T element4) {
-    return construct(element1, element2, element3, element4);
+  public static <T> ConclusionPredicate<Delegate<T>> from( T element1, T element2, T element3,
+      T element4 )
+  {
+    return construct( element1, element2, element3, element4 );
   }
 
-  public static <T> ConclusionPredicate<Delegate<T>> from(T element1, T element2, T element3, T element4,
-                                                            T element5) {
-    return construct(element1, element2, element3, element4, element5);
+  public static <T> ConclusionPredicate<Delegate<T>> from( T element1, T element2, T element3,
+      T element4, T element5 )
+  {
+    return construct( element1, element2, element3, element4, element5 );
   }
-  
+
   @SuppressWarnings("unchecked")
-  private static <T> ConclusionPredicate<Delegate<T>> construct(Object... elements) {
+  private static <T> ConclusionPredicate<Delegate<T>> construct( Object... elements )
+  {
     T[] params;
-    //for support FluentConclusionPredicate subclasses
-    if (elements[0] instanceof FluentConclusionPredicate) {
-      params = (T[])Array.newInstance(FluentConclusionPredicate.class, elements.length);
-    } else {
-      params = (T[]) Array.newInstance(elements[0].getClass(), elements.length);
+    // for support FluentConclusionPredicate subclasses
+    if (elements[0] instanceof FluentConclusionPredicate)
+    {
+      params = (T[]) Array.newInstance( FluentConclusionPredicate.class, elements.length );
     }
-    System.arraycopy(elements, 0, params, 0, elements.length);
-    return createPredicate(params);
+    else
+    {
+      params = (T[]) Array.newInstance( elements[0].getClass(), elements.length );
+    }
+    System.arraycopy( elements, 0, params, 0, elements.length );
+    return createPredicate( params );
   }
 
   /**
@@ -71,27 +82,30 @@ public class DelegateFactory {
    * @return
    */
   @SuppressWarnings("unchecked")
-  public static <T> ConclusionPredicate<Delegate<T>> values(T element1, T element2, T element3, T element4, T element5,
-                                                            T... others) {
+  public static <T> ConclusionPredicate<Delegate<T>> values( T element1, T element2, T element3,
+      T element4, T element5, T... others )
+  {
     final int paramCount = 5;
-    T[] params = (T[]) Array.newInstance(element1.getClass(), paramCount + others.length);
+    T[] params = (T[]) Array.newInstance( element1.getClass(), paramCount + others.length );
     params[0] = element1;
     params[1] = element2;
     params[2] = element3;
     params[3] = element4;
     params[4] = element5;
-    System.arraycopy(others, 0, params, paramCount, others.length);
-    return createPredicate(params);
+    System.arraycopy( others, 0, params, paramCount, others.length );
+    return createPredicate( params );
   }
 
   /**
    * Create predicate which store base on passed param
+   * 
    * @param params
    * @param <T>
    * @return ConclusionPredicate<Delegate<T>>
    */
   @SuppressWarnings("unchecked")
-  private static <T> ConclusionPredicate<Delegate<T>> createPredicate(T[] params) {
-    return toPredicate(callOn(Delegate.class).execute(params));
+  private static <T> ConclusionPredicate<Delegate<T>> createPredicate( T[] params )
+  {
+    return toPredicate( callOn( Delegate.class ).execute( params ) );
   }
 }

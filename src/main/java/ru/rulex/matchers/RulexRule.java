@@ -4,5 +4,5 @@ public interface RulexRule<T>
 {
   RulexAnalyzer in( Iterable<T> iterator );
 
-  RulexAnalyzer on( T item ); 
+  RulexAnalyzer on( T item );
 }

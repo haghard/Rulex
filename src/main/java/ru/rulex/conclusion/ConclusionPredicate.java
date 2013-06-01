@@ -17,8 +17,7 @@
  */
 package ru.rulex.conclusion;
 
-
-public interface ConclusionPredicate<T>
-    extends FunctionalInterface {
-  boolean apply(T argument);
+public interface ConclusionPredicate<T> extends FunctionalInterface
+{
+  boolean apply( T argument );
 }

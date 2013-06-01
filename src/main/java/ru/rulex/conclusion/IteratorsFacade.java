@@ -20,14 +20,16 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.UnmodifiableIterator;
 import java.util.Iterator;
 
-public final class IteratorsFacade {
+public final class IteratorsFacade
+{
 
-  enum IterationState {
-    Regular,
-    Exit;
+  enum IterationState
+  {
+    Regular, Exit;
   }
 
-  private IteratorsFacade() {
+  private IteratorsFacade()
+  {
   }
 
   /**
@@ -36,21 +38,24 @@ public final class IteratorsFacade {
    * @param <T>
    * @return Iterator<T>
    */
-  public static <T> Iterator<T> whereIterator(final AssertionUnit<T> validationRuleEntry,
-                                              final ImmutableList<T> source) {
-    return whereIterator(validationRuleEntry, source, ImmutableSet.<T>of());
+  public static <T> Iterator<T> whereIterator( final AssertionUnit<T> validationRuleEntry,
+      final ImmutableList<T> source )
+  {
+    return whereIterator( validationRuleEntry, source, ImmutableSet.<T> of() );
   }
 
   /**
-   * @param validationRuleEntry
+   * @param assertionUnit
    * @param source
    * @param excepts
    * @param <T>
    * @return Iterator<T>
    */
-  public static <T> Iterator<T> whereIterator(final AssertionUnit<T> validationRuleEntry,
-                                              final ImmutableList<T> source, final ImmutableSet<T> excepts) {
-    return new AbstractIterator<T>() {
+  public static <T> Iterator<T> whereIterator( final AssertionUnit<T> assertionUnit,
+      final ImmutableList<T> source, final ImmutableSet<T> excepts )
+  {
+    return new AbstractIterator<T>()
+    {
       private final UnmodifiableIterator<T> iterator = source.iterator();
 
       private final ConclusionStatePathTrace pathTrace = ConclusionStatePathTrace.defaultInstance();
@@ -58,19 +63,24 @@ public final class IteratorsFacade {
       private IterationState state = IterationState.Regular;
 
       @Override
-      public boolean hasNext() {
-        switch (state) {
-          case Regular:
-            while (iterator.hasNext()) {
-              T event = iterator.next();
-              if (validationRuleEntry.satisfies(pathTrace, event) && !excepts.contains(event)) {
-                state = IterationState.Exit;
-                return computeNext(event);
-              }
+      public boolean hasNext()
+      {
+        switch (state)
+        {
+        case Regular:
+          while (iterator.hasNext())
+          {
+            T event = iterator.next();
+            if ( ! excepts.contains( event ) && assertionUnit.satisfies( pathTrace, event ) )
+            {
+              state = IterationState.Exit;
+              return computeNext( event );
             }
-          case Exit: {
-            return interrupt;
           }
+        case Exit:
+        {
+          return interrupt;
+        }
         }
         return interrupt;
       }

@@ -9,7 +9,6 @@ import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
-
 import ru.rulex.matchers.AssertionAwareListener;
 import ru.rulex.matchers.RulexObjectMatcher;
 import ru.rulex.matchers.RulexAnalyzer;
@@ -23,17 +22,15 @@ public class TestRulexApi
   {
     Model model = Model.values( 4, 56.7f );
 
-    RulexMatcher<Model> matcher0 = selector( Model.class,
-        callOn( Model.class ).getInteger() ).lessThan( 5 ).and(
-        selector( Model.class, callOn( Model.class ).getInteger() )
-            .lessThan( 6 ) );
+    RulexMatcher<Model> matcher0 = selector( Model.class, callOn( Model.class ).getInteger() )
+        .lessThan( 5 ).and(
+            selector( Model.class, callOn( Model.class ).getInteger() ).lessThan( 6 ) );
 
     assertThat( matcher0.matches( model ) ).isTrue();
 
-    RulexMatcher<Model> matcher = selector( Model.class,
-        callOn( Model.class ).getInteger() ).lessThan( 5 ).and(
-        selector( Model.class, callOn( Model.class ).getFloat() ).lessThan(
-            56.8f ) );
+    RulexMatcher<Model> matcher = selector( Model.class, callOn( Model.class ).getInteger() )
+        .lessThan( 5 ).and(
+            selector( Model.class, callOn( Model.class ).getFloat() ).lessThan( 56.8f ) );
 
     assertThat( matcher.matches( model ) ).isTrue();
   }
@@ -41,9 +38,8 @@ public class TestRulexApi
   @Test
   public void shouldBeEqualsOnSameFields()
   {
-    RulexMatcher<Model> matcher = selector( Model.class,
-        callOn( Model.class ).getInteger() ).isEquals(
-        selector( Model.class, callOn( Model.class ).getInteger() ) );
+    RulexMatcher<Model> matcher = selector( Model.class, callOn( Model.class ).getInteger() )
+        .isEquals( selector( Model.class, callOn( Model.class ).getInteger() ) );
 
     Model model = Model.values( 4, 5 );
     assertThat( matcher.matches( model ) ).isTrue();
@@ -52,15 +48,14 @@ public class TestRulexApi
   @Test
   public void oneIntegerShouldBeLessOtherInteger()
   {
-    RulexMatcher<Model> matcher = modelSelector(
-        callOn( Model.class ).getInteger() ).lessThan(
+    RulexMatcher<Model> matcher = modelSelector( callOn( Model.class ).getInteger() ).lessThan(
         modelSelector( callOn( Model.class ).getOtherInteger() ) );
 
     final Model model = Model.values( 1, 2 );
 
     // separate configuration from processing
-    RulexAnalyzer analyzed = RulexObjectMatcher.projection( Model.class )
-        .assertThat( matcher ).on( model );
+    RulexAnalyzer analyzed = RulexObjectMatcher.projection( Model.class ).assertThat( matcher )
+        .on( model );
     analyzed.analyze( new AssertionAwareListener()
     {
       @Override
@@ -103,14 +98,12 @@ public class TestRulexApi
 
     final ImmutableList<Model> list = ImmutableList.of( first, second );
 
-    RulexMatcher<Model> filter = modelSelector(
-        callOn( Model.class ).getInteger() ).lessThan( 122 );
+    RulexMatcher<Model> filter = modelSelector( callOn( Model.class ).getInteger() ).lessThan( 122 );
 
-    RulexMatcher<Model> matcher = modelSelector(
-        callOn( Model.class ).getInteger() ).moreThan( 50 );
+    RulexMatcher<Model> matcher = modelSelector( callOn( Model.class ).getInteger() ).moreThan( 50 );
 
-    RulexObjectMatcher.projection( Model.class ).forEach( filter )
-        .assertThat( matcher ).in( list ).analyze( new AssertionAwareListener()
+    RulexObjectMatcher.projection( Model.class ).forEach( filter ).assertThat( matcher ).in( list )
+        .analyze( new AssertionAwareListener()
         {
           @Override
           public void passed( Object analysedObject, Matcher<?> matcher )

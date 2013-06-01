@@ -19,28 +19,28 @@ package ru.rulex.conclusion;
 import java.util.Arrays;
 import java.util.List;
 
-public final class DslFacade {
+public final class DslFacade
+{
 
-  private DslFacade() {
+  private DslFacade()
+  {
   }
 
   private static <T> List<ConclusionPredicate<? super T>> asList(
-      ConclusionPredicate<? super T> first,
-      ConclusionPredicate<? super T> second) {
-    return Arrays.<ConclusionPredicate<? super T>> asList(first, second);
+      ConclusionPredicate<? super T> first, ConclusionPredicate<? super T> second )
+  {
+    return Arrays.<ConclusionPredicate<? super T>> asList( first, second );
   }
 
-  public static <T> FluentConclusionPredicate<T> and(
-      final ConclusionPredicate<? super T> p,
-      final ConclusionPredicate<? super T> p0) {
-    return new FluentConclusionPredicate.AndConclusionPredicate<T>(
-        asList(p, p0).iterator());
+  public static <T> FluentConclusionPredicate<T> and( final ConclusionPredicate<? super T> p,
+      final ConclusionPredicate<? super T> p0 )
+  {
+    return new FluentConclusionPredicate.AndConclusionPredicate<T>( asList( p, p0 ).iterator() );
   }
 
-  public static <T> FluentConclusionPredicate<T> or(
-      final ConclusionPredicate<? super T> p,
-      final ConclusionPredicate<? super T> p0) {
-    return new FluentConclusionPredicate.OrConclusionPredicate<T>(
-        asList(p, p0).iterator());
+  public static <T> FluentConclusionPredicate<T> or( final ConclusionPredicate<? super T> p,
+      final ConclusionPredicate<? super T> p0 )
+  {
+    return new FluentConclusionPredicate.OrConclusionPredicate<T>( asList( p, p0 ).iterator() );
   }
 }

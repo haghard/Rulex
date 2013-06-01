@@ -39,41 +39,41 @@ import static ru.rulex.conclusion.RulexMatchersDsl.*;
 public class TestParallelStrategyExecution
 {
 
-  private final ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors
-      .newFixedThreadPool(Runtime.getRuntime().availableProcessors() / 2));
+  private final ListeningExecutorService service = MoreExecutors.listeningDecorator( Executors
+      .newFixedThreadPool( Runtime.getRuntime().availableProcessors() / 2 ) );
 
   private interface FutureMerger<T>
   {
-    ListenableFuture<List<T>> merged ( List<ListenableFuture<T>> futures );
+    ListenableFuture<List<T>> merged( List<ListenableFuture<T>> futures );
   }
 
   FutureMerger<Boolean> allMerger = new FutureMerger<Boolean>()
   {
     @Override
-    public ListenableFuture<List<Boolean>> merged ( List<ListenableFuture<Boolean>> futures )
+    public ListenableFuture<List<Boolean>> merged( List<ListenableFuture<Boolean>> futures )
     {
-      return Futures.allAsList(futures);
+      return Futures.allAsList( futures );
     }
   };
 
   FutureMerger<Boolean> successMerger = new FutureMerger<Boolean>()
   {
     @Override
-    public ListenableFuture<List<Boolean>> merged ( List<ListenableFuture<Boolean>> futures )
+    public ListenableFuture<List<Boolean>> merged( List<ListenableFuture<Boolean>> futures )
     {
-      return Futures.successfulAsList(futures);
+      return Futures.successfulAsList( futures );
     }
   };
 
   @Test
-  public void testBind () throws Exception
+  public void testBind() throws Exception
   {
-    Model en = Model.values(40);
-    assertTrue("testBind error !!!",
-        Callables.bind(Callables.unit(en), new ConclusionFunction<Model, Callable<Boolean>>()
+    Model en = Model.values( 40 );
+    assertTrue( "testBind error !!!",
+        Callables.bind( Callables.unit( en ), new ConclusionFunction<Model, Callable<Boolean>>()
         {
           @Override
-          public Callable<Boolean> apply ( final Model argument )
+          public Callable<Boolean> apply( final Model argument )
           {
             return new Callable<Boolean>()
             {
@@ -81,112 +81,114 @@ public class TestParallelStrategyExecution
               FluentConclusionPredicate<?> fluent = fluent();
 
               @Override
-              public Boolean call ()
+              public Boolean call()
               {
-                return fluent.eq(argument(23), descriptor(Model.class, accessor))
-                    .and(fluent.eq(argument(39), descriptor(Model.class, accessor)))
-                    .and(fluent.eq(argument(39), descriptor(Model.class, accessor)))
-                    .or(fluent.eq(argument(40), descriptor(Model.class, accessor))).apply(argument);
+                return fluent.eq( argument( 23 ), descriptor( Model.class, accessor ) )
+                    .and( fluent.eq( argument( 39 ), descriptor( Model.class, accessor ) ) )
+                    .and( fluent.eq( argument( 39 ), descriptor( Model.class, accessor ) ) )
+                    .or( fluent.eq( argument( 40 ), descriptor( Model.class, accessor ) ) )
+                    .apply( argument );
               }
             };
           }
-        }).call());
+        } ).call() );
   }
 
   @Test
-  public void testBlockToGetResult () throws Exception
+  public void testBlockToGetResult() throws Exception
   {
     // explicitly block execution thread
-    assertTrue("testBlockToGetResult 1 error !!!",
-        ParallelStrategy.<Boolean, PhraseExecutionException> listenableFutureStrategy(service)
-            .lift(new ConclusionFunction<Integer, Boolean>()
+    assertTrue( "testBlockToGetResult 1 error !!!",
+        ParallelStrategy.<Boolean, PhraseExecutionException> listenableFutureStrategy( service )
+            .lift( new ConclusionFunction<Integer, Boolean>()
             {
               @Override
-              public Boolean apply ( Integer argument )
+              public Boolean apply( Integer argument )
               {
-                return always().apply(argument);
+                return always().apply( argument );
               }
-            }).apply(2).get());
+            } ).apply( 2 ).get() );
 
     // implicitly block execution thread
     assertTrue(
         "testBlockToGetResult 2 error !!!",
         Callables.obtain(
-            ParallelStrategy.<Boolean, PhraseExecutionException> listenableFutureStrategy(service)
-                .lift(new ConclusionFunction<Integer, Boolean>()
+            ParallelStrategy.<Boolean, PhraseExecutionException> listenableFutureStrategy( service )
+                .lift( new ConclusionFunction<Integer, Boolean>()
                 {
                   @Override
-                  public Boolean apply ( Integer argument )
+                  public Boolean apply( Integer argument )
                   {
-                    return always().apply(argument);
+                    return always().apply( argument );
                   }
-                }).apply(2)).call());
+                } ).apply( 2 ) ).call() );
   }
 
   @Test
-  public void testFmap () throws Exception
+  public void testFmap() throws Exception
   {
-    Model en = Model.values(40);
-    assertTrue("testFmap error !!!", Callables.fmap(new ConclusionFunction<Model, Boolean>()
+    Model en = Model.values( 40 );
+    assertTrue( "testFmap error !!!", Callables.fmap( new ConclusionFunction<Model, Boolean>()
     {
       @Override
-      public Boolean apply ( Model argument )
+      public Boolean apply( Model argument )
       {
-        return always().apply(argument);
+        return always().apply( argument );
       }
-    }).apply(Callables.unit(en)).call());
+    } ).apply( Callables.unit( en ) ).call() );
   }
 
   @Test
-  public void testListenableFutureWithParallelStrategy () throws InterruptedException
+  public void testListenableFutureWithParallelStrategy() throws InterruptedException
   {
-    Model en = Model.values(40);
-    final CountDownLatch latch = new CountDownLatch(1);
+    Model en = Model.values( 40 );
+    final CountDownLatch latch = new CountDownLatch( 1 );
     FutureCallback<List<Boolean>> callback = new FutureCallback<List<Boolean>>()
     {
       @Override
-      public void onSuccess ( List<Boolean> result )
+      public void onSuccess( List<Boolean> result )
       {
         latch.countDown();
       }
 
       @Override
-      public void onFailure ( Throwable t )
+      public void onFailure( Throwable t )
       {
-        fail("testWithParallelStrategy error");
+        fail( "testWithParallelStrategy error" );
       }
     };
 
     ParallelStrategy<Boolean, PhraseExecutionException> pStrategy = ParallelStrategy
-        .listenableFutureStrategy(service);
+        .listenableFutureStrategy( service );
 
     ImmutableList.Builder<ListenableFuture<Boolean>> blist = ImmutableList.builder();
 
-    blist.add(pStrategy.lift(new ConclusionFunction<Model, Boolean>()
+    blist.add( pStrategy.lift( new ConclusionFunction<Model, Boolean>()
     {
       @Override
-      public Boolean apply ( Model argument )
+      public Boolean apply( Model argument )
       {
         String accessor = Model.INT_ACCESSOR;
-        return fluent().eq(argument(39), descriptor(Model.class, accessor))
-            .and(fluent().eq(argument(39), descriptor(Model.class, accessor)))
-            .and(fluent().eq(argument(39), descriptor(Model.class, accessor)))
-            .or(fluent().eq(argument(40), descriptor(Model.class, accessor))).apply(argument);
+        return fluent().eq( argument( 39 ), descriptor( Model.class, accessor ) )
+            .and( fluent().eq( argument( 39 ), descriptor( Model.class, accessor ) ) )
+            .and( fluent().eq( argument( 39 ), descriptor( Model.class, accessor ) ) )
+            .or( fluent().eq( argument( 40 ), descriptor( Model.class, accessor ) ) )
+            .apply( argument );
       }
-    }).apply(en));
+    } ).apply( en ) );
 
-    blist.add(pStrategy.lift(new ConclusionFunction<Model, Boolean>()
+    blist.add( pStrategy.lift( new ConclusionFunction<Model, Boolean>()
     {
       @Override
-      public Boolean apply ( Model argument )
+      public Boolean apply( Model argument )
       {
         return true;
       }
-    }).apply(en));
+    } ).apply( en ) );
 
-    Futures.addCallback(allMerger.merged(blist.build()), callback);
+    Futures.addCallback( allMerger.merged( blist.build() ), callback );
 
-    assertTrue("testWithParallelStrategy error !!!", latch.await(5, TimeUnit.SECONDS));
+    assertTrue( "testWithParallelStrategy error !!!", latch.await( 5, TimeUnit.SECONDS ) );
   }
 
   /**
@@ -195,37 +197,39 @@ public class TestParallelStrategyExecution
    * @throws Exception
    */
   @Test
-  public void testObtainWithException () throws Exception
+  public void testObtainWithException() throws Exception
   {
-    Model en = Model.values(40);
+    Model en = Model.values( 40 );
     ParallelStrategy<Boolean, PhraseExecutionException> pStrategy = ParallelStrategy
-        .listenableFutureStrategy(service);
+        .listenableFutureStrategy( service );
     try
     {
-      Callables.bind(Callables.obtain(pStrategy.lift(new ConclusionFunction<Model, Boolean>()
+      Callables.bind( Callables.obtain( pStrategy.lift( new ConclusionFunction<Model, Boolean>()
       {
         @Override
-        public Boolean apply ( Model argument )
+        public Boolean apply( Model argument )
         {
-          throw new IllegalArgumentException("expected");
+          throw new IllegalArgumentException( "expected" );
         }
-      }).apply(en)), new ConclusionFunction<Boolean, Callable<Integer>>()
+      } ).apply( en ) ), new ConclusionFunction<Boolean, Callable<Integer>>()
       {
         @Override
-        public Callable<Integer> apply ( Boolean argument )
+        public Callable<Integer> apply( Boolean argument )
         {
           // post action, executed in main thread after function completion
           // 0 could be possitive result marker
-          return Callables.unit(0);
+          return Callables.unit( 0 );
         }
-      }).call();
-    } catch ( PhraseExecutionException e )
+      } ).call();
+    }
+    catch (PhraseExecutionException e)
     {
       e.printStackTrace();
       // expected
-    } catch ( Exception ex )
+    }
+    catch (Exception ex)
     {
-      fail("testObtainWithException error !!!");
+      fail( "testObtainWithException error !!!" );
     }
   }
 }

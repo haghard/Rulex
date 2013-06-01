@@ -49,8 +49,7 @@ public class ProxyUtils
    */
   public static <T> ConclusionPredicate<T> toPredicate( Object ignoredValue )
   {
-    final Invokable<T, Boolean> invokable = ProxyUtils
-        .<T, Boolean> poolInvokable();
+    final Invokable<T, Boolean> invokable = ProxyUtils.<T, Boolean> poolInvokable();
     return Invokable.invokablePredicate( invokable );
   }
 
@@ -103,21 +102,18 @@ public class ProxyUtils
     {
       final Class<?>[] proxiedClasses = prepend( mockedType, types );
       if (canImposterise( mockedType ))
-        return (T) Proxy.newProxyInstance( mockedType.getClassLoader(),
-            proxiedClasses, new java.lang.reflect.InvocationHandler()
+        return (T) Proxy.newProxyInstance( mockedType.getClassLoader(), proxiedClasses,
+            new java.lang.reflect.InvocationHandler()
             {
               @Override
-              public Object invoke( Object proxy, Method method, Object[] args )
-                  throws Throwable
+              public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
               {
-                pushInvokable( Invokable.<Object, Boolean> invokableMethod(
-                    method, args ) );
+                pushInvokable( Invokable.<Object, Boolean> invokableMethod( method, args ) );
                 return true;
               }
             } );
       else
-        return (T) createEnhancer( new PredicateProxyArgument(), mockedType,
-            types ).create();
+        return (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
     }
 
     private Class<?>[] prepend( Class<?> first, Class<?>... rest )
@@ -129,8 +125,8 @@ public class ProxyUtils
     }
   }
 
-  private static Enhancer createEnhancer( MethodInterceptor interceptor,
-      Class<?> clazz, Class<?>... interfaces )
+  private static Enhancer createEnhancer( MethodInterceptor interceptor, Class<?> clazz,
+      Class<?>... interfaces )
   {
     Enhancer enhancer = new Enhancer();
     enhancer.setCallback( interceptor );
@@ -143,8 +139,7 @@ public class ProxyUtils
   private static class PredicateProxyArgument extends JavaCglibInvocInterceptor
   {
     @Override
-    public Object invoke( Object proxy, Method method, Object[] args )
-        throws Throwable
+    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
     {
       pushInvokable( Invokable.<Object, Boolean> invokableMethod( method, args ) );
       return null;

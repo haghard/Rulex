@@ -20,9 +20,10 @@ import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.Matcher;
 
-public interface ElementInjectionRequest extends Runnable {
+public interface ElementInjectionRequest extends Runnable
+{
 
-  void setBinder(Binder binder);
+  void setBinder( Binder binder );
 
   TypeLiteral<?> getLiteral();
 

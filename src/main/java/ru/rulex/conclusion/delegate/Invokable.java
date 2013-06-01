@@ -25,15 +25,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+
 /**
  *
  *
  */
-abstract class Invokable<T, E> {
+abstract class Invokable<T, E>
+{
 
   private final Member reflectionMember;
 
-  Invokable(Member reflectionMember) {
+  Invokable( Member reflectionMember )
+  {
     this.reflectionMember = reflectionMember;
   }
 
@@ -44,75 +47,94 @@ abstract class Invokable<T, E> {
    * @throws InvocationTargetException
    * @throws IllegalAccessException
    */
-  abstract Object invokeInternal(T receiver, Object... args)
-      throws InvocationTargetException, IllegalAccessException;
+  abstract Object invokeInternal( T receiver, Object... args ) throws InvocationTargetException,
+      IllegalAccessException;
 
-  @SuppressWarnings ( "unchecked")
-  public final E invoke(T receiver, Object... args)
-      throws InvocationTargetException, IllegalAccessException {
-    return (E) invokeInternal(receiver, Preconditions.checkNotNull(args));
+  @SuppressWarnings("unchecked")
+  public final E invoke( T receiver, Object... args ) throws InvocationTargetException,
+      IllegalAccessException
+  {
+    return (E) invokeInternal( receiver, Preconditions.checkNotNull( args ) );
   }
 
-  public static <T, E> Invokable<T, E> invokableMethod(Method method, Object... arguments) {
-    return new MethodInvokable<T, E>(method, arguments);
+  public static <T, E> Invokable<T, E> invokableMethod( Method method, Object... arguments )
+  {
+    return new MethodInvokable<T, E>( method, arguments );
   }
 
-  public static <T> ConclusionPredicate<T> invokablePredicate(Invokable<T, Boolean> invokable) {
-    return new InvokableConclusionPredicate<T>(invokable);
+  public static <T> ConclusionPredicate<T> invokablePredicate( Invokable<T, Boolean> invokable )
+  {
+    return new InvokableConclusionPredicate<T>( invokable );
   }
 
-  public static <T, E> Selector<T, E> invokableSelector(Invokable<T, E> invokable) {
-    return new InvokableSelector<T, E>(invokable);
+  public static <T, E> Selector<T, E> invokableSelector( Invokable<T, E> invokable )
+  {
+    return new InvokableSelector<T, E>( invokable );
   }
 
-  static class MethodInvokable<T, E> extends Invokable<T, E> {
+  static class MethodInvokable<T, E> extends Invokable<T, E>
+  {
     private final Method method;
     private final Object[] arguments;
-    
-    MethodInvokable(Method method, Object[] arguments) {
-      super(method);
+
+    MethodInvokable( Method method, Object[] arguments )
+    {
+      super( method );
       this.method = method;
-      this.arguments = Arrays.copyOf(arguments, arguments.length);
+      this.arguments = Arrays.copyOf( arguments, arguments.length );
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    E invokeInternal(T receiver, Object... args)
-        throws InvocationTargetException, IllegalAccessException {
-      return (E) method.invoke(receiver, arguments);
+    E invokeInternal( T receiver, Object... args ) throws InvocationTargetException,
+        IllegalAccessException
+    {
+      return (E) method.invoke( receiver, arguments );
     }
   }
 
-  static final class InvokableSelector<T, E> implements Selector<T, E> {
+  static final class InvokableSelector<T, E> implements Selector<T, E>
+  {
     private final Invokable<T, E> invokable;
 
-    InvokableSelector(Invokable<T, E> invokable) {
+    InvokableSelector( Invokable<T, E> invokable )
+    {
       this.invokable = invokable;
     }
 
     @Override
-    public E select(T value) {
-      try {
-        return invokable.invoke(value);
-      } catch (Exception ex) {
-        throw new RuntimeException("InvokableSelector invocation error");
+    public E select( T value )
+    {
+      try
+      {
+        return invokable.invoke( value );
+      }
+      catch (Exception ex)
+      {
+        throw new RuntimeException( "InvokableSelector invocation error" );
       }
     }
   }
 
-  static final class InvokableConclusionPredicate<T> implements ConclusionPredicate<T> {
+  static final class InvokableConclusionPredicate<T> implements ConclusionPredicate<T>
+  {
     private final Invokable<T, Boolean> invokable;
 
-    public InvokableConclusionPredicate(Invokable<T, Boolean> invokable) {
+    public InvokableConclusionPredicate( Invokable<T, Boolean> invokable )
+    {
       this.invokable = invokable;
     }
 
     @Override
-    public boolean apply(T value) {
-      try {
-        return invokable.invoke(value);
-      } catch (Exception ex) {
-        throw new RuntimeException("InvokableConclusionPredicate invocation error", ex);
+    public boolean apply( T value )
+    {
+      try
+      {
+        return invokable.invoke( value );
+      }
+      catch (Exception ex)
+      {
+        throw new RuntimeException( "InvokableConclusionPredicate invocation error", ex );
       }
     }
   }

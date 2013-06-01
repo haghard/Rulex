@@ -16,9 +16,10 @@
  */
 package ru.rulex.conclusion.guice;
 
-public interface BindingVisitor {
+public interface BindingVisitor
+{
 
-  void visitBinding(SinglePredicateInjectionRequest binding);
+  void visitBinding( SinglePredicateInjectionRequest binding );
 
-  void visitBinding(OrPredicatesInjectionRequest binding);
+  void visitBinding( OrPredicatesInjectionRequest binding );
 }

@@ -41,12 +41,14 @@ import static com.google.inject.name.Names.named;
 import static ru.rulex.conclusion.guice.GuiceGenericTypes.*;
 
 @SuppressWarnings("unchecked")
-public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
-    extends AbstractModule {
+public abstract class ConclusionPredicateModule<T extends Comparable<? super T>> extends
+    AbstractModule
+{
 
   protected abstract void bindPredicate();
 
-  protected void configure() {
+  protected void configure()
+  {
     bindPredicate();
   }
 
@@ -56,10 +58,10 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    * @param selector
    * @param <E>
    */
-  protected void equality(final String conditionName, final T value0,
-      final Selector<?, T> selector) {
-    bindSinglePredicateRequest(conditionName, value0, selector,
-        GuicefyEqualsConclusionPredicate.class);
+  protected void equality( final String conditionName, final T value0, final Selector<?, T> selector )
+  {
+    bindSinglePredicateRequest( conditionName, value0, selector,
+        GuicefyEqualsConclusionPredicate.class );
   }
 
   /**
@@ -68,10 +70,10 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    * @param selector
    * @param <E>
    */
-  protected void majority(final String conditionName, final T pvalue,
-      final Selector<?, T> selector) {
-    bindSinglePredicateRequest(conditionName, pvalue, selector,
-        GuicefyMoreConclusionPredicate.class);
+  protected void majority( final String conditionName, final T pvalue, final Selector<?, T> selector )
+  {
+    bindSinglePredicateRequest( conditionName, pvalue, selector,
+        GuicefyMoreConclusionPredicate.class );
   }
 
   /**
@@ -80,57 +82,64 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    * @param selector
    * @param <E>
    */
-  protected void minority(final String conditionName, final T pvalue,
-      final Selector<?, T> selector) {
-    bindSinglePredicateRequest(conditionName, pvalue, selector,
-        GuicefyLessConclusionPredicate.class);
+  protected void minority( final String conditionName, final T pvalue, final Selector<?, T> selector )
+  {
+    bindSinglePredicateRequest( conditionName, pvalue, selector,
+        GuicefyLessConclusionPredicate.class );
   }
 
   /**
    * @param conditionName
    * @param modules
    */
-  protected void disjunction(String conditionName, Module... modules) {
-    bindDisjunctionRequest(conditionName, modules);
+  protected void disjunction( String conditionName, Module... modules )
+  {
+    bindDisjunctionRequest( conditionName, modules );
   }
 
   /**
    * @param conditionName
    * @param modules
    */
-  private void bindDisjunctionRequest(String conditionName, Module... modules) {
-    final ImmutableList.Builder<ElementInjectionRequest> disjunctionRequestRequests = 
-        ImmutableList.builder();
-    final ImmutableList.Builder<ConclusionPredicate> disjunctionPredicates = 
-        ImmutableList.builder();
-    List<Element> elements = Elements.getElements(modules);
-    for (Element element : elements) {
-      element.acceptVisitor(new DefaultElementVisitor<Void>() {
-        public <T> Void visit(Binding<T> binding) {
+  private void bindDisjunctionRequest( String conditionName, Module... modules )
+  {
+    final ImmutableList.Builder<ElementInjectionRequest> disjunctionRequestRequests = ImmutableList
+        .builder();
+    final ImmutableList.Builder<ConclusionPredicate> disjunctionPredicates = ImmutableList
+        .builder();
+    List<Element> elements = Elements.getElements( modules );
+    for (Element element : elements)
+    {
+      element.acceptVisitor( new DefaultElementVisitor<Void>()
+      {
+        public <T> Void visit( Binding<T> binding )
+        {
           Key<?> bindingKey = binding.getKey();
-          if (binding instanceof InstanceBinding
-              && bindingKey.getAnnotation() != null
-              && (Named.class.isAssignableFrom(bindingKey.getAnnotationType()))) {
+          if (binding instanceof InstanceBinding && bindingKey.getAnnotation() != null
+              && (Named.class.isAssignableFrom( bindingKey.getAnnotationType() )))
+          {
             InstanceBinding<?> requestBinding = (InstanceBinding<?>) binding;
-            if (requestBinding.getInstance() instanceof SinglePredicateInjectionRequest) {
-              disjunctionRequestRequests.add(((ElementInjectionRequest) requestBinding
-                  .getInstance()));
+            if (requestBinding.getInstance() instanceof SinglePredicateInjectionRequest)
+            {
+              disjunctionRequestRequests.add( ((ElementInjectionRequest) requestBinding
+                  .getInstance()) );
             }
           }
-          return super.visit(binding);
+          return super.visit( binding );
         }
-      });
+      } );
     }
 
-    for (ElementInjectionRequest binding : disjunctionRequestRequests.build()) {
-      disjunctionPredicates.add(bindEarlierInjectedPredicates(binding));
+    for (ElementInjectionRequest binding : disjunctionRequestRequests.build())
+    {
+      disjunctionPredicates.add( bindEarlierInjectedPredicates( binding ) );
     }
 
-    ImmutableList<ConclusionPredicate> disjunctionPredicatesList = disjunctionPredicates
-        .build();
-    if (disjunctionPredicatesList.size() > 0) {
-      bindDisjunction(conditionName, GuicefyAnyOffConclusionPredicate.class,
-          disjunctionPredicatesList);
+    ImmutableList<ConclusionPredicate> disjunctionPredicatesList = disjunctionPredicates.build();
+    if (disjunctionPredicatesList.size() > 0)
+    {
+      bindDisjunction( conditionName, GuicefyAnyOffConclusionPredicate.class,
+          disjunctionPredicatesList );
     }
   }
 
@@ -139,54 +148,64 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    * @return ConclusionPredicate<?>
    */
   private ConclusionPredicate<?> bindEarlierInjectedPredicates(
-      final ElementInjectionRequest binding) {
-    Injector internalInjector = Guice.createInjector(new AbstractModule() {
+      final ElementInjectionRequest binding )
+  {
+    Injector internalInjector = Guice.createInjector( new AbstractModule()
+    {
       @Override
-      protected void configure() {
-        binding.setBinder(binder());
+      protected void configure()
+      {
+        binding.setBinder( binder() );
         binding.run();
       }
-    });
-    return internalInjector.getInstance(Key.get(newGenericType(
-        ConclusionPredicate.class, binding.getLiteral())));
+    } );
+    return internalInjector.getInstance( Key.get( newGenericType( ConclusionPredicate.class,
+        binding.getLiteral() ) ) );
   }
 
-  private <E extends ConclusionPredicate<T>> void bindDisjunction(
-      final String conditionName, final Class<E> predicateClass0,
-      final ImmutableList<ConclusionPredicate> disjunctionPredicatesList) {
-    bind(ElementInjectionRequest.class).annotatedWith(named(conditionName)).toInstance(
-        new OrPredicatesInjectionRequest() {
+  private <E extends ConclusionPredicate<T>> void bindDisjunction( final String conditionName,
+      final Class<E> predicateClass0,
+      final ImmutableList<ConclusionPredicate> disjunctionPredicatesList )
+  {
+    bind( ElementInjectionRequest.class ).annotatedWith( named( conditionName ) ).toInstance(
+        new OrPredicatesInjectionRequest()
+        {
           private Binder binder;
           private final Class<E> predicateClass = predicateClass0;
 
           @Override
-          public void setBinder(Binder binder) {
+          public void setBinder( Binder binder )
+          {
             this.binder = binder;
           }
 
           @Override
-          public TypeLiteral<?> getLiteral() {
-            return TypeLiteral.get(Void.class);
+          public TypeLiteral<?> getLiteral()
+          {
+            return TypeLiteral.get( Void.class );
           }
 
           @Override
-          public Matcher<Object> matcher() {
+          public Matcher<Object> matcher()
+          {
             return Matchers.any();
           }
 
           @Override
-          public String description() {
+          public String description()
+          {
             return conditionName;
           }
 
           @Override
-          public void run() {
-            binder.bind(immutableListOf(ConclusionPredicate.class)).toInstance(
-                disjunctionPredicatesList);
-            binder.bind(AbstractPhrasesAnalyzerModule.OR_KEY).to(
-                GuicefyAnyOffConclusionPredicate.class);
+          public void run()
+          {
+            binder.bind( immutableListOf( ConclusionPredicate.class ) ).toInstance(
+                disjunctionPredicatesList );
+            binder.bind( AbstractPhrasesAnalyzerModule.OR_KEY ).to(
+                GuicefyAnyOffConclusionPredicate.class );
           }
-        });
+        } );
   }
 
   /**
@@ -197,110 +216,123 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    * @param <E>
    */
   private <U, E extends ConclusionPredicate<T>> void bindSinglePredicateRequest(
-      final String conditionName, final T value0,
-      final Selector<U, T> selector0, final Class<E> predicateClass0) {
-    bind(ElementInjectionRequest.class).annotatedWith(named(conditionName)).toInstance(
-        new SinglePredicateInjectionRequest() {
+      final String conditionName, final T value0, final Selector<U, T> selector0,
+      final Class<E> predicateClass0 )
+  {
+    bind( ElementInjectionRequest.class ).annotatedWith( named( conditionName ) ).toInstance(
+        new SinglePredicateInjectionRequest()
+        {
           private Binder binder;
           private final T value = value0;
           private final Class<E> predicateClass = predicateClass0;
           private final Selector<U, T> selector = selector0;
-          private final TypeLiteral<T> literal = (TypeLiteral<T>) TypeLiteral.get(value0.getClass());
+          private final TypeLiteral<T> literal = (TypeLiteral<T>) TypeLiteral.get( value0
+              .getClass() );
 
           @Override
-          public void setBinder(Binder binder) {
+          public void setBinder( Binder binder )
+          {
             this.binder = binder;
           }
 
           @Override
-          public TypeLiteral<?> getLiteral() {
+          public TypeLiteral<?> getLiteral()
+          {
             return literal;
           }
 
           @Override
-          public void run() {
-            binder.bind(literal).toInstance(value);
-            binder.bind(newGenericType(ConclusionPredicate.class, literal)).to(
-                newEnclosedGenericType(predicateClass, literal));
-            binder.bindListener(matcher(),
-                new GuicefyDefaultAtomicPredicateTypeListener<U, T>(selector));
+          public void run()
+          {
+            binder.bind( literal ).toInstance( value );
+            binder.bind( newGenericType( ConclusionPredicate.class, literal ) ).to(
+                newEnclosedGenericType( predicateClass, literal ) );
+            binder.bindListener( matcher(), new GuicefyDefaultAtomicPredicateTypeListener<U, T>(
+                selector ) );
           }
 
           @Override
-          public Matcher<Object> matcher() {
-            return Matchers
-                .only(newEnclosedGenericType(predicateClass, literal));
+          public Matcher<Object> matcher()
+          {
+            return Matchers.only( newEnclosedGenericType( predicateClass, literal ) );
           }
 
           @Override
-          public String description() {
+          public String description()
+          {
             return conditionName;
           }
-        });
+        } );
   }
 
-  private static abstract class AbstractGuicefyAtomicPredicateTypeListener
-      implements TypeListener {
+  private static abstract class AbstractGuicefyAtomicPredicateTypeListener implements TypeListener
+  {
     private static final String TO_STRING_METHOD = "toString";
 
     private static final String INTERCEPTOR_METHOD = "apply";
 
-    protected <T> Method findToStringMethod(Class<T> klass) {
-      for (Method method : klass.getDeclaredMethods()) {
-        Matcher<Method> predicate = Matchers.returns(Matchers
-            .only(String.class));
-        if (predicate.matches(method)
-            && method.getName().equals(TO_STRING_METHOD)) {
+    protected <T> Method findToStringMethod( Class<T> klass )
+    {
+      for (Method method : klass.getDeclaredMethods())
+      {
+        Matcher<Method> predicate = Matchers.returns( Matchers.only( String.class ) );
+        if (predicate.matches( method ) && method.getName().equals( TO_STRING_METHOD ))
+        {
           return method;
         }
       }
       return null;
     }
 
-    protected boolean isApplyMethod(Method method) {
-      return method.getName().equals(INTERCEPTOR_METHOD)
+    protected boolean isApplyMethod( Method method )
+    {
+      return method.getName().equals( INTERCEPTOR_METHOD )
           && (method.getParameterTypes()[0] == Object.class);
     }
   }
 
-  private static final class GuicefyDefaultAtomicPredicateTypeListener<U, T>
-      extends AbstractGuicefyAtomicPredicateTypeListener {
+  private static final class GuicefyDefaultAtomicPredicateTypeListener<U, T> extends
+      AbstractGuicefyAtomicPredicateTypeListener
+  {
 
     private final Selector<U, T> selector;
 
-    private GuicefyDefaultAtomicPredicateTypeListener(Selector<U, T> selector) {
+    private GuicefyDefaultAtomicPredicateTypeListener( Selector<U, T> selector )
+    {
       this.selector = selector;
     }
 
     @Override
-    public <U> void hear(TypeLiteral<U> literal, TypeEncounter<U> encounter) {
+    public <U> void hear( TypeLiteral<U> literal, TypeEncounter<U> encounter )
+    {
       final Class<? super U> klass = literal.getRawType();
-      Method toStringMethod = findToStringMethod(klass);
-      Preconditions.checkNotNull(toStringMethod,
-          "Can't find toString method in " + klass.getSimpleName());
+      Method toStringMethod = findToStringMethod( klass );
+      Preconditions.checkNotNull( toStringMethod,
+          "Can't find toString method in " + klass.getSimpleName() );
 
-      for (Method method : klass.getDeclaredMethods()) {
-        if (isApplyMethod(method)) {
+      for (Method method : klass.getDeclaredMethods())
+      {
+        if (isApplyMethod( method ))
+        {
           PredicateApplyMethodInterceptor<U, T> interceptor = new PredicateApplyMethodInterceptor<U, T>(
-              toStringMethod, (Selector<U, T>) selector);
-          encounter.bindInterceptor(Matchers.only(method), interceptor);
+              toStringMethod, (Selector<U, T>) selector );
+          encounter.bindInterceptor( Matchers.only( method ), interceptor );
           return;
         }
       }
     }
   }
 
-  private static final class PredicateApplyMethodInterceptor<U, T> implements
-      MethodInterceptor {
+  private static final class PredicateApplyMethodInterceptor<U, T> implements MethodInterceptor
+  {
     private final Method toStringMethod;
 
     private final Selector<U, T> selector;
 
-    private static final Logger logger = Logger
-        .getLogger(PredicateApplyMethodInterceptor.class);
+    private static final Logger logger = Logger.getLogger( PredicateApplyMethodInterceptor.class );
 
-    private PredicateApplyMethodInterceptor(Method toStringMethod,
-        Selector<U, T> selector) {
+    private PredicateApplyMethodInterceptor( Method toStringMethod, Selector<U, T> selector )
+    {
       this.toStringMethod = toStringMethod;
       this.selector = selector;
     }
@@ -310,11 +342,13 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
      * apply(Object value) method
      */
     @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
+    public Object invoke( MethodInvocation invocation ) throws Throwable
+    {
       U argument = (U) invocation.getArguments()[0];
-      Comparable<?> value = (Comparable<?>) selector.select(argument);
-      logger.debug(String.format("%s %s",
-          toStringMethod.invoke(invocation.getThis(), new Object[] {}), value));
+      Comparable<?> value = (Comparable<?>) selector.select( argument );
+      logger.debug( String.format( "%s %s",
+          toStringMethod.invoke( invocation.getThis(), new Object[]
+          {} ), value ) );
       invocation.getArguments()[0] = value;
       return invocation.proceed();
     }

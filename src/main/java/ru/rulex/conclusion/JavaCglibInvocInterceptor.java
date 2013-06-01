@@ -18,18 +18,21 @@ package ru.rulex.conclusion;
 import java.lang.reflect.Method;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+
 /**
- *
- * Base on {@code InvocationInterceptor} from lambdaJ
- * An interceptor that manages invocations on both a native Java proxy and a cglib one.
- *
+ * 
+ * Base on {@code InvocationInterceptor} from lambdaJ An interceptor that
+ * manages invocations on both a native Java proxy and a cglib one.
+ * 
  */
 public abstract class JavaCglibInvocInterceptor implements MethodInterceptor,
-    java.lang.reflect.InvocationHandler {
+    java.lang.reflect.InvocationHandler
+{
 
-  public final Object intercept(Object proxy, Method method, Object[] args,
-      MethodProxy methodProxy) throws Throwable {
-    return invoke(proxy, method, args);
+  public final Object intercept( Object proxy, Method method, Object[] args, MethodProxy methodProxy )
+      throws Throwable
+  {
+    return invoke( proxy, method, args );
   }
 
 }

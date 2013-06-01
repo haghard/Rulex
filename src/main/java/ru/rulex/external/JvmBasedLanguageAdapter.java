@@ -16,25 +16,26 @@
  */
 package ru.rulex.external;
 
-public interface JvmBasedLanguageAdapter {
+public interface JvmBasedLanguageAdapter
+{
 
-    /**
-     * Invoke the function and return the results.
-     * 
-     * @param function
-     * @param args
-     * @return Object results from function execution
-     */
-    Object call(Object function, Object[] args);
+  /**
+   * Invoke the function and return the results.
+   * 
+   * @param function
+   * @param args
+   * @return Object results from function execution
+   */
+  Object call( Object function, Object[] args );
 
-    /**
-     * The Class of the Function that this adaptor serves.
-     * <p>
-     * Example: groovy.lang.Closure
-     * <p>
-     * This should not return classes of java.* packages.
-     * 
-     * @return Class of classes that this adaptor should be invoked for.
-     */
-    public Class<?> getFunctionClass();
+  /**
+   * The Class of the Function that this adaptor serves.
+   * <p>
+   * Example: groovy.lang.Closure
+   * <p>
+   * This should not return classes of java.* packages.
+   * 
+   * @return Class of classes that this adaptor should be invoked for.
+   */
+  public Class<?> getFunctionClass();
 }

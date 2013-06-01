@@ -16,5 +16,6 @@
  */
 package ru.rulex.conclusion.guice;
 
-public interface OrPredicatesInjectionRequest extends ElementInjectionRequest {
+public interface OrPredicatesInjectionRequest extends ElementInjectionRequest
+{
 }

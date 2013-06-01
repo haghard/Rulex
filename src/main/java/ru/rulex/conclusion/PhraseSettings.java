@@ -17,84 +17,99 @@ package ru.rulex.conclusion;
 
 import ru.rulex.conclusion.execution.ParallelStrategy;
 
-public class PhraseSettings<E, T> {
-  
+public class PhraseSettings<E, T>
+{
+
   private final Class<T> targetClass;
   private final String accessorName;
   private final ParallelStrategy<Object, CodedException> pStrategy;
   private final E value;
   private final ConclusionPredicate<E> predicate;
-  
-  
-  private PhraseSettings(PhraseSettingsBuilder<E, T> builder) {
-    this.targetClass = builder.targetClass; 
-    this.accessorName = builder.accessorName; 
-    this.value = builder.value; 
-    this.pStrategy = builder.pStrategy; 
+
+  private PhraseSettings( PhraseSettingsBuilder<E, T> builder )
+  {
+    this.targetClass = builder.targetClass;
+    this.accessorName = builder.accessorName;
+    this.value = builder.value;
+    this.pStrategy = builder.pStrategy;
     this.predicate = builder.predicate;
   }
-  
-  public static <E, T> PhraseSettingsBuilder<E, T> newBuilder() {
-    return new PhraseSettingsBuilder<E,T>();  
-  } 
-  
-  static final class PhraseSettingsBuilder<E, T> {
+
+  public static <E, T> PhraseSettingsBuilder<E, T> newBuilder()
+  {
+    return new PhraseSettingsBuilder<E, T>();
+  }
+
+  static final class PhraseSettingsBuilder<E, T>
+  {
     private Class<T> targetClass;
     private String accessorName;
     private ParallelStrategy<Object, CodedException> pStrategy;
     private E value;
     private ConclusionPredicate<E> predicate;
-    
-    public PhraseSettingsBuilder<E, T> value(E value) {
+
+    public PhraseSettingsBuilder<E, T> value( E value )
+    {
       this.value = value;
       return this;
     }
-    
-    public PhraseSettingsBuilder<E, T> predicate(ConclusionPredicate<E> predicate) {
+
+    public PhraseSettingsBuilder<E, T> predicate( ConclusionPredicate<E> predicate )
+    {
       this.predicate = predicate;
       return this;
     }
-    
-    public PhraseSettingsBuilder<E, T> targetClass(Class<T> targetClass) {
+
+    public PhraseSettingsBuilder<E, T> targetClass( Class<T> targetClass )
+    {
       this.targetClass = targetClass;
       return this;
     }
-    
-    public PhraseSettingsBuilder<E, T> accessorName(String accessorName) {
+
+    public PhraseSettingsBuilder<E, T> accessorName( String accessorName )
+    {
       this.accessorName = accessorName;
       return this;
     }
-    
+
     @SuppressWarnings("unchecked")
-    public <U, X extends CodedException> PhraseSettingsBuilder<E, T> pStrategy(ParallelStrategy<U, X> pStrategy) {
+    public <U, X extends CodedException> PhraseSettingsBuilder<E, T> pStrategy(
+        ParallelStrategy<U, X> pStrategy )
+    {
       this.pStrategy = (ParallelStrategy<Object, CodedException>) pStrategy;
       return this;
     }
-    
-    public PhraseSettings<E,T> build() {
-      return new PhraseSettings<E,T>(this);
+
+    public PhraseSettings<E, T> build()
+    {
+      return new PhraseSettings<E, T>( this );
     }
-    
+
   }
-  
-  public Class<T> getTargetClass() {
+
+  public Class<T> getTargetClass()
+  {
     return targetClass;
   }
 
-  public String getAccessorName() {
+  public String getAccessorName()
+  {
     return accessorName;
   }
 
   @SuppressWarnings("unchecked")
-  public <U, X extends CodedException> ParallelStrategy<U, X> getParallelStrategy() {
+  public <U, X extends CodedException> ParallelStrategy<U, X> getParallelStrategy()
+  {
     return (ParallelStrategy<U, X>) pStrategy;
   }
-  
-  public E getValue() {
+
+  public E getValue()
+  {
     return value;
   }
-  
-  public ConclusionPredicate<E> getPredicate() {
+
+  public ConclusionPredicate<E> getPredicate()
+  {
     return predicate;
   }
 }

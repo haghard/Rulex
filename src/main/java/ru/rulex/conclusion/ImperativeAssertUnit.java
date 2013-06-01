@@ -16,12 +16,11 @@
  */
 package ru.rulex.conclusion;
 
-public interface ImperativeAssertUnit<T> {
+public interface ImperativeAssertUnit<T>
+{
 
-  public void setIterable(Iterable<T> collection);
+  public void setIterable( Iterable<T> collection );
 
   public boolean satisfies();
 
 }
-
-

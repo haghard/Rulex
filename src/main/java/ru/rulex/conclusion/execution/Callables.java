@@ -23,12 +23,16 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import com.google.common.util.concurrent.CheckedFuture;
 
-public final class Callables {
+public final class Callables
+{
 
-  public static <A> Callable<A> unit(final A argument) {
-    return new Callable<A>(){
+  public static <A> Callable<A> unit( final A argument )
+  {
+    return new Callable<A>()
+    {
       @Override
-      public A call() throws Exception {
+      public A call() throws Exception
+      {
         return argument;
       }
     };
@@ -40,58 +44,79 @@ public final class Callables {
    * @return A
    * @throws Exception
    */
-  public static <A> A call(final Callable<A> unit) throws Exception {
+  public static <A> A call( final Callable<A> unit ) throws Exception
+  {
     return unit.call();
   }
 
   /**
    * Create new Callable which wrap function apply call with unit
    * 
-   * @param Callable<A> - unit A
-   * @param ConclusionFunction<A, Callable<B>> - function
+   * @param Callable
+   *          <A> - unit A
+   * @param ConclusionFunction
+   *          <A, Callable<B>> - function
    * @return Callable<B> - unit B
    */
-  public static <A, B> Callable<B> bind(final Callable<A> unit, final ConclusionFunction<A, Callable<B>> function) {
-    return new Callable<B>() {
-      public B call() throws Exception {
-        return function.apply(unit.call()).call();
+  public static <A, B> Callable<B> bind( final Callable<A> unit,
+      final ConclusionFunction<A, Callable<B>> function )
+  {
+    return new Callable<B>()
+    {
+      public B call() throws Exception
+      {
+        return function.apply( unit.call() ).call();
       }
     };
   }
 
   /**
    * 
-   * @param ConclusionFunction<A, B> function
+   * @param ConclusionFunction
+   *          <A, B> function
    * @return ConclusionFunction<Callable<A>, Callable<B>> function
    */
-  public static <A, B> ConclusionFunction<Callable<A>, Callable<B>> fmap(final ConclusionFunction<A, B> function) {
-    return new ConclusionFunction<Callable<A>, Callable<B>>() {
-      public Callable<B> apply(final Callable<A> a) {
-        return bind(a, new ConclusionFunction<A, Callable<B>>() {
-          public Callable<B> apply(final A argument) {
-            return new Callable<B>() {
-              public B call() {
-                return function.apply(argument);
+  public static <A, B> ConclusionFunction<Callable<A>, Callable<B>> fmap(
+      final ConclusionFunction<A, B> function )
+  {
+    return new ConclusionFunction<Callable<A>, Callable<B>>()
+    {
+      public Callable<B> apply( final Callable<A> a )
+      {
+        return bind( a, new ConclusionFunction<A, Callable<B>>()
+        {
+          public Callable<B> apply( final A argument )
+          {
+            return new Callable<B>()
+            {
+              public B call()
+              {
+                return function.apply( argument );
               }
             };
           }
-        });
+        } );
       }
     };
   }
 
   /**
    * 
-   * Wrap values of type Future<T> inside of a Callable<T> 
-   * so that we can manipulate their return values while they are running
+   * Wrap values of type Future<T> inside of a Callable<T> so that we can
+   * manipulate their return values while they are running
    * 
    * Implicitly way to do similar {@code future.checkedGet() }
-   * @param  ListenableFuture<T>
+   * 
+   * @param ListenableFuture
+   *          <T>
    * @return Callable<T>
    */
-  public static <T> Callable<T> obtain(final CheckedFuture<T, PhraseExecutionException> future) {
-    return new Callable<T>() {
-      public T call() throws PhraseExecutionException {
+  public static <T> Callable<T> obtain( final CheckedFuture<T, PhraseExecutionException> future )
+  {
+    return new Callable<T>()
+    {
+      public T call() throws PhraseExecutionException
+      {
         return future.checkedGet();
       }
     };
@@ -104,11 +129,14 @@ public final class Callables {
    * @param executor
    * @return Callable<T>
    */
-  public static <T> Callable<T> obtain(final CheckedFuture<T, PhraseExecutionException> future, final Runnable listener,
-      final Executor executor) {
-    return new Callable<T>() {
-      public T call() throws PhraseExecutionException {
-        future.addListener(listener, executor);
+  public static <T> Callable<T> obtain( final CheckedFuture<T, PhraseExecutionException> future,
+      final Runnable listener, final Executor executor )
+  {
+    return new Callable<T>()
+    {
+      public T call() throws PhraseExecutionException
+      {
+        future.addListener( listener, executor );
         return future.checkedGet();
       }
     };

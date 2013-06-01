@@ -23,7 +23,8 @@ import java.util.Iterator;
 /**
  * @param <T>
  */
-public interface IteratorElement<T> {
+public interface IteratorElement<T>
+{
   /**
    * @return
    */
@@ -34,6 +35,6 @@ public interface IteratorElement<T> {
    * @param source
    * @param except
    */
-  void accept(AssertionUnit<T> conclusionPredicate, ImmutableList<T> source, ImmutableSet<T> except);
+  void accept( AssertionUnit<T> conclusionPredicate, ImmutableList<T> source, ImmutableSet<T> except );
 
 }

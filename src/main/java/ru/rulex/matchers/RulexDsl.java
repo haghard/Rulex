@@ -50,8 +50,7 @@ public class RulexDsl
     };
   }
 
-  public static <T> RulexMatcher<T> and( final RulexMatcher<T> matcher1,
-      final Matcher<T> matcher2 )
+  public static <T> RulexMatcher<T> and( final RulexMatcher<T> matcher1, final Matcher<T> matcher2 )
   {
     return new RulexMatcher<T>( matcher1.getAdapter() )
     {
@@ -73,8 +72,7 @@ public class RulexDsl
     };
   }
 
-  public static <T> RulexMatcher<T> or( final RulexMatcher<T> matcher1,
-      final Matcher<T> matcher2 )
+  public static <T> RulexMatcher<T> or( final RulexMatcher<T> matcher1, final Matcher<T> matcher2 )
   {
     return new RulexMatcher<T>( matcher1.getAdapter() )
     {

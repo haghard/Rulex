@@ -15,9 +15,10 @@
  */
 package ru.rulex.conclusion;
 
-public interface IterablePhrases<T> {
-  
-  void setIterable(Iterable<T> collection);
+public interface IterablePhrases<T>
+{
+
+  void setIterable( Iterable<T> collection );
 
   Boolean evaluate();
 }

@@ -41,17 +41,18 @@ import static com.google.inject.spi.Elements.getElements;
 import static com.google.inject.Guice.*;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 
-public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
+public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
+{
 
   protected final ImmutableList<Element> elements;
 
   protected final AbstractPhrase<?> phrase;
 
-  public static final Key<ConclusionPredicate> OR_KEY = Key.get(
-      ConclusionPredicate.class, named("disjunction"));
+  public static final Key<ConclusionPredicate> OR_KEY = Key.get( ConclusionPredicate.class,
+      named( "disjunction" ) );
 
-  protected AbstractPhrasesAnalyzerModule(ImmutableList<Element> elements,
-      AbstractPhrase<?> phrase) {
+  protected AbstractPhrasesAnalyzerModule( ImmutableList<Element> elements, AbstractPhrase<?> phrase )
+  {
     this.elements = elements;
     this.phrase = phrase;
   }
@@ -65,44 +66,51 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * adding it in {@code AbstractPhrase}
    * 
    */
-  public static final BindingVisitorAdapter<BindingVisitor> PREDICATE_INJECTION_INTERCEPTOR 
-          = new BindingVisitorAdapter<BindingVisitor>() {
+  public static final BindingVisitorAdapter<BindingVisitor> PREDICATE_INJECTION_INTERCEPTOR = new BindingVisitorAdapter<BindingVisitor>()
+  {
     @Override
-    public BindingVisitor asVisitor(final AbstractPhrase<?> phrase) {
-      return new BindingVisitor() {
+    public BindingVisitor asVisitor( final AbstractPhrase<?> phrase )
+    {
+      return new BindingVisitor()
+      {
 
         @Override
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        public void visitBinding(final SinglePredicateInjectionRequest binding) {
-          Injector internalInjector = createInjector(new AbstractModule() {
+        @SuppressWarnings(
+        { "unchecked", "rawtypes" })
+        public void visitBinding( final SinglePredicateInjectionRequest binding )
+        {
+          Injector internalInjector = createInjector( new AbstractModule()
+          {
             @Override
-            public void configure() {
-              binding.setBinder(binder());
+            public void configure()
+            {
+              binding.setBinder( binder() );
               binding.run();
             }
-          });
-          ConclusionPredicate<?> conclusionPredicate = internalInjector
-              .getInstance(Key.get(GuiceGenericTypes.newGenericType(
-                  ConclusionPredicate.class, binding.getLiteral())));
+          } );
+          ConclusionPredicate<?> conclusionPredicate = internalInjector.getInstance( Key
+              .get( GuiceGenericTypes.newGenericType( ConclusionPredicate.class,
+                  binding.getLiteral() ) ) );
 
-          phrase.addUnit(new SimpleAssertionUnit(conclusionPredicate, binding
-              .description()));
+          phrase.addUnit( new SimpleAssertionUnit( conclusionPredicate, binding.description() ) );
         }
 
         @Override
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        public void visitBinding(final OrPredicatesInjectionRequest binding) {
-          Injector internalOrInjector = createInjector(new AbstractModule() {
+        @SuppressWarnings(
+        { "unchecked", "rawtypes" })
+        public void visitBinding( final OrPredicatesInjectionRequest binding )
+        {
+          Injector internalOrInjector = createInjector( new AbstractModule()
+          {
             @Override
-            public void configure() {
-              binding.setBinder(binder());
+            public void configure()
+            {
+              binding.setBinder( binder() );
               binding.run();
             }
-          });
-          ConclusionPredicate<?> conclusionPredicate = internalOrInjector
-              .getInstance(OR_KEY);
-          phrase.addUnit(new SimpleAssertionUnit(conclusionPredicate, binding
-              .description()));
+          } );
+          ConclusionPredicate<?> conclusionPredicate = internalOrInjector.getInstance( OR_KEY );
+          phrase.addUnit( new SimpleAssertionUnit( conclusionPredicate, binding.description() ) );
         }
       };
     }
@@ -119,9 +127,10 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    *          {@code Module...}
    * @return {@code Module}
    */
-  public static Module $expression(Module... modules) {
-    return new InternalDslPhrasesBuilderModule(
-        Phrases.ALL_TRUE.withNarrowedType(), getElements(modules));
+  public static Module $expression( Module... modules )
+  {
+    return new InternalDslPhrasesBuilderModule( Phrases.ALL_TRUE.withNarrowedType(),
+        getElements( modules ) );
   }
 
   /**
@@ -129,9 +138,10 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * @param modules
    * @return subclass {@code AbstractPhrasesAnalyzerModule}
    */
-  public static Module $expression(Phrases phrase, Module... modules) {
-    return new InternalDslPhrasesBuilderModule(phrase.withNarrowedType(),
-        Elements.getElements(modules));
+  public static Module $expression( Phrases phrase, Module... modules )
+  {
+    return new InternalDslPhrasesBuilderModule( phrase.withNarrowedType(),
+        Elements.getElements( modules ) );
   }
 
   /**
@@ -143,11 +153,14 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * @return ConclusionPredicateModule<T>
    */
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $more(
-    final T pvalue, final Selector<E, T> selector, final String conditionName) {
-    return new ConclusionPredicateModule<T>() {
+      final T pvalue, final Selector<E, T> selector, final String conditionName )
+  {
+    return new ConclusionPredicateModule<T>()
+    {
       @Override
-      protected void bindPredicate() {
-        majority(conditionName, pvalue, selector);
+      protected void bindPredicate()
+      {
+        majority( conditionName, pvalue, selector );
       }
     };
   }
@@ -161,13 +174,15 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * @return ConclusionPredicateModule<T>
    */
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $more(
-    final T pvalue, final Object selector, final String conditionName) {
-    final Selector<E, T> selector0 = FluentConclusionPredicate
-        .toJavaSelector(selector);
-    return new ConclusionPredicateModule<T>() {
+      final T pvalue, final Object selector, final String conditionName )
+  {
+    final Selector<E, T> selector0 = FluentConclusionPredicate.toJavaSelector( selector );
+    return new ConclusionPredicateModule<T>()
+    {
       @Override
-      protected void bindPredicate() {
-        majority(conditionName, pvalue, selector0);
+      protected void bindPredicate()
+      {
+        majority( conditionName, pvalue, selector0 );
       }
     };
   }
@@ -180,11 +195,14 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * @return
    */
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $more(
-    final T pvalue, final T argument, final String conditionName) {
-    return new ConclusionPredicateModule<T>() {
+      final T pvalue, final T argument, final String conditionName )
+  {
+    return new ConclusionPredicateModule<T>()
+    {
       @Override
-      protected void bindPredicate() {
-        majority(conditionName, pvalue, toSelector(argument));
+      protected void bindPredicate()
+      {
+        majority( conditionName, pvalue, toSelector( argument ) );
       }
     };
   }
@@ -198,24 +216,31 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * @return ConclusionPredicateModule<T>
    */
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $less(
-    final T pvalue, final Selector<E, T> selector, final String conditionName) {
-    return new ConclusionPredicateModule<T>() {
+      final T pvalue, final Selector<E, T> selector, final String conditionName )
+  {
+    return new ConclusionPredicateModule<T>()
+    {
       @Override
-      protected void bindPredicate() {
-        minority(conditionName, pvalue, selector);
+      protected void bindPredicate()
+      {
+        minority( conditionName, pvalue, selector );
       }
     };
   }
 
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $less(
-      final T pvalue, final T argument, final String conditionName) {
-    return new ConclusionPredicateModule<T>() {
+      final T pvalue, final T argument, final String conditionName )
+  {
+    return new ConclusionPredicateModule<T>()
+    {
       @Override
-      protected void bindPredicate() {
-        minority(conditionName, pvalue, toSelector(argument));
+      protected void bindPredicate()
+      {
+        minority( conditionName, pvalue, toSelector( argument ) );
       }
     };
   }
+
   /**
    * method for use with external language
    * 
@@ -225,13 +250,15 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * @return
    */
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $less(
-    final T pvalue, final Object selector, final String conditionName) {
-    final Selector<E, T> selector0 = FluentConclusionPredicate
-        .toJavaSelector(selector);
-    return new ConclusionPredicateModule<T>() {
+      final T pvalue, final Object selector, final String conditionName )
+  {
+    final Selector<E, T> selector0 = FluentConclusionPredicate.toJavaSelector( selector );
+    return new ConclusionPredicateModule<T>()
+    {
       @Override
-      protected void bindPredicate() {
-        minority(conditionName, pvalue, selector0);
+      protected void bindPredicate()
+      {
+        minority( conditionName, pvalue, selector0 );
       }
     };
   }
@@ -245,24 +272,30 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * @return ConclusionPredicateModule<T>
    */
   public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq(
-    final T pvalue, final Selector<E, T> selector, final String conditionName) {
-    return new ConclusionPredicateModule<T>() {
+      final T pvalue, final Selector<E, T> selector, final String conditionName )
+  {
+    return new ConclusionPredicateModule<T>()
+    {
       @Override
-      protected void bindPredicate() {
-        equality(conditionName, pvalue, selector);
+      protected void bindPredicate()
+      {
+        equality( conditionName, pvalue, selector );
       }
     };
   }
 
   public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq(
-      final T pvalue, final T argument, final String conditionName) {
-      return new ConclusionPredicateModule<T>() {
-        @Override
-        protected void bindPredicate() {
-          equality(conditionName, pvalue, toSelector(argument));
-        }
-      };
-   }
+      final T pvalue, final T argument, final String conditionName )
+  {
+    return new ConclusionPredicateModule<T>()
+    {
+      @Override
+      protected void bindPredicate()
+      {
+        equality( conditionName, pvalue, toSelector( argument ) );
+      }
+    };
+  }
 
   /**
    * method for use with external language
@@ -273,13 +306,15 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * @return
    */
   public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq(
-    final T pvalue, final Object selector, final String conditionName) {
-    final Selector<E, T> selector0 = FluentConclusionPredicate
-        .<E, T> toJavaSelector(selector);
-    return new ConclusionPredicateModule<T>() {
+      final T pvalue, final Object selector, final String conditionName )
+  {
+    final Selector<E, T> selector0 = FluentConclusionPredicate.<E, T> toJavaSelector( selector );
+    return new ConclusionPredicateModule<T>()
+    {
       @Override
-      protected void bindPredicate() {
-        equality(conditionName, pvalue, selector0);
+      protected void bindPredicate()
+      {
+        equality( conditionName, pvalue, selector0 );
       }
     };
   }
@@ -289,88 +324,95 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule {
    * @return ConclusionPredicateModule<T>
    */
   public static <T extends Comparable<? super T>> ConclusionPredicateModule<T> $or(
-      final String conditionName, final Module... modules) {
-    return new ConclusionPredicateModule<T>() {
+      final String conditionName, final Module... modules )
+  {
+    return new ConclusionPredicateModule<T>()
+    {
       @Override
-      protected void bindPredicate() {
-        disjunction(conditionName, modules);
+      protected void bindPredicate()
+      {
+        disjunction( conditionName, modules );
       }
     };
   }
 
   /**
-   *
+   * 
    * TO DO : implement this
-   *
+   * 
    */
-  static final class InternalTokenPhrasesAnalyzerModule extends
-    AbstractPhrasesAnalyzerModule {
+  static final class InternalTokenPhrasesAnalyzerModule extends AbstractPhrasesAnalyzerModule
+  {
 
-    protected InternalTokenPhrasesAnalyzerModule(
-        ImmutableList<Element> elements, AbstractPhrase<?> phrase) {
-      super(elements, phrase);
+    protected InternalTokenPhrasesAnalyzerModule( ImmutableList<Element> elements,
+        AbstractPhrase<?> phrase )
+    {
+      super( elements, phrase );
       // TODO Auto-generated constructor stub
     }
 
     @Override
-    protected void interceptEarlierBinding() {
-      
+    protected void interceptEarlierBinding()
+    {
+
     }
 
     @Override
-    protected void configure() {
-      
+    protected void configure()
+    {
+
     }
-    
+
   }
-  
-  static final class InternalDslPhrasesBuilderModule extends
-    AbstractPhrasesAnalyzerModule {
+
+  static final class InternalDslPhrasesBuilderModule extends AbstractPhrasesAnalyzerModule
+  {
 
     private final AbstractEventOrientedPhrasesBuilder phraseBuilder;
 
-    InternalDslPhrasesBuilderModule(AbstractPhrase<?> phrase0,
-        List<Element> elements) {
-      super(ImmutableList.copyOf(checkNotNull(elements)), phrase0);
-      this.phraseBuilder = new GuiceEventOrientedPhrasesBuilder(phrase0);
+    InternalDslPhrasesBuilderModule( AbstractPhrase<?> phrase0, List<Element> elements )
+    {
+      super( ImmutableList.copyOf( checkNotNull( elements ) ), phrase0 );
+      this.phraseBuilder = new GuiceEventOrientedPhrasesBuilder( phrase0 );
     }
 
     @Override
-    protected void configure() {
+    protected void configure()
+    {
       // phrase builder class binding
-      bind(AbstractEventOrientedPhrasesBuilder.class).toInstance(phraseBuilder);
+      bind( AbstractEventOrientedPhrasesBuilder.class ).toInstance( phraseBuilder );
       interceptEarlierBinding();
     }
 
     @Override
-    protected void interceptEarlierBinding() {
-      final BindingVisitor visitor = PREDICATE_INJECTION_INTERCEPTOR
-          .asVisitor(phrase);
+    protected void interceptEarlierBinding()
+    {
+      final BindingVisitor visitor = PREDICATE_INJECTION_INTERCEPTOR.asVisitor( phrase );
       // element as a
       // SinglePredicateInjectionRequest/OrPredicatesInjectionRequest instances
-      for (Element element : elements) {
-        element.acceptVisitor(new DefaultElementVisitor<Void>() {
+      for (Element element : elements)
+      {
+        element.acceptVisitor( new DefaultElementVisitor<Void>()
+        {
           @Override
-          public <T> Void visit(Binding<T> binding) {
+          public <T> Void visit( Binding<T> binding )
+          {
             Key<?> bindingKey = binding.getKey();
-            if (binding instanceof InstanceBinding
-                && bindingKey.getAnnotation() != null
-                && (Named.class.isAssignableFrom(bindingKey.getAnnotationType()))) {
+            if (binding instanceof InstanceBinding && bindingKey.getAnnotation() != null
+                && (Named.class.isAssignableFrom( bindingKey.getAnnotationType() )))
+            {
               InstanceBinding<?> requestBinding = (InstanceBinding<?>) binding;
 
               if (requestBinding.getInstance() instanceof SinglePredicateInjectionRequest)
-                visitor
-                    .visitBinding((SinglePredicateInjectionRequest) requestBinding
-                        .getInstance());
+                visitor.visitBinding( (SinglePredicateInjectionRequest) requestBinding
+                    .getInstance() );
 
               if (requestBinding.getInstance() instanceof OrPredicatesInjectionRequest)
-                visitor
-                    .visitBinding((OrPredicatesInjectionRequest) requestBinding
-                        .getInstance());
+                visitor.visitBinding( (OrPredicatesInjectionRequest) requestBinding.getInstance() );
             }
-            return super.visit(binding);
+            return super.visit( binding );
           }
-        });
+        } );
       }
     }
   }

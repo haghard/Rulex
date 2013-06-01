@@ -17,21 +17,25 @@
 package ru.rulex.external;
 
 import groovy.lang.Closure;
+
 /**
  * 
- * This adaptor allows 'groovy.lang.Closure' functions 
- * to be used and will know how to invoke them
- *
+ * This adaptor allows 'groovy.lang.Closure' functions to be used and will know
+ * how to invoke them
+ * 
  */
-public class GroovyLanguageAdapter implements JvmBasedLanguageAdapter {
+public class GroovyLanguageAdapter implements JvmBasedLanguageAdapter
+{
 
   @Override
-  public Object call(Object function, Object[] args) {
-    return ((Closure<?>) function).call(args);
+  public Object call( Object function, Object[] args )
+  {
+    return ((Closure<?>) function).call( args );
   }
 
   @Override
-  public Class<?> getFunctionClass() {
+  public Class<?> getFunctionClass()
+  {
     return Closure.class;
   }
 }
