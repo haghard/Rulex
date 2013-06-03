@@ -398,16 +398,16 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
           public <T> Void visit( Binding<T> binding )
           {
             Key<?> bindingKey = binding.getKey();
-            if (binding instanceof InstanceBinding && bindingKey.getAnnotation() != null
-                && (Named.class.isAssignableFrom( bindingKey.getAnnotationType() )))
+            if ( binding instanceof InstanceBinding && bindingKey.getAnnotation() != null
+                && (Named.class.isAssignableFrom( bindingKey.getAnnotationType() )) )
             {
               InstanceBinding<?> requestBinding = (InstanceBinding<?>) binding;
 
-              if (requestBinding.getInstance() instanceof SinglePredicateInjectionRequest)
+              if ( requestBinding.getInstance() instanceof SinglePredicateInjectionRequest )
                 visitor.visitBinding( (SinglePredicateInjectionRequest) requestBinding
                     .getInstance() );
 
-              if (requestBinding.getInstance() instanceof OrPredicatesInjectionRequest)
+              if ( requestBinding.getInstance() instanceof OrPredicatesInjectionRequest )
                 visitor.visitBinding( (OrPredicatesInjectionRequest) requestBinding.getInstance() );
             }
             return super.visit( binding );

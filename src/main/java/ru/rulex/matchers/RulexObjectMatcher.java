@@ -91,7 +91,7 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRu
 
   private RulexMatcher<T> toStatefulMatcher( Matcher<T> matcher )
   {
-    if (matcher instanceof RulexMatcher)
+    if ( matcher instanceof RulexMatcher )
       return ((RulexMatcher<T>) matcher).toStateful();
     else
       throw new IllegalArgumentException( "This type can't be adapted to stateful matcher" );
@@ -107,7 +107,7 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRu
   @Override
   public void analyze( final AssertionAwareListener listener )
   {
-    if (listener == null)
+    if ( listener == null )
     {
       throw new IllegalArgumentException( "listener cannot be null" );
     }
@@ -124,9 +124,9 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRu
   {
     try
     {
-      if (filterMatcher == null || filterMatcher.matches( currentlyAnalysed ))
+      if ( filterMatcher == null || filterMatcher.matches( currentlyAnalysed ) )
       {
-        if (assertionMatcher.matches( currentlyAnalysed ))
+        if ( assertionMatcher.matches( currentlyAnalysed ) )
         {
           listener.passed( currentlyAnalysed, assertionMatcher );
         }

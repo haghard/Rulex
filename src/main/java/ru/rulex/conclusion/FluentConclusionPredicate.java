@@ -93,7 +93,7 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
   public static void registerLanguageAdaptor( Class<?> functionClass,
       JvmBasedLanguageAdapter adaptor )
   {
-    if (functionClass.getPackage().getName().startsWith( "java." ))
+    if ( functionClass.getPackage().getName().startsWith( "java." ) )
       throw new IllegalArgumentException(
           "FunctionLanguageAdaptor implementations can not specify java.lang.* classes." );
     languageAdaptors.put( functionClass, adaptor );
@@ -438,7 +438,7 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
     {
       while (predicates.hasNext())
       {
-        if (predicates.next().apply( argument ))
+        if ( predicates.next().apply( argument ) )
         {
           return true;
         }
@@ -466,7 +466,7 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
       this.argument = checkNotNull( argument0 );
       while (predicates.hasNext())
       {
-        if (!predicates.next().apply( argument ))
+        if ( !predicates.next().apply( argument ) )
         {
           return false;
         }
@@ -623,7 +623,7 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
   {
     for (final Class<?> c : languageAdaptors.keySet())
     {
-      if (c.isInstance( closure ))
+      if ( c.isInstance( closure ) )
       {
         final JvmBasedLanguageAdapter la = languageAdaptors.get( c );
         return la;
@@ -634,7 +634,7 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
 
   public static <T> ConclusionPredicate<T> toJavaPredicate( final Object predicate )
   {
-    if (predicate == null)
+    if ( predicate == null )
       throw new RuntimeException( "predicate is null. Can't send arguments to null predicate." );
     final JvmBasedLanguageAdapter la = findLanguageAdapter( predicate );
     return new ConclusionPredicate<T>()
@@ -651,7 +651,7 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
   public static <E, U extends Comparable<? super U>> Selector<E, U> toJavaSelector(
       final Object selector )
   {
-    if (selector == null)
+    if ( selector == null )
       throw new RuntimeException( "selector is null. Can't send arguments to null selector." );
     final JvmBasedLanguageAdapter la = findLanguageAdapter( selector );
     return new Selector<E, U>()

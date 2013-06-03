@@ -34,7 +34,7 @@ public class ProxyUtils
   private static <T> InvocationManager threadSafe()
   {
     InvocationManager manager = invocationManager.get();
-    if (manager == null)
+    if ( manager == null )
     {
       manager = new InvocationManager();
       invocationManager.set( manager );
@@ -101,7 +101,7 @@ public class ProxyUtils
     public <T> T imposterise( Class<T> mockedType, Class<?>... types )
     {
       final Class<?>[] proxiedClasses = prepend( mockedType, types );
-      if (canImposterise( mockedType ))
+      if ( canImposterise( mockedType ) )
         return (T) Proxy.newProxyInstance( mockedType.getClassLoader(), proxiedClasses,
             new java.lang.reflect.InvocationHandler()
             {
@@ -131,7 +131,7 @@ public class ProxyUtils
     Enhancer enhancer = new Enhancer();
     enhancer.setCallback( interceptor );
     enhancer.setSuperclass( clazz );
-    if (interfaces != null && interfaces.length > 0)
+    if ( interfaces != null && interfaces.length > 0 )
       enhancer.setInterfaces( interfaces );
     return enhancer;
   }

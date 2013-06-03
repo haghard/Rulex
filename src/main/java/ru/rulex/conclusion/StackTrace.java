@@ -49,11 +49,11 @@ public final class StackTrace
         buffer.append( '\n' );
       }
       // todo for batch sql exception
-      if (cause instanceof BatchUpdateException)
+      if ( cause instanceof BatchUpdateException )
       {
         getErrorInfo( buffer, (BatchUpdateException) cause );
       }
-      if (cause instanceof SQLException)
+      if ( cause instanceof SQLException )
       {
         cause = ((SQLException) cause).getNextException();
       }
@@ -62,7 +62,7 @@ public final class StackTrace
         cause = cause.getCause();
       }
 
-      if (cause != null)
+      if ( cause != null )
       {
         buffer.append( "Caused by:\n" );
       }
@@ -73,7 +73,7 @@ public final class StackTrace
 
   private static void getErrorInfo( StringBuffer buffer, BatchUpdateException error )
   {
-    if (buffer != null)
+    if ( buffer != null )
     {
       buffer.append( "Database Error Details:\n" );
       buffer.append( "   Error Code: " );

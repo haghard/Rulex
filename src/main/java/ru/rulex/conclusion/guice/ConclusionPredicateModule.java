@@ -115,11 +115,11 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
         public <T> Void visit( Binding<T> binding )
         {
           Key<?> bindingKey = binding.getKey();
-          if (binding instanceof InstanceBinding && bindingKey.getAnnotation() != null
-              && (Named.class.isAssignableFrom( bindingKey.getAnnotationType() )))
+          if ( binding instanceof InstanceBinding && bindingKey.getAnnotation() != null
+              && (Named.class.isAssignableFrom( bindingKey.getAnnotationType() )) )
           {
             InstanceBinding<?> requestBinding = (InstanceBinding<?>) binding;
-            if (requestBinding.getInstance() instanceof SinglePredicateInjectionRequest)
+            if ( requestBinding.getInstance() instanceof SinglePredicateInjectionRequest )
             {
               disjunctionRequestRequests.add( ((ElementInjectionRequest) requestBinding
                   .getInstance()) );
@@ -136,7 +136,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
     }
 
     ImmutableList<ConclusionPredicate> disjunctionPredicatesList = disjunctionPredicates.build();
-    if (disjunctionPredicatesList.size() > 0)
+    if ( disjunctionPredicatesList.size() > 0 )
     {
       bindDisjunction( conditionName, GuicefyAnyOffConclusionPredicate.class,
           disjunctionPredicatesList );
@@ -276,7 +276,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
       for (Method method : klass.getDeclaredMethods())
       {
         Matcher<Method> predicate = Matchers.returns( Matchers.only( String.class ) );
-        if (predicate.matches( method ) && method.getName().equals( TO_STRING_METHOD ))
+        if ( predicate.matches( method ) && method.getName().equals( TO_STRING_METHOD ) )
         {
           return method;
         }
@@ -312,7 +312,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
 
       for (Method method : klass.getDeclaredMethods())
       {
-        if (isApplyMethod( method ))
+        if ( isApplyMethod( method ) )
         {
           PredicateApplyMethodInterceptor<U, T> interceptor = new PredicateApplyMethodInterceptor<U, T>(
               toStringMethod, (Selector<U, T>) selector );

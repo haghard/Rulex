@@ -74,7 +74,7 @@ public abstract class AbstractPhrase<T>
     @Override
     public void setEvent( T event )
     {
-      if (clazz != null && !clazz.isAssignableFrom( event.getClass() ))
+      if ( clazz != null && !clazz.isAssignableFrom( event.getClass() ) )
       {
         conclusionPathTrace.addBlockingError( MessageFormat.format(
             "Class {0} is not a subclass of {1} ", event.getClass(), clazz ) );
@@ -86,11 +86,11 @@ public abstract class AbstractPhrase<T>
     @Override
     protected Boolean evaluate()
     {
-      if (units.size() == 0)
+      if ( units.size() == 0 )
         return Boolean.FALSE;
       for (AssertionUnit<T> unit : units)
       {
-        if (!unit.satisfies( conclusionPathTrace, event ))
+        if ( !unit.satisfies( conclusionPathTrace, event ) )
         {
           return Boolean.FALSE;
         }
@@ -106,7 +106,7 @@ public abstract class AbstractPhrase<T>
     @Override
     public void setEvent( T event )
     {
-      if (clazz != null && !clazz.isAssignableFrom( event.getClass() ))
+      if ( clazz != null && !clazz.isAssignableFrom( event.getClass() ) )
       {
         conclusionPathTrace.addBlockingError( MessageFormat.format(
             "Class {0} is not a subclass of {1} ", event.getClass(), clazz ) );
@@ -126,7 +126,7 @@ public abstract class AbstractPhrase<T>
     {
       for (AssertionUnit<T> unit : units)
       {
-        if (unit.satisfies( conclusionPathTrace, event ))
+        if ( unit.satisfies( conclusionPathTrace, event ) )
         {
           return Boolean.TRUE;
         }

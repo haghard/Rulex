@@ -212,7 +212,7 @@ public class TestImperativeIterableOrientedPhrasesBuilder
         Preconditions.checkArgument( fluentPredicate[0] != null, "null FluentConclusionPredicate" );
         for (Object object : collection)
         {
-          if (fluentPredicate[0].apply( object ))
+          if ( fluentPredicate[0].apply( object ) )
           {
             return true;
           }

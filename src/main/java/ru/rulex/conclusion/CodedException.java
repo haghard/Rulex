@@ -160,7 +160,7 @@ public abstract class CodedException extends Exception
    */
   protected final void init( final ErrorCode code, final String[] fields )
   {
-    if (code != null)
+    if ( code != null )
     {
       error = code;
     }
@@ -179,7 +179,7 @@ public abstract class CodedException extends Exception
   {
     String message;
     // determine if it's a valid extended error.
-    if ((errors != null) && (error != null))
+    if ( (errors != null) && (error != null) )
     {
       try
       {
@@ -187,7 +187,7 @@ public abstract class CodedException extends Exception
                                                         // resource bundle
 
         // if there are error fields, fill them in.
-        if (errorFields != null)
+        if ( errorFields != null )
         {
           message = MessageFormat.format( message, (Object[]) errorFields );
         }
@@ -235,7 +235,7 @@ public abstract class CodedException extends Exception
       sb.append( issue );
       sb.append( "\n" );
     }
-    if (issues.isEmpty())
+    if ( issues.isEmpty() )
     {
       sb.append( getMessage() );
     }

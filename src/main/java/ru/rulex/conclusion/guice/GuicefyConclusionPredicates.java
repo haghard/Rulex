@@ -117,7 +117,7 @@ public final class GuicefyConclusionPredicates
     {
       for (ConclusionPredicate predicate : predicates)
       {
-        if (predicate.apply( argument ))
+        if ( predicate.apply( argument ) )
         {
           return true;
         }

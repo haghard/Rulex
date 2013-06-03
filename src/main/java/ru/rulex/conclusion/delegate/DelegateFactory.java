@@ -59,7 +59,7 @@ public class DelegateFactory
   {
     T[] params;
     // for support FluentConclusionPredicate subclasses
-    if (elements[0] instanceof FluentConclusionPredicate)
+    if ( elements[0] instanceof FluentConclusionPredicate )
     {
       params = (T[]) Array.newInstance( FluentConclusionPredicate.class, elements.length );
     }

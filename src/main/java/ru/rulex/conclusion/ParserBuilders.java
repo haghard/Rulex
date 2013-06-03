@@ -247,7 +247,7 @@ public final class ParserBuilders
         @Override
         public boolean satisfies( ConclusionStatePathTrace conclusionPathTrace, final T event )
         {
-          if (conclusionPathTrace.isWorkingState() && predicate.apply( event ))
+          if ( conclusionPathTrace.isWorkingState() && predicate.apply( event ) )
           {
             supplier.get().action();
             return true;

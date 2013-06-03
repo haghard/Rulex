@@ -46,11 +46,11 @@ public class NamedThreadFactory implements ThreadFactory
   {
     Thread t = new Thread( this.group, r, this.namePrefix + this.threadNumber.getAndIncrement()
         + ")", 0L );
-    if (t.isDaemon())
+    if ( t.isDaemon() )
     {
       t.setDaemon( false );
     }
-    if (t.getPriority() != Thread.NORM_PRIORITY)
+    if ( t.getPriority() != Thread.NORM_PRIORITY )
     {
       t.setPriority( Thread.NORM_PRIORITY );
     }

@@ -95,7 +95,7 @@ public abstract class AbstractIterablePhrases<T> implements IterablePhrases<T>
       Iterator<T> iterator = getIterator();
       while (iterator.hasNext())
       {
-        if (!result)
+        if ( !result )
         {
           result = true;
         }
@@ -125,7 +125,7 @@ public abstract class AbstractIterablePhrases<T> implements IterablePhrases<T>
       {
         lBuilder.add( (T) iterator.next() );
 
-        if (!result)
+        if ( !result )
         {
           result = true;
         }

@@ -24,6 +24,7 @@ import java.util.concurrent.*;
 import org.apache.log4j.Logger;
 
 import static ru.rulex.conclusion.execution.Callables.*;
+
 /**
  * <pre>
  *                         <b> Classes hierarchy (single object oriented)</b>
@@ -416,7 +417,6 @@ public final class PhraseBuildersFacade
    */
   public static class GuiceEventOrientedPhrasesBuilder extends AbstractEventOrientedBuilderImpl
   {
-
     public <T> GuiceEventOrientedPhrasesBuilder( AbstractPhrase<T> delegate )
     {
       super( delegate, ParallelStrategy.<Boolean, PhraseExecutionException> serial() );
