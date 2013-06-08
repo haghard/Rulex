@@ -41,6 +41,11 @@ import static com.google.inject.spi.Elements.getElements;
 import static com.google.inject.Guice.*;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 
+/**
+ * 
+ * @author haghard
+ * 
+ */
 public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
 {
 
@@ -73,7 +78,6 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
     {
       return new BindingVisitor()
       {
-
         @Override
         @SuppressWarnings(
         { "unchecked", "rawtypes" })
@@ -89,15 +93,13 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
             }
           } );
           ConclusionPredicate<?> conclusionPredicate = internalInjector.getInstance( Key
-              .get( GuiceGenericTypes.newGenericType( ConclusionPredicate.class,
-                  binding.getLiteral() ) ) );
+              .get( GuiceGenericTypes.newGenericType( ConclusionPredicate.class, binding.getLiteral() ) ) );
 
           phrase.addUnit( new SimpleAssertionUnit( conclusionPredicate, binding.description() ) );
         }
 
         @Override
-        @SuppressWarnings(
-        { "unchecked", "rawtypes" })
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         public void visitBinding( final OrPredicatesInjectionRequest binding )
         {
           Injector internalOrInjector = createInjector( new AbstractModule()
@@ -129,8 +131,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
    */
   public static Module $expression( Module... modules )
   {
-    return new InternalDslPhrasesBuilderModule( Phrases.ALL_TRUE.withNarrowedType(),
-        getElements( modules ) );
+    return new InternalDslPhrasesBuilderModule( Phrases.ALL_TRUE.withNarrowedType(), getElements( modules ) );
   }
 
   /**
@@ -140,8 +141,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
    */
   public static Module $expression( Phrases phrase, Module... modules )
   {
-    return new InternalDslPhrasesBuilderModule( phrase.withNarrowedType(),
-        Elements.getElements( modules ) );
+    return new InternalDslPhrasesBuilderModule( phrase.withNarrowedType(), Elements.getElements( modules ) );
   }
 
   /**
@@ -208,6 +208,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
   }
 
   /**
+   * 
    * @param conditionName
    * @param pvalue
    * @param selector
@@ -271,8 +272,8 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
    * @param <T>
    * @return ConclusionPredicateModule<T>
    */
-  public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq(
-      final T pvalue, final Selector<E, T> selector, final String conditionName )
+  public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq( final T pvalue,
+      final Selector<E, T> selector, final String conditionName )
   {
     return new ConclusionPredicateModule<T>()
     {
@@ -284,8 +285,8 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
     };
   }
 
-  public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq(
-      final T pvalue, final T argument, final String conditionName )
+  public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq( final T pvalue,
+      final T argument, final String conditionName )
   {
     return new ConclusionPredicateModule<T>()
     {
@@ -305,8 +306,8 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
    * @param selector
    * @return
    */
-  public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq(
-      final T pvalue, final Object selector, final String conditionName )
+  public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq( final T pvalue,
+      final Object selector, final String conditionName )
   {
     final Selector<E, T> selector0 = FluentConclusionPredicate.<E, T> toJavaSelector( selector );
     return new ConclusionPredicateModule<T>()
@@ -344,8 +345,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
   static final class InternalTokenPhrasesAnalyzerModule extends AbstractPhrasesAnalyzerModule
   {
 
-    protected InternalTokenPhrasesAnalyzerModule( ImmutableList<Element> elements,
-        AbstractPhrase<?> phrase )
+    protected InternalTokenPhrasesAnalyzerModule( ImmutableList<Element> elements, AbstractPhrase<?> phrase )
     {
       super( elements, phrase );
       // TODO Auto-generated constructor stub
@@ -390,7 +390,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
       final BindingVisitor visitor = PREDICATE_INJECTION_INTERCEPTOR.asVisitor( phrase );
       // element as a
       // SinglePredicateInjectionRequest/OrPredicatesInjectionRequest instances
-      for (Element element : elements)
+      for ( Element element : elements )
       {
         element.acceptVisitor( new DefaultElementVisitor<Void>()
         {
@@ -404,8 +404,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
               InstanceBinding<?> requestBinding = (InstanceBinding<?>) binding;
 
               if ( requestBinding.getInstance() instanceof SinglePredicateInjectionRequest )
-                visitor.visitBinding( (SinglePredicateInjectionRequest) requestBinding
-                    .getInstance() );
+                visitor.visitBinding( (SinglePredicateInjectionRequest) requestBinding.getInstance() );
 
               if ( requestBinding.getInstance() instanceof OrPredicatesInjectionRequest )
                 visitor.visitBinding( (OrPredicatesInjectionRequest) requestBinding.getInstance() );

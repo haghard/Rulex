@@ -21,9 +21,8 @@ import ru.rulex.conclusion.AssertionUnit;
 
 public class SimpleAssertionUnit<T> implements AssertionUnit<T>
 {
-
+  
   private final ConclusionPredicate<T> predicate;
-
   private final String description;
 
   public SimpleAssertionUnit( ConclusionPredicate<T> conclusionPredicate, String exp )

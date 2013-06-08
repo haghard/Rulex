@@ -18,7 +18,6 @@ package ru.rulex.conclusion;
 
 import org.junit.Test;
 import com.google.inject.Injector;
-
 import ru.rulex.conclusion.Phrases;
 import ru.rulex.conclusion.Selector;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
@@ -241,4 +240,14 @@ public class GuiceEventOrientedEngineModuleTest
       fail( "testDisjunctionGuiceModuleWithProxy result error ex !!!" );
     }
   }
+
+  /*
+   * TODO: implement like this API , with AnnotationProcessor
+  public void testAnnotationApi() {
+    //@Module(addsTo = RootModule.class, injects = { C.class, D.class })
+    @Expression( onClass = Model.class,
+        conditions = { callOn( Model.class ).getFloat(), callOn( Model.class ).getFloat() } )
+    
+  }
+  */
 }

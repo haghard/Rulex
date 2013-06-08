@@ -23,6 +23,7 @@ import com.google.inject.matcher.Matcher;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Named;
 import com.google.inject.spi.*;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.log4j.Logger;
@@ -41,8 +42,7 @@ import static com.google.inject.name.Names.named;
 import static ru.rulex.conclusion.guice.GuiceGenericTypes.*;
 
 @SuppressWarnings("unchecked")
-public abstract class ConclusionPredicateModule<T extends Comparable<? super T>> extends
-    AbstractModule
+public abstract class ConclusionPredicateModule<T extends Comparable<? super T>> extends AbstractModule
 {
 
   protected abstract void bindPredicate();
@@ -60,8 +60,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    */
   protected void equality( final String conditionName, final T value0, final Selector<?, T> selector )
   {
-    bindSinglePredicateRequest( conditionName, value0, selector,
-        GuicefyEqualsConclusionPredicate.class );
+    bindSinglePredicateRequest( conditionName, value0, selector, GuicefyEqualsConclusionPredicate.class );
   }
 
   /**
@@ -72,8 +71,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    */
   protected void majority( final String conditionName, final T pvalue, final Selector<?, T> selector )
   {
-    bindSinglePredicateRequest( conditionName, pvalue, selector,
-        GuicefyMoreConclusionPredicate.class );
+    bindSinglePredicateRequest( conditionName, pvalue, selector, GuicefyMoreConclusionPredicate.class );
   }
 
   /**
@@ -84,8 +82,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    */
   protected void minority( final String conditionName, final T pvalue, final Selector<?, T> selector )
   {
-    bindSinglePredicateRequest( conditionName, pvalue, selector,
-        GuicefyLessConclusionPredicate.class );
+    bindSinglePredicateRequest( conditionName, pvalue, selector, GuicefyLessConclusionPredicate.class );
   }
 
   /**
@@ -103,12 +100,10 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    */
   private void bindDisjunctionRequest( String conditionName, Module... modules )
   {
-    final ImmutableList.Builder<ElementInjectionRequest> disjunctionRequestRequests = ImmutableList
-        .builder();
-    final ImmutableList.Builder<ConclusionPredicate> disjunctionPredicates = ImmutableList
-        .builder();
-    List<Element> elements = Elements.getElements( modules );
-    for (Element element : elements)
+    final ImmutableList.Builder<ElementInjectionRequest> disjunctionRequestRequests = ImmutableList.builder();
+    final ImmutableList.Builder<ConclusionPredicate> disjunctionPredicates = ImmutableList.builder();
+    final List<Element> elements = Elements.getElements( modules );
+    for ( Element element : elements )
     {
       element.acceptVisitor( new DefaultElementVisitor<Void>()
       {
@@ -121,8 +116,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
             InstanceBinding<?> requestBinding = (InstanceBinding<?>) binding;
             if ( requestBinding.getInstance() instanceof SinglePredicateInjectionRequest )
             {
-              disjunctionRequestRequests.add( ((ElementInjectionRequest) requestBinding
-                  .getInstance()) );
+              disjunctionRequestRequests.add( ((ElementInjectionRequest) requestBinding.getInstance()) );
             }
           }
           return super.visit( binding );
@@ -130,7 +124,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
       } );
     }
 
-    for (ElementInjectionRequest binding : disjunctionRequestRequests.build())
+    for ( ElementInjectionRequest binding : disjunctionRequestRequests.build() )
     {
       disjunctionPredicates.add( bindEarlierInjectedPredicates( binding ) );
     }
@@ -138,8 +132,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
     ImmutableList<ConclusionPredicate> disjunctionPredicatesList = disjunctionPredicates.build();
     if ( disjunctionPredicatesList.size() > 0 )
     {
-      bindDisjunction( conditionName, GuicefyAnyOffConclusionPredicate.class,
-          disjunctionPredicatesList );
+      bindDisjunction( conditionName, GuicefyAnyOffConclusionPredicate.class, disjunctionPredicatesList );
     }
   }
 
@@ -147,8 +140,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    * @param binding
    * @return ConclusionPredicate<?>
    */
-  private ConclusionPredicate<?> bindEarlierInjectedPredicates(
-      final ElementInjectionRequest binding )
+  private ConclusionPredicate<?> bindEarlierInjectedPredicates( final ElementInjectionRequest binding )
   {
     Injector internalInjector = Guice.createInjector( new AbstractModule()
     {
@@ -164,8 +156,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
   }
 
   private <E extends ConclusionPredicate<T>> void bindDisjunction( final String conditionName,
-      final Class<E> predicateClass0,
-      final ImmutableList<ConclusionPredicate> disjunctionPredicatesList )
+      final Class<E> predicateClass0, final ImmutableList<ConclusionPredicate> disjunctionPredicatesList )
   {
     bind( ElementInjectionRequest.class ).annotatedWith( named( conditionName ) ).toInstance(
         new OrPredicatesInjectionRequest()
@@ -200,10 +191,9 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
           @Override
           public void run()
           {
-            binder.bind( immutableListOf( ConclusionPredicate.class ) ).toInstance(
-                disjunctionPredicatesList );
-            binder.bind( AbstractPhrasesAnalyzerModule.OR_KEY ).to(
-                GuicefyAnyOffConclusionPredicate.class );
+            binder.bind( immutableListOf( ConclusionPredicate.class ) )
+                .toInstance( disjunctionPredicatesList );
+            binder.bind( AbstractPhrasesAnalyzerModule.OR_KEY ).to( GuicefyAnyOffConclusionPredicate.class );
           }
         } );
   }
@@ -215,9 +205,8 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    * @param predicateClass0
    * @param <E>
    */
-  private <U, E extends ConclusionPredicate<T>> void bindSinglePredicateRequest(
-      final String conditionName, final T value0, final Selector<U, T> selector0,
-      final Class<E> predicateClass0 )
+  private <U, E extends ConclusionPredicate<T>> void bindSinglePredicateRequest( final String conditionName,
+      final T value0, final Selector<U, T> selector0, final Class<E> predicateClass0 )
   {
     bind( ElementInjectionRequest.class ).annotatedWith( named( conditionName ) ).toInstance(
         new SinglePredicateInjectionRequest()
@@ -226,8 +215,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
           private final T value = value0;
           private final Class<E> predicateClass = predicateClass0;
           private final Selector<U, T> selector = selector0;
-          private final TypeLiteral<T> literal = (TypeLiteral<T>) TypeLiteral.get( value0
-              .getClass() );
+          private final TypeLiteral<T> literal = (TypeLiteral<T>) TypeLiteral.get( value0.getClass() );
 
           @Override
           public void setBinder( Binder binder )
@@ -247,8 +235,9 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
             binder.bind( literal ).toInstance( value );
             binder.bind( newGenericType( ConclusionPredicate.class, literal ) ).to(
                 newEnclosedGenericType( predicateClass, literal ) );
-            binder.bindListener( matcher(), new GuicefyDefaultAtomicPredicateTypeListener<U, T>(
-                selector ) );
+            // may be use bindInterceptor(Matchers.any(),
+            // Matchers.annotatedWith(Cached.class), cacheInterceptor);
+            binder.bindListener( matcher(), new GuicefyDefaultAtomicPredicateTypeListener<U, T>( selector ) );
           }
 
           @Override
@@ -273,7 +262,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
 
     protected <T> Method findToStringMethod( Class<T> klass )
     {
-      for (Method method : klass.getDeclaredMethods())
+      for ( Method method : klass.getDeclaredMethods() )
       {
         Matcher<Method> predicate = Matchers.returns( Matchers.only( String.class ) );
         if ( predicate.matches( method ) && method.getName().equals( TO_STRING_METHOD ) )
@@ -286,8 +275,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
 
     protected boolean isApplyMethod( Method method )
     {
-      return method.getName().equals( INTERCEPTOR_METHOD )
-          && (method.getParameterTypes()[0] == Object.class);
+      return method.getName().equals( INTERCEPTOR_METHOD ) && (method.getParameterTypes()[0] == Object.class);
     }
   }
 
@@ -307,10 +295,9 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
     {
       final Class<? super U> klass = literal.getRawType();
       Method toStringMethod = findToStringMethod( klass );
-      Preconditions.checkNotNull( toStringMethod,
-          "Can't find toString method in " + klass.getSimpleName() );
+      Preconditions.checkNotNull( toStringMethod, "Can't find toString method in " + klass.getSimpleName() );
 
-      for (Method method : klass.getDeclaredMethods())
+      for ( Method method : klass.getDeclaredMethods() )
       {
         if ( isApplyMethod( method ) )
         {
@@ -345,10 +332,9 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
     public Object invoke( MethodInvocation invocation ) throws Throwable
     {
       U argument = (U) invocation.getArguments()[0];
-      Comparable<?> value = (Comparable<?>) selector.select( argument );
-      logger.debug( String.format( "%s %s",
-          toStringMethod.invoke( invocation.getThis(), new Object[]
-          {} ), value ) );
+      Comparable<U> value = (Comparable<U>) selector.select( argument );
+      logger.debug( String.format( "%s %s", toStringMethod.invoke( invocation.getThis(), new Object[]
+      {} ), value ) );
       invocation.getArguments()[0] = value;
       return invocation.proceed();
     }
