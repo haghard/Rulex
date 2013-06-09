@@ -28,10 +28,10 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.log4j.Logger;
 
-import ru.rulex.conclusion.guice.GuicefyConclusionPredicates.GuicefyAnyOffConclusionPredicate;
-import ru.rulex.conclusion.guice.GuicefyConclusionPredicates.GuicefyEqualsConclusionPredicate;
-import ru.rulex.conclusion.guice.GuicefyConclusionPredicates.GuicefyLessConclusionPredicate;
-import ru.rulex.conclusion.guice.GuicefyConclusionPredicates.GuicefyMoreConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableAnyOffConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableEqualsConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreConclusionPredicate;
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.Selector;
 
@@ -60,7 +60,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    */
   protected void equality( final String conditionName, final T value0, final Selector<?, T> selector )
   {
-    bindSinglePredicateRequest( conditionName, value0, selector, GuicefyEqualsConclusionPredicate.class );
+    bindSinglePredicateRequest( conditionName, value0, selector, InjectableEqualsConclusionPredicate.class );
   }
 
   /**
@@ -71,7 +71,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    */
   protected void majority( final String conditionName, final T pvalue, final Selector<?, T> selector )
   {
-    bindSinglePredicateRequest( conditionName, pvalue, selector, GuicefyMoreConclusionPredicate.class );
+    bindSinglePredicateRequest( conditionName, pvalue, selector, InjectableMoreConclusionPredicate.class );
   }
 
   /**
@@ -82,7 +82,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
    */
   protected void minority( final String conditionName, final T pvalue, final Selector<?, T> selector )
   {
-    bindSinglePredicateRequest( conditionName, pvalue, selector, GuicefyLessConclusionPredicate.class );
+    bindSinglePredicateRequest( conditionName, pvalue, selector, InjectableLessConclusionPredicate.class );
   }
 
   /**
@@ -132,7 +132,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
     ImmutableList<ConclusionPredicate> disjunctionPredicatesList = disjunctionPredicates.build();
     if ( disjunctionPredicatesList.size() > 0 )
     {
-      bindDisjunction( conditionName, GuicefyAnyOffConclusionPredicate.class, disjunctionPredicatesList );
+      bindDisjunction( conditionName, InjectableAnyOffConclusionPredicate.class, disjunctionPredicatesList );
     }
   }
 
@@ -193,7 +193,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
           {
             binder.bind( immutableListOf( ConclusionPredicate.class ) )
                 .toInstance( disjunctionPredicatesList );
-            binder.bind( AbstractPhrasesAnalyzerModule.OR_KEY ).to( GuicefyAnyOffConclusionPredicate.class );
+            binder.bind( AbstractPhrasesAnalyzerModule.OR_KEY ).to( InjectableAnyOffConclusionPredicate.class );
           }
         } );
   }

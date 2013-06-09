@@ -41,7 +41,7 @@ public final class GuiceGenericTypes
   public static <T, E> TypeLiteral<E> newEnclosedGenericType( Class<E> genericType,
       TypeLiteral<T> literal )
   {
-    Type newType = Types.newParameterizedTypeWithOwner( GuicefyConclusionPredicates.class,
+    Type newType = Types.newParameterizedTypeWithOwner( InjectableConclusionPredicates.class,
         genericType, literal.getType() );
     return (TypeLiteral<E>) TypeLiteral.get( newType );
   }

@@ -422,7 +422,18 @@ public final class PhraseBuildersFacade
       super( delegate, ParallelStrategy.<Boolean, PhraseExecutionException> serial() );
     }
   }
-
+  /**
+   * 
+   * @author haghard
+   *
+   */
+  public static class DaggerEventOrientedPhrasesBuilder extends AbstractEventOrientedBuilderImpl
+  {
+    public <T> DaggerEventOrientedPhrasesBuilder( AbstractPhrase<T> delegate )
+    {
+      super( delegate, ParallelStrategy.<Boolean, PhraseExecutionException> serial() );
+    }
+  }
   /**
    * {@code AbstractIterableOrientedPhrasesBuilder} class is a root of class
    * hierarchy define a base abstraction for collection oriented PhraseBuilders

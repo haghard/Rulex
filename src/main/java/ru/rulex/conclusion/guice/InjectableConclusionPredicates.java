@@ -21,21 +21,21 @@ import com.google.inject.Inject;
 import ru.rulex.conclusion.ConclusionPredicate;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class GuicefyConclusionPredicates
+public final class InjectableConclusionPredicates
 {
 
   @Inject
-  private GuicefyConclusionPredicates()
+  private InjectableConclusionPredicates()
   {
   }
 
-  public static class GuicefyEqualsConclusionPredicate<T extends Comparable<? super T>> implements
+  public static class InjectableEqualsConclusionPredicate<T extends Comparable<? super T>> implements
       ConclusionPredicate<T>
   {
     private final T parameter;
 
     @Inject
-    GuicefyEqualsConclusionPredicate( T parameter )
+    InjectableEqualsConclusionPredicate( T parameter )
     {
       this.parameter = checkNotNull( parameter );
     }
@@ -53,13 +53,13 @@ public final class GuicefyConclusionPredicates
     }
   }
 
-  public static class GuicefyLessConclusionPredicate<T extends Comparable<? super T>> implements
+  public static class InjectableLessConclusionPredicate<T extends Comparable<? super T>> implements
       ConclusionPredicate<T>
   {
     private final T parameter;
 
     @Inject
-    GuicefyLessConclusionPredicate( T parameter )
+    public InjectableLessConclusionPredicate( T parameter )
     {
       this.parameter = checkNotNull( parameter );
     }
@@ -77,13 +77,13 @@ public final class GuicefyConclusionPredicates
     }
   }
 
-  public static class GuicefyMoreConclusionPredicate<T extends Comparable<? super T>> implements
+  public static class InjectableMoreConclusionPredicate<T extends Comparable<? super T>> implements
       ConclusionPredicate<T>
   {
     private final T parameter;
 
     @Inject
-    GuicefyMoreConclusionPredicate( T parameter )
+    public InjectableMoreConclusionPredicate( T parameter )
     {
       this.parameter = checkNotNull( parameter );
     }
@@ -101,12 +101,12 @@ public final class GuicefyConclusionPredicates
     }
   }
 
-  public static class GuicefyAnyOffConclusionPredicate<T> implements ConclusionPredicate<T>
+  public static class InjectableAnyOffConclusionPredicate<T> implements ConclusionPredicate<T>
   {
     private final ImmutableList<ConclusionPredicate> predicates;
 
     @Inject
-    GuicefyAnyOffConclusionPredicate( ImmutableList<ConclusionPredicate> predicates )
+    InjectableAnyOffConclusionPredicate( ImmutableList<ConclusionPredicate> predicates )
     {
       this.predicates = checkNotNull( ImmutableList.copyOf( predicates ) );
     }
