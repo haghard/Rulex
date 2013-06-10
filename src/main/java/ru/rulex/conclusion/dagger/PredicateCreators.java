@@ -15,7 +15,7 @@ public final class PredicateCreators
     ConclusionPredicate<T> createPredicate(T value);
   }
 
-  static class LessCreator<T extends Comparable<? super T>> implements PredicateCreator<T> 
+  static class LessPredicateCreator<T extends Comparable<? super T>> implements PredicateCreator<T> 
   {
     @Override
     public InjectableLessConclusionPredicate<T> createPredicate( T value )
@@ -24,7 +24,7 @@ public final class PredicateCreators
     }
   }
 
-  static class MoreCreator<T extends Comparable<? super T>> implements PredicateCreator<T> 
+  static class MorePredicateCreator<T extends Comparable<? super T>> implements PredicateCreator<T> 
   {
     @Override
     public InjectableMoreConclusionPredicate<T> createPredicate( T value )

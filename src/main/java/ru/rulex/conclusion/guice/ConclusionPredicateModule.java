@@ -44,7 +44,9 @@ import static ru.rulex.conclusion.guice.GuiceGenericTypes.*;
 @SuppressWarnings("unchecked")
 public abstract class ConclusionPredicateModule<T extends Comparable<? super T>> extends AbstractModule
 {
-
+  /**
+   * 
+   */
   protected abstract void bindPredicate();
 
   protected void configure()
@@ -235,8 +237,6 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
             binder.bind( literal ).toInstance( value );
             binder.bind( newGenericType( ConclusionPredicate.class, literal ) ).to(
                 newEnclosedGenericType( predicateClass, literal ) );
-            // may be use bindInterceptor(Matchers.any(),
-            // Matchers.annotatedWith(Cached.class), cacheInterceptor);
             binder.bindListener( matcher(), new GuicefyDefaultAtomicPredicateTypeListener<U, T>( selector ) );
           }
 

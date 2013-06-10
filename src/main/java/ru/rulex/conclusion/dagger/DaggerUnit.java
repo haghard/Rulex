@@ -1,13 +1,14 @@
 package ru.rulex.conclusion.dagger;
 
-import ru.rulex.conclusion.ConclusionPredicate;
-import ru.rulex.conclusion.dagger.PredicateCreators.PredicateCreator;
-import ru.rulex.conclusion.dagger.PredicateCreators.LessCreator;
-import ru.rulex.conclusion.dagger.PredicateCreators.MoreCreator;
-import com.google.common.collect.ImmutableMap;
-
 import dagger.Module;
 import dagger.Provides;
+import ru.rulex.conclusion.Selector;
+import com.google.common.collect.ImmutableMap;
+import ru.rulex.conclusion.ConclusionPredicate;
+import ru.rulex.conclusion.dagger.PredicateCreators.PredicateCreator;
+import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
+import ru.rulex.conclusion.dagger.PredicateCreators.LessPredicateCreator;
+import ru.rulex.conclusion.dagger.PredicateCreators.MorePredicateCreator;
 
 @Module(
     injects = ConclusionPredicate.class,
@@ -19,6 +20,7 @@ public final class DaggerUnit
   private final ValueSuppler<? extends Comparable<?>> suppler = Generefier.INSTANCE.generify();
   private PredicateCreator builder;
   private Comparable<?> value;
+  private Selector<Object, Comparable> selector;
 
   static
   {
@@ -35,46 +37,36 @@ public final class DaggerUnit
     switch (operation)
     {
     case lessThan:
-      return (E) new LessCreator<T>();
+      return (E) new LessPredicateCreator<T>();
     case moreThan:
-      return (E) new MoreCreator<T>();
+      return (E) new MorePredicateCreator<T>();
     default:
       throw new IllegalArgumentException( "Invalid operation" );
     }
   }
 
-  public static <T extends Comparable<? super T>> DaggerUnit less( T value )
-  {
-    return new DaggerUnit( value, map.get( LogicOperation.lessThan ) );
-  }
-
-  public static <T extends Comparable<? super T>> DaggerUnit more( T value )
-  {
-    return new DaggerUnit( value, map.get( LogicOperation.moreThan ) );
-  }
-
-  private DaggerUnit( Comparable<?> value, PredicateCreator<?> builder )
+  protected <T> DaggerUnit( Comparable<?> value, PredicateCreator<?> builder, Selector<Object, T> selector )
   {
     this.value = value;
     this.builder = builder;
+    this.selector = (Selector<Object, Comparable>) selector;
+  }
+
+  public <T extends Comparable> DaggerUnit( T pvalue, Selector<Object, T> selector, LogicOperation operation )
+  {
+    this( pvalue, map.get( operation ), selector );
+  }
+
+  protected DaggerUnit less(Comparable<?> value, PredicateCreator<?> builder)
+  {
+    return new DaggerUnit(value, builder, selector);
   }
 
   @Provides
   @SuppressWarnings({"unchecked" })
   ConclusionPredicate predicate()
   {
-    return ConclusionPredicate.class.cast( builder.createPredicate( suppler.supply( value ) ) );
-  }
-
-  public static <T> DaggerUnit less( final T pvalue, final T argument )
-  {
-    // TODO: implement this
-    return null;
-  }
-
-  public static <T> DaggerUnit more( final T pvalue, final T argument )
-  {
-    // TODO: implement this
-    return null;
+    ConclusionPredicate conclusionPredicate = ConclusionPredicate.class.cast( builder.createPredicate( suppler.supply( value ) ) );
+    return new SelectorPredicate( conclusionPredicate, selector );
   }
 }
