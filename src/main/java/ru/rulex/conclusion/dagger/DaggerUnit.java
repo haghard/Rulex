@@ -59,15 +59,22 @@ public final class DaggerUnit
     this.builder = builder;
   }
 
-  public <T> DaggerUnit( T[] params )
-  {
-    
-  }
-
   @Provides
   @SuppressWarnings({"unchecked" })
   ConclusionPredicate predicate()
   {
     return ConclusionPredicate.class.cast( builder.createPredicate( suppler.supply( value ) ) );
+  }
+
+  public static <T> DaggerUnit less( final T pvalue, final T argument )
+  {
+    // TODO: implement this
+    return null;
+  }
+
+  public static <T> DaggerUnit more( final T pvalue, final T argument )
+  {
+    // TODO: implement this
+    return null;
   }
 }
