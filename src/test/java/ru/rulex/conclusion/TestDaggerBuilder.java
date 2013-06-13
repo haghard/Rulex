@@ -37,7 +37,7 @@ public class TestDaggerBuilder
         $expression( 
             $less( 19, callOn( Model.class ).getInteger() ),
             $more( 79, callOn( Model.class ).getOtherInteger() ) ) )
-            .get(AbstractEventOrientedPhrasesBuilder.class );
+              .get(AbstractEventOrientedPhrasesBuilder.class );
 
     assertThat( builder.sync( Model.values( 20, 78 ) ) ).isTrue();
   }

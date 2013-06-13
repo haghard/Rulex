@@ -2,7 +2,6 @@ package ru.rulex.conclusion.dagger;
 
 import dagger.Module;
 import dagger.Provides;
-import dagger.ObjectGraph;
 import ru.rulex.conclusion.Phrases;
 import ru.rulex.conclusion.AbstractPhrase;
 import ru.rulex.conclusion.ConclusionPredicate;
