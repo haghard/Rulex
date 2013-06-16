@@ -30,9 +30,6 @@ import com.google.common.base.Preconditions;
  */
 public class InvocationManager
 {
-
-  // private final Logger LOG = Logger.getLogger( getClass() );
-
   private Queue<Invokable<?, ?>> invokableList = new ArrayDeque<Invokable<?, ?>>();
 
   public void pushInvokable( Invokable<?, ?> invokable )

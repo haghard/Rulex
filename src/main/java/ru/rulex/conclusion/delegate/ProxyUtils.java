@@ -19,10 +19,10 @@ package ru.rulex.conclusion.delegate;
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.JavaCglibInvocInterceptor;
 import ru.rulex.conclusion.Selector;
-
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
+import com.google.common.base.Preconditions;
+import com.google.common.reflect.Reflection;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 
@@ -50,6 +50,7 @@ public class ProxyUtils
   public static <T> ConclusionPredicate<T> toPredicate( Object ignoredValue )
   {
     final Invokable<T, Boolean> invokable = ProxyUtils.<T, Boolean> poolInvokable();
+    Preconditions.checkNotNull( invokable );
     return Invokable.invokablePredicate( invokable );
   }
 
@@ -62,7 +63,14 @@ public class ProxyUtils
   public static <T, E> Selector<T, E> toSelector( E ignoredValue )
   {
     final Invokable<T, E> invokable = ProxyUtils.<T, E> poolInvokable();
+    Preconditions.checkNotNull( invokable );
     return Invokable.<T, E> invokableSelector( invokable );
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T callOn(Class<T> clazz, final T original)
+  {
+    return JavaReflectionImposterizer.INSTANCE.imposterise( clazz, original );
   }
 
   public static <T> T callOn( Class<T> clazz )
@@ -75,6 +83,8 @@ public class ProxyUtils
     public boolean canImposterise( Class<?> type );
 
     public <T> T imposterise( Class<T> mockedType, Class<?>... ancilliaryTypes );
+
+    public <T> T imposterise( Class<T> mockedType, T original, Class<?>... ancilliaryTypes );
   }
 
   public static <T> void pushInvokable( Invokable<?, ?> invokable )
@@ -94,26 +104,16 @@ public class ProxyUtils
 
     public boolean canImposterise( Class<?> type )
     {
-      return type.isInterface() && type.getClass().isInstance( Delegate.class );
+      return type.isInterface();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T imposterise( Class<T> mockedType, Class<?>... types )
     {
-      final Class<?>[] proxiedClasses = prepend( mockedType, types );
-      if ( canImposterise( mockedType ) )
-        return (T) Proxy.newProxyInstance( mockedType.getClassLoader(), proxiedClasses,
-            new java.lang.reflect.InvocationHandler()
-            {
-              @Override
-              public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
-              {
-                pushInvokable( Invokable.<Object, Boolean> invokableMethod( method, args ) );
-                return true;
-              }
-            } );
-      else
-        return (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
+      return  canImposterise( mockedType ) ?
+        createNativeJavaProxy(mockedType, new PushableHandler()) :
+        (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
     }
 
     private Class<?>[] prepend( Class<?> first, Class<?>... rest )
@@ -123,8 +123,23 @@ public class ProxyUtils
       System.arraycopy( rest, 0, proxiedClasses, 1, rest.length );
       return proxiedClasses;
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T imposterise( Class<T> mockedType, final T original, Class<?>... types )
+    {
+      return canImposterise( mockedType ) ? 
+          createNativeJavaProxy( mockedType, new InterceptableHandler<T>( original )) :
+          (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
+    }
   }
 
+  private static <T> T createNativeJavaProxy(Class<T> mockedType, InvocationHandler interceptor) 
+  {
+    //guava way instead Proxy.newProxyInstance(classLoader, interfaces, interceptor);
+    return Reflection.newProxy( mockedType, interceptor );
+  }
+  
   private static Enhancer createEnhancer( MethodInterceptor interceptor, Class<?> clazz,
       Class<?>... interfaces )
   {
@@ -136,12 +151,46 @@ public class ProxyUtils
     return enhancer;
   }
 
+  //TODO: change name
+  private static class InterceptableHandler<T> implements InvocationHandler
+  {
+    final T original;
+    InterceptableHandler(T original)
+    {
+      this.original = original;
+    }
+
+    protected boolean isApplyMethod( Method method )
+    {
+      return method.getName().equals( "apply" ) && (method.getParameterTypes()[0] == Object.class);
+    }
+    
+    @Override
+    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+    {
+      if ( isApplyMethod( method ) ) 
+        System.out.println(String.format( "%s %s", proxy.toString(), args[0] ) );
+
+      return method.invoke( original, args );
+    }
+  }
+
+  private static class PushableHandler implements InvocationHandler
+  {
+    @Override
+    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+    {
+      pushInvokable( Invokable.invokableMethod( method, args ) );
+      return true;
+    }
+  }
+
   private static class PredicateProxyArgument extends JavaCglibInvocInterceptor
   {
     @Override
     public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
     {
-      pushInvokable( Invokable.<Object, Boolean> invokableMethod( method, args ) );
+      pushInvokable( Invokable.invokableMethod( method, args ) );
       return null;
     }
   }

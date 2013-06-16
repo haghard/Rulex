@@ -3,6 +3,8 @@ package ru.rulex.conclusion.dagger;
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreOrEqualsConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessOrEqualsConclusionPredicate;
 /**
  * 
  * @author haghard
@@ -30,6 +32,24 @@ public final class PredicateCreators
     public InjectableMoreConclusionPredicate<T> createPredicate( T value )
     {
       return new InjectableMoreConclusionPredicate<T>( value );
+    }
+  }
+
+  static class MoreOrEqualsPredicateCreator<T extends Comparable<? super T>> implements PredicateCreator<T>
+  {
+    @Override
+    public ConclusionPredicate<T> createPredicate( T value )
+    {
+      return new InjectableMoreOrEqualsConclusionPredicate<T>( value );
+    }
+  }
+
+  static class LessOrEqualsPredicateCreator<T extends Comparable<? super T>> implements PredicateCreator<T>
+  {
+    @Override
+    public ConclusionPredicate<T> createPredicate( T value )
+    {
+      return new InjectableLessOrEqualsConclusionPredicate<T>( value );
     }
   }
 }

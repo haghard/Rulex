@@ -57,8 +57,8 @@ public class GroovyScriptEngineTest
       Binding binding = new Binding();
       binding.setVariable( "foo", foo );
       gse.run( "GroovyExample.groovy", binding );
-      assertEquals( "testRunLocalGuiceScripts error !!!", true,
-          (boolean) binding.getVariable( "output" ) );
+      assertTrue("testRunLocalGuiceScripts error !!!",
+              (Boolean) binding.getVariable( "output" ));
     }
     catch (Exception ex)
     {
@@ -78,8 +78,8 @@ public class GroovyScriptEngineTest
       Binding binding = new Binding();
       binding.setVariable( "foo", foo );
       gse.run( "SingleEventGroovyScript.groovy", binding );
-      assertEquals( "testNativeRunLocalGuiceBasedScripts error !!!", true,
-          (boolean) binding.getVariable( "output" ) );
+      assertTrue("testNativeRunLocalGuiceBasedScripts error !!!",
+              (Boolean) binding.getVariable( "output" ));
     }
     catch (Exception ex)
     {
@@ -102,14 +102,14 @@ public class GroovyScriptEngineTest
       binding.setVariable( "list", list );
       binding.setVariable( "value", targetId );
       gse.run( "ListGroovyScript.groovy", binding );
-      assertEquals( "testListRunLocalGuiceBasedScripts null error !!!", true,
-          (boolean) binding.getVariable( "output" ) );
+      assertTrue( "testListRunLocalGuiceBasedScripts null error !!!",
+          (Boolean) binding.getVariable( "output" ) );
 
       binding.setVariable( "list", list );
       binding.setVariable( "value", targetId + 1 );
       gse.run( "ListGroovyScript.groovy", binding );
-      assertEquals( "testListRunLocalGuiceBasedScripts null error !!!", false,
-          (boolean) binding.getVariable( "output" ) );
+      assertTrue( "testListRunLocalGuiceBasedScripts null error !!!",
+          (Boolean) binding.getVariable( "output" ) );
 
     }
     catch (Exception ex)

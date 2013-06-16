@@ -399,8 +399,8 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
    */
   public static class SelectorPredicate<T, E> implements ConclusionPredicate<T>
   {
-    private final ConclusionPredicate<E> predicate;
-    private final Selector<T, E> selector;
+    private ConclusionPredicate<E> predicate;
+    private Selector<T, E> selector;
 
     public SelectorPredicate( ConclusionPredicate<E> predicate, Selector<T, E> selector )
     {
@@ -503,11 +503,7 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
   }
 
   /**
-   * 
-   * @param value
-   * @param clazz
-   * @param returnClazz
-   * @param method
+   *
    * @return FluentConclusionPredicate<T>
    * 
    */
@@ -642,8 +638,12 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
       @Override
       public boolean apply( Object argument )
       {
-        return (boolean) la.call( predicate, new Object[]
-        { argument } );
+        Object result = la.call( predicate, new Object[] { argument } );
+        if (result instanceof Boolean) {
+            boolean res = (Boolean)result;
+            return  res;
+        }
+        throw new IllegalArgumentException("result should be boolean");
       }
     };
   }

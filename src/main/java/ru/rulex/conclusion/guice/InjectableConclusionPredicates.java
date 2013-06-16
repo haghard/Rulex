@@ -23,7 +23,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class InjectableConclusionPredicates
 {
-
   @Inject
   private InjectableConclusionPredicates()
   {
@@ -98,6 +97,54 @@ public final class InjectableConclusionPredicates
     public String toString()
     {
       return String.format( "%s $more ", parameter );
+    }
+  }
+
+  public static class InjectableMoreOrEqualsConclusionPredicate<T extends Comparable<? super T>> implements
+    ConclusionPredicate<T> 
+  {
+    private final T parameter;
+
+    @Inject
+    public InjectableMoreOrEqualsConclusionPredicate( T parameter )
+    {
+      this.parameter = parameter;
+    }
+    
+    @Override
+    public boolean apply( T argument )
+    {
+      return parameter.compareTo( argument ) >= 0;
+    }
+
+    @Override
+    public String toString()
+    {
+      return String.format( "%s $moreOrEquals ", parameter );
+    }
+  }
+
+  public static class InjectableLessOrEqualsConclusionPredicate<T extends Comparable<? super T>> implements
+    ConclusionPredicate<T> 
+  {
+    private final T parameter;
+
+    @Inject
+    public InjectableLessOrEqualsConclusionPredicate( T parameter )
+    {
+      this.parameter = parameter;
+    }
+    
+    @Override
+    public boolean apply( T argument )
+    {
+      return parameter.compareTo( argument ) <= 0;
+    }
+  
+    @Override
+    public String toString()
+    {
+      return String.format( "%s $lessOrEquals ", parameter );
     }
   }
 

@@ -9,24 +9,31 @@ import ru.rulex.conclusion.dagger.PredicateCreators.PredicateCreator;
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 import ru.rulex.conclusion.dagger.PredicateCreators.LessPredicateCreator;
 import ru.rulex.conclusion.dagger.PredicateCreators.MorePredicateCreator;
+import ru.rulex.conclusion.dagger.PredicateCreators.MoreOrEqualsPredicateCreator;
+import ru.rulex.conclusion.dagger.PredicateCreators.LessOrEqualsPredicateCreator;
+
+import static dagger.ObjectGraph.create;
+import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 @Module(
     injects = ConclusionPredicate.class,
     library = true)
 @SuppressWarnings("rawtypes")
-public final class DaggerUnit
+public final class DaggerPredicateModule
 {
-  private static ImmutableMap<LogicOperation, PredicateCreator> map;
+  private static ImmutableMap<LogicOperation, PredicateCreator<?>> map;
   private final ValueSuppler<? extends Comparable<?>> suppler = Generefier.INSTANCE.generify();
   private PredicateCreator builder;
   private Comparable<?> value;
-  private Selector<Object, Comparable> selector;
+  private Selector<Object, Comparable<?>> selector;
 
   static
   {
-    ImmutableMap.Builder<LogicOperation, PredicateCreator> mapBuilder = ImmutableMap.builder();
+    ImmutableMap.Builder<LogicOperation, PredicateCreator<?>> mapBuilder = ImmutableMap.builder();
     mapBuilder.put( LogicOperation.lessThan, builderInstance( LogicOperation.lessThan ) );
     mapBuilder.put( LogicOperation.moreThan, builderInstance( LogicOperation.moreThan ) );
+    mapBuilder.put( LogicOperation.lessOrEquals, builderInstance( LogicOperation.lessOrEquals ) );
+    mapBuilder.put( LogicOperation.moreOrEquals, builderInstance( LogicOperation.moreOrEquals ) );
     map = mapBuilder.build();
   }
 
@@ -40,33 +47,35 @@ public final class DaggerUnit
       return (E) new LessPredicateCreator<T>();
     case moreThan:
       return (E) new MorePredicateCreator<T>();
+    case moreOrEquals:
+      return (E) new MoreOrEqualsPredicateCreator<T>();
+    case lessOrEquals:
+      return (E) new LessOrEqualsPredicateCreator<T>();
     default:
       throw new IllegalArgumentException( "Invalid operation" );
     }
   }
 
-  protected <T> DaggerUnit( Comparable<?> value, PredicateCreator<?> builder, Selector<Object, T> selector )
+  protected <T extends Comparable<? super T>> DaggerPredicateModule( Comparable<?> value, PredicateCreator<?> builder, 
+      Selector<Object, Comparable<?>> selector )
   {
     this.value = value;
     this.builder = builder;
-    this.selector = (Selector<Object, Comparable>) selector;
+    this.selector = selector;
   }
 
-  public <T extends Comparable> DaggerUnit( T pvalue, Selector<Object, T> selector, LogicOperation operation )
+  public <T extends Comparable<? super T>> DaggerPredicateModule( T value, Selector<Object,
+      Comparable<?>> selector, LogicOperation operation )
   {
-    this( pvalue, map.get( operation ), selector );
-  }
-
-  protected DaggerUnit less(Comparable<?> value, PredicateCreator<?> builder)
-  {
-    return new DaggerUnit(value, builder, selector);
+    this( value, map.get( operation ), selector );
   }
 
   @Provides
   @SuppressWarnings({"unchecked" })
   ConclusionPredicate predicate()
   {
-    ConclusionPredicate conclusionPredicate = ConclusionPredicate.class.cast( builder.createPredicate( suppler.supply( value ) ) );
+    final ConclusionPredicate conclusionPredicate = callOn( ConclusionPredicate.class,
+        ConclusionPredicate.class.cast(builder.createPredicate(suppler.supply(value))));
     return new SelectorPredicate( conclusionPredicate, selector );
   }
 }
