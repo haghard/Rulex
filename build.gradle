@@ -11,7 +11,6 @@ ext {
   localRepo = 'file://localhost/Volumes/Code/apache-maven-3.0.4/repository'
 
   javaCompilerExecutable = System.env['JAVA_HOME'] ? System.env['JAVA_HOME'] + '/bin/javac' : 'javac'
-  //javaCompilerExecutable = '/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home/bin/javac'
 }
 
 defaultTasks 'build'
@@ -170,6 +169,8 @@ dependencies {
   compile 'com.squareup.dagger:dagger:1.0.1'
   compile 'com.squareup.dagger:dagger-compiler:1.0.1'
 
+  testCompile 'com.squareup.dagger:dagger:1.0.1'
+  testCompile 'com.squareup.dagger:dagger-compiler:1.0.1'
   testCompile group: 'org.testng', name: 'testng', version: '6.8'
   // Add at least version 4.8 of JUnit as dependency.
   testCompile 'junit:junit:[4.8,)'
@@ -246,6 +247,17 @@ task testGroovyScripts(type: Test) {
   jvmArgs "-XX:-UseSplitVerifier", "-XX:MaxPermSize=256m"
   beforeTest { descriptor -> logger.lifecycle("Running test: " + descriptor) }
   onOutput { descriptor, event -> logger.lifecycle("Test: " + descriptor + " out/err: " + event.message ) }
+}
+
+//don't use for now
+task testDagger(type: Test) {
+    useJUnit()
+    //ignoreFailures = true
+    include '**/Dagger*'
+    maxHeapSize = "512m"
+    jvmArgs "-XX:-UseSplitVerifier", "-XX:MaxPermSize=256m"
+    beforeTest { descriptor -> logger.lifecycle("Running test: " + descriptor) }
+    onOutput { descriptor, event -> logger.lifecycle("Test: " + descriptor + " out/err: " + event.message ) }
 }
 
 //usage gradle clean testTestSet -PtestSet=**/Test*
