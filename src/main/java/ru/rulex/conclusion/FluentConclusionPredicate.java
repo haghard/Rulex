@@ -16,7 +16,7 @@
  */
 package ru.rulex.conclusion;
 
-import com.google.common.reflect.Invokable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
@@ -24,13 +24,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import com.google.common.reflect.Invokable;
 import org.apache.log4j.Logger;
+
+import ru.rulex.conclusion.MoreSelectors.TypeSafeSelector;
 import ru.rulex.external.JvmBasedLanguageAdapter;
-import ru.rulex.conclusion.MoreSelectors.*;
 import ru.rulex.conclusion.RulexMatchersDsl.AccessorDescriptor;
 import ru.rulex.conclusion.RulexMatchersDsl.Argument;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 
 /**
@@ -317,13 +318,6 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
     return new SelectorPredicate<T, E>( predicate, selector );
   }
 
-  /**
-   * 
-   * @param selectorArgument
-   * @param predicate
-   * @param clazz
-   * @return ConclusionPredicate<T>
-   */
   public static <T, E> ConclusionPredicate<T> query( E selectorArgument,
       ConclusionPredicate<E> predicate, Class<T> clazz )
   {
