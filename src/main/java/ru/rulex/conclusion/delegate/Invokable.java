@@ -91,6 +91,12 @@ abstract class Invokable<T, E>
     {
       return (E) method.invoke( receiver, arguments );
     }
+
+    @Override
+    public String toString()
+    {
+      return method.getName();
+    }
   }
 
   static final class InvokableSelector<T, E> implements Selector<T, E>

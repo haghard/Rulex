@@ -41,8 +41,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
-import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static ru.rulex.conclusion.RulexMatchersDsl.*;
+import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;

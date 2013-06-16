@@ -1,4 +1,4 @@
-package ru.rulex.conclusion;
+package ru.rulex.matchers;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
@@ -9,13 +9,15 @@ import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
-import ru.rulex.matchers.AssertionAwareListener;
-import ru.rulex.matchers.RulexObjectMatcher;
-import ru.rulex.matchers.RulexAnalyzer;
-import ru.rulex.matchers.RulexMatcher;
-import ru.rulex.matchers.RulexMatchersBuilder;
 
-public class TestRulexApi
+import ru.rulex.conclusion.Model;
+import ru.rulex.matchers.RulexMatcher;
+import ru.rulex.matchers.RulexAnalyzer;
+import ru.rulex.matchers.RulexMatchersBuilder;
+import ru.rulex.matchers.AssertionAwareListener;
+import static ru.rulex.matchers.RulexObjectMatcher.projection;
+
+public class RulexMatchersTest
 {
   @Test
   public void testRulexMatcherChainCalls()
@@ -54,7 +56,7 @@ public class TestRulexApi
     final Model model = Model.values( 1, 2 );
 
     // separate configuration from processing
-    RulexAnalyzer analyzed = RulexObjectMatcher.projection( Model.class ).assertThat( matcher )
+    RulexAnalyzer analyzed = projection( Model.class ).assertThat( matcher )
         .on( model );
     analyzed.analyze( new AssertionAwareListener()
     {
@@ -102,7 +104,7 @@ public class TestRulexApi
 
     RulexMatcher<Model> matcher = modelSelector( callOn( Model.class ).getInteger() ).moreThan( 50 );
 
-    RulexObjectMatcher.projection( Model.class ).forEach( filter ).assertThat( matcher ).in( list )
+    projection( Model.class ).forEach( filter ).assertThat( matcher ).in( list )
         .analyze( new AssertionAwareListener()
         {
           @Override

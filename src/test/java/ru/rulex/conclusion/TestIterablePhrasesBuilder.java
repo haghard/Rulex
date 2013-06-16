@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 import static ru.rulex.conclusion.FluentConclusionPredicate.query;
 import static ru.rulex.conclusion.FluentConclusionPredicate.typeSafeQuery;
 import static ru.rulex.conclusion.FluentConclusionPredicate.number;
+import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ import ru.rulex.conclusion.PhraseBuildersFacade.IterableOrientedPhrasesBuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import static ru.rulex.conclusion.RulexMatchersDsl.*;
+
 
 public class TestIterablePhrasesBuilder
 {

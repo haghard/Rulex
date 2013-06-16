@@ -22,6 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
+import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
 import java.util.Collection;
 import org.junit.Test;
@@ -41,7 +42,6 @@ import ru.rulex.conclusion.FluentConclusionPredicate;
 import ru.rulex.conclusion.PhraseExecutionException;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractIterableOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.ImperativeIterableOrientedPhrasesBuilder;
-import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
 public class TestImperativeIterableOrientedPhrasesBuilder
 {

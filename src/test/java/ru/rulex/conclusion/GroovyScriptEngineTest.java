@@ -108,7 +108,7 @@ public class GroovyScriptEngineTest
       binding.setVariable( "list", list );
       binding.setVariable( "value", targetId + 1 );
       gse.run( "ListGroovyScript.groovy", binding );
-      assertTrue( "testListRunLocalGuiceBasedScripts null error !!!",
+      assertFalse( "testListRunLocalGuiceBasedScripts null error !!!",
           (Boolean) binding.getVariable( "output" ) );
 
     }

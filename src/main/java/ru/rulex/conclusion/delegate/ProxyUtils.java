@@ -19,8 +19,13 @@ package ru.rulex.conclusion.delegate;
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.JavaCglibInvocInterceptor;
 import ru.rulex.conclusion.Selector;
+import ru.rulex.conclusion.dagger.SelectorKeeper;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+
+import org.apache.log4j.Logger;
+
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.Reflection;
 import net.sf.cglib.proxy.Enhancer;
@@ -28,7 +33,7 @@ import net.sf.cglib.proxy.MethodInterceptor;
 
 public class ProxyUtils
 {
-
+  private static final Logger logger = Logger.getLogger( ProxyUtils.class );
   private static final ThreadLocal<InvocationManager> invocationManager = new ThreadLocal<InvocationManager>();
 
   private static <T> InvocationManager threadSafe()
@@ -67,8 +72,16 @@ public class ProxyUtils
     return Invokable.<T, E> invokableSelector( invokable );
   }
 
-  @SuppressWarnings("unchecked")
-  public static <T> T callOn(Class<T> clazz, final T original)
+  public static <T, E> SelectorKeeper toCastedSelector( E ignoredValue )
+  {
+    final Invokable<T, E> invokable = ProxyUtils.<T, E> poolInvokable();
+    Preconditions.checkNotNull( invokable );
+    SelectorKeeper.INSTANCE.setDelegate(Invokable.invokableSelector( invokable ));
+    SelectorKeeper.INSTANCE.setExpressionClass( invokable.toString()  );
+    return SelectorKeeper.INSTANCE;
+  }
+
+  public static <T> T callOn( Class<T> clazz, final T original )
   {
     return JavaReflectionImposterizer.INSTANCE.imposterise( clazz, original );
   }
@@ -111,9 +124,8 @@ public class ProxyUtils
     @SuppressWarnings("unchecked")
     public <T> T imposterise( Class<T> mockedType, Class<?>... types )
     {
-      return  canImposterise( mockedType ) ?
-        createNativeJavaProxy(mockedType, new PushableHandler()) :
-        (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
+      return canImposterise( mockedType ) ? createNativeJavaProxy( mockedType, new PushableHandler() )
+          : (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
     }
 
     private Class<?>[] prepend( Class<?> first, Class<?>... rest )
@@ -128,18 +140,18 @@ public class ProxyUtils
     @SuppressWarnings("unchecked")
     public <T> T imposterise( Class<T> mockedType, final T original, Class<?>... types )
     {
-      return canImposterise( mockedType ) ? 
-          createNativeJavaProxy( mockedType, new InterceptableHandler<T>( original )) :
-          (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
+      return canImposterise( mockedType ) ? createNativeJavaProxy( mockedType, new InterceptableHandler<T>(
+          original ) ) : (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
     }
   }
 
-  private static <T> T createNativeJavaProxy(Class<T> mockedType, InvocationHandler interceptor) 
+  private static <T> T createNativeJavaProxy( Class<T> mockedType, InvocationHandler interceptor )
   {
-    //guava way instead Proxy.newProxyInstance(classLoader, interfaces, interceptor);
+    // guava way instead Proxy.newProxyInstance(classLoader, interfaces,
+    // interceptor);
     return Reflection.newProxy( mockedType, interceptor );
   }
-  
+
   private static Enhancer createEnhancer( MethodInterceptor interceptor, Class<?> clazz,
       Class<?>... interfaces )
   {
@@ -151,11 +163,12 @@ public class ProxyUtils
     return enhancer;
   }
 
-  //TODO: change name
+  // TODO: change name
   private static class InterceptableHandler<T> implements InvocationHandler
   {
     final T original;
-    InterceptableHandler(T original)
+
+    InterceptableHandler( T original )
     {
       this.original = original;
     }
@@ -164,12 +177,12 @@ public class ProxyUtils
     {
       return method.getName().equals( "apply" ) && (method.getParameterTypes()[0] == Object.class);
     }
-    
+
     @Override
     public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
     {
-      if ( isApplyMethod( method ) ) 
-        System.out.println(String.format( "%s %s", proxy.toString(), args[0] ) );
+      if ( isApplyMethod( method ) )
+        logger.info( String.format( "%s %s", proxy.toString(), args[0] ) );
 
       return method.invoke( original, args );
     }

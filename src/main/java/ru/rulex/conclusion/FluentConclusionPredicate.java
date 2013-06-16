@@ -26,9 +26,9 @@ import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import ru.rulex.external.JvmBasedLanguageAdapter;
+import ru.rulex.conclusion.MoreSelectors.*;
 import ru.rulex.conclusion.RulexMatchersDsl.AccessorDescriptor;
 import ru.rulex.conclusion.RulexMatchersDsl.Argument;
-import ru.rulex.conclusion.MoreSelectors.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;

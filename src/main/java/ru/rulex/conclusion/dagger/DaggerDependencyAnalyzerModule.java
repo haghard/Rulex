@@ -4,12 +4,10 @@ import java.lang.reflect.Array;
 
 import dagger.Module;
 import dagger.Provides;
+import ru.rulex.conclusion.AssertionUnit;
 import ru.rulex.conclusion.Phrases;
 import ru.rulex.conclusion.AbstractPhrase;
-import ru.rulex.conclusion.ConclusionPredicate;
-import ru.rulex.conclusion.Selector;
 import ru.rulex.conclusion.delegate.ProxyUtils;
-import ru.rulex.conclusion.guice.SimpleAssertionUnit;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerEventOrientedPhrasesBuilder;
 import static dagger.ObjectGraph.create;
@@ -17,6 +15,7 @@ import static dagger.ObjectGraph.create;
 @Module( 
     injects = AbstractEventOrientedPhrasesBuilder.class,
     library = true)
+//<T extends Comparable<? super T>>
 public final class DaggerDependencyAnalyzerModule
 {
   private final AbstractEventOrientedPhrasesBuilder phraseBuilder;
@@ -53,31 +52,25 @@ public final class DaggerDependencyAnalyzerModule
 
   public static <T extends Comparable<? super T>> DaggerPredicateModule $less( final T value, final T argument )
   {
-    return new DaggerPredicateModule( value, ProxyUtils.<Object, Comparable<?>>toSelector( argument ),
-        LogicOperation.lessThan );
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <T extends Comparable<? super T>> DaggerPredicateModule $lessMock( final T value, MockModule mockModule ) {
-    return new DaggerPredicateModule( value, create( mockModule ).get( Selector.class ),
+    return new DaggerPredicateModule( value, ProxyUtils.toCastedSelector( argument ),
         LogicOperation.lessThan );
   }
 
   public static <T extends Comparable<? super T>> DaggerPredicateModule $more( final T value, final T argument )
   {
-    return new DaggerPredicateModule( value, ProxyUtils.<Object, Comparable<?>>toSelector( argument ),
+    return new DaggerPredicateModule( value, ProxyUtils.toCastedSelector( argument ),
         LogicOperation.moreThan );
   }
 
   public static <T extends Comparable<? super T>> DaggerPredicateModule $lessOrEquals( final T value, final T argument )
   {
-    return new DaggerPredicateModule( value, ProxyUtils.<Object, Comparable<?>>toSelector( argument ),
+    return new DaggerPredicateModule( value, ProxyUtils.toCastedSelector( argument ),
         LogicOperation.lessOrEquals );
   }
 
   public static <T extends Comparable<? super T>> DaggerPredicateModule $moreOrEquals( final T value, final T argument )
   {
-    return new DaggerPredicateModule( value, ProxyUtils.<Object, Comparable<?>>toSelector( argument ),
+    return new DaggerPredicateModule( value, ProxyUtils.toCastedSelector( argument ),
         LogicOperation.moreOrEquals );
   }
 
@@ -89,11 +82,10 @@ public final class DaggerDependencyAnalyzerModule
       fillPhraseFrom( module );
   }
 
-  @SuppressWarnings("unchecked")
-  private <T extends Comparable<? super T>> void fillPhraseFrom( DaggerPredicateModule element )
-  {
-    ConclusionPredicate<T> predicate = create( element ).get( ConclusionPredicate.class );
-    phrase.addUnit( new SimpleAssertionUnit( predicate, "desc" ) );
+  private void fillPhraseFrom( DaggerPredicateModule element )
+  {    
+    AssertionUnit ex = create( element ).get( element.getExpressionClass() );
+    phrase.addUnit( ex );
   }
 
   @Provides AbstractEventOrientedPhrasesBuilder getPhraseBuilder()

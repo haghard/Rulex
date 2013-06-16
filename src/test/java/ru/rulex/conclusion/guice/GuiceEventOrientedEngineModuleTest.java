@@ -14,10 +14,13 @@
  * limitations under the License.
  *
  */
-package ru.rulex.conclusion;
+package ru.rulex.conclusion.guice;
 
 import org.junit.Test;
 import com.google.inject.Injector;
+
+import ru.rulex.conclusion.Model;
+import ru.rulex.conclusion.PhraseBuildersFacade;
 import ru.rulex.conclusion.Phrases;
 import ru.rulex.conclusion.Selector;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
