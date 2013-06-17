@@ -3,11 +3,11 @@ package ru.rulex.conclusion.dagger;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import ru.rulex.conclusion.AssertionUnit;
 import ru.rulex.conclusion.Selector;
-
 import ru.rulex.conclusion.dagger.AssertionUnits.IntExpression;
 import ru.rulex.conclusion.dagger.AssertionUnits.StringExpression;
 import ru.rulex.conclusion.dagger.AssertionUnits.FloatExpression;
@@ -18,18 +18,21 @@ public enum SelectorKeeper implements Selector<Object, Object>
   INSTANCE
   {
 
-    private ImmutableMap<String, Class<? extends AssertionUnit>> map = ImmutableMap.of( "getInteger",
+    //Map for association Class MethodName 
+    final ImmutableMap<String, Class<? extends AssertionUnit>> map = ImmutableMap.of( "getInteger",
         IntExpression.class, "getOtherInteger", IntExpression.class, "getFloat", FloatExpression.class,
         "", StringExpression.class );
 
-    private Queue<Class<? extends AssertionUnit>> classesQueue = new ArrayDeque<>();
+    final Queue<Class<? extends AssertionUnit>> classesQueue = new ArrayDeque<>();
 
-    private Queue<Selector> selectorsQueue = new ArrayDeque<>();
-    
+    final Queue<Selector> selectorsQueue = new ArrayDeque<>();
+
     @Override
+    @SuppressWarnings("unchecked")
     public Object select( Object argument )
     {
        Selector selector = selectorsQueue.poll();
+       Preconditions.checkNotNull( selector );
        return selector.select( argument );
     }
 
@@ -57,6 +60,7 @@ public enum SelectorKeeper implements Selector<Object, Object>
 
   public abstract void setExpressionClass( String methodName );
 
+  @SuppressWarnings("unchecked")
   <E, T> Selector<E, T> cast()
   {
     return (Selector<E, T>) this;
