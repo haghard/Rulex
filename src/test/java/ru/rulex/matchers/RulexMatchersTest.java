@@ -4,6 +4,10 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static ru.rulex.matchers.RulexObjectMatcher.selector;
 
+import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.fest.assertions.api.Assertions;
 import org.hamcrest.Matcher;
 import org.junit.Test;

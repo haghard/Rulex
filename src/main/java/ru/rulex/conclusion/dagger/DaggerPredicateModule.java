@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableMap;
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.dagger.AssertionUnits.IntExpression;
 import ru.rulex.conclusion.dagger.AssertionUnits.FloatExpression;
-import ru.rulex.conclusion.dagger.AssertionUnits.StringExpression;
 import ru.rulex.conclusion.dagger.PredicateCreators.PredicateCreator;
 import ru.rulex.conclusion.dagger.PredicateCreators.LessPredicateCreator;
 import ru.rulex.conclusion.dagger.PredicateCreators.MorePredicateCreator;
@@ -25,7 +24,7 @@ import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 public class DaggerPredicateModule
 {
   private static ImmutableMap<LogicOperation, PredicateCreator<?>> map;
-  private final ValueSuppler<Comparable<?>> suppler = Generefier.INSTANCE.generify();
+  private final ValueSuppler<Comparable<?>> suppler = Generefier.INSTANCE.withNarrowType();
   private PredicateCreator builder;
   private Comparable<?> value;
   private SelectorKeeper selector;

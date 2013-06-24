@@ -10,7 +10,7 @@ ext {
   githubProjectName = project.name
   localRepo = 'file://localhost/Volumes/Code/apache-maven-3.0.4/repository'
 
-  javaCompilerExecutable = System.env['JAVA_HOME'] ? System.env['JAVA_HOME'] + '/bin/javac' : 'javac'
+  javaCompilerExecutable = System.env['JAVA_HOME'] ? System.env['JAVA_HOME'] + '/bin/javac' : 'javac' 
 }
 
 defaultTasks 'build'

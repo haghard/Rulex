@@ -12,7 +12,7 @@ public enum Generefier implements ValueSuppler<Object>
   };
 
   @SuppressWarnings("unchecked") // these Object ValueSuppler work for any T
-  <T> ValueSuppler<T> generify()
+  <T> ValueSuppler<T> withNarrowType()
   {
     return (ValueSuppler<T>) this;
   }

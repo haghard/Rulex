@@ -76,7 +76,7 @@ public class ProxyUtils
   {
     final Invokable<T, E> invokable = ProxyUtils.<T, E> poolInvokable();
     Preconditions.checkNotNull( invokable );
-    SelectorKeeper.INSTANCE.setDelegate(Invokable.invokableSelector( invokable ));
+    SelectorKeeper.INSTANCE.setDelegate( Invokable.invokableSelector( invokable ) );
     SelectorKeeper.INSTANCE.setExpressionClass( invokable.toString()  );
     return SelectorKeeper.INSTANCE;
   }
