@@ -8,9 +8,9 @@ ext {
   siteUrl = 'http://xxxx.github.com/Some Framework'
   sourceUrl = 'git://github.com/haghard/Rulex.git'
   githubProjectName = project.name
-  localRepo = 'file://localhost/Volumes/Code/apache-maven-3.0.4/repository'
+  localRepo = 'file://localhost/Volumes/Data/dev_build_tools/apache-maven-3.0.4/repository'
 
-  javaCompilerExecutable = System.env['JAVA_HOME'] ? System.env['JAVA_HOME'] + '/bin/javac' : 'javac' 
+  javaCompilerExecutable = System.env['JAVA_HOME'] ? System.env['JAVA_HOME'] + '/bin/javac' : 'javac'
 }
 
 defaultTasks 'build'

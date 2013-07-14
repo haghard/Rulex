@@ -72,12 +72,12 @@ public class DaggerPredicateModule
     this( value, map.get( operation ), selector );
   }
 
-  @Provides Selector<Object, Integer> iSelector()
+  @Provides Selector<Object, Integer> intSelector()
   {
     return selector.cast(); 
   }
 
-  @Provides Selector<Object, Float> fSelector()
+  @Provides Selector<Object, Float> floatSelector()
   {
     return selector.cast(); 
   }

@@ -13,8 +13,8 @@ public final class AssertionUnits
 
   static class IntExpression<T> implements AssertionUnit<T>
   {
-    final ConclusionPredicate<Integer> predicate;
-    final Selector<Object, Integer> selector;
+    private final ConclusionPredicate<Integer> predicate;
+    private final Selector<Object, Integer> selector;
 
     @Inject
     IntExpression( ConclusionPredicate<Integer> predicate, Selector<Object, Integer> selector )
@@ -32,8 +32,8 @@ public final class AssertionUnits
 
   static class FloatExpression<T> implements AssertionUnit<T>
   {
-    final ConclusionPredicate<Float> predicate;
-    final Selector<Object, Float> selector;
+    private final ConclusionPredicate<Float> predicate;
+    private final Selector<Object, Float> selector;
 
     @Inject
     FloatExpression( ConclusionPredicate<Float> predicate, Selector<Object, Float> selector )
@@ -51,8 +51,8 @@ public final class AssertionUnits
 
   static class StringExpression<T> implements AssertionUnit<T>
   {
-    final ConclusionPredicate<String> predicate;
-    final Selector<Object, String> selector;
+    private final ConclusionPredicate<String> predicate;
+    private final Selector<Object, String> selector;
 
     @Inject
     StringExpression( ConclusionPredicate<String> predicate, Selector<Object, String> selector )

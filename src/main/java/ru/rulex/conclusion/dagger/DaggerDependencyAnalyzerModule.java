@@ -15,7 +15,6 @@ import static dagger.ObjectGraph.create;
 @Module( 
     injects = AbstractEventOrientedPhrasesBuilder.class,
     library = true)
-//<T extends Comparable<? super T>>
 public final class DaggerDependencyAnalyzerModule
 {
   private final AbstractEventOrientedPhrasesBuilder phraseBuilder;

@@ -53,6 +53,8 @@ public final class ParallelStrategy<T, E extends Exception>
 
   private static final ListeningExecutorService COMPUTATION_EXECUTOR = createComputationExecutor();
 
+  private static final ListeningExecutorService SAME_THREAD_EXECUTOR = MoreExecutors.sameThreadExecutor();
+
   @SuppressWarnings("unchecked")
   private static <X extends CodedException> Function<Exception, X> createMapper(
       final ErrorCode code, final String[] line )
@@ -137,14 +139,12 @@ public final class ParallelStrategy<T, E extends Exception>
   {
     return strategy( new ConclusionFunction<Callable<T>, CheckedFuture<T, X>>()
     {
-      private final ListeningExecutorService ex = MoreExecutors.sameThreadExecutor();
-
       @Override
       public CheckedFuture<T, X> apply( Callable<T> input )
       {
         Function<Exception, X> mapper = createMapper( PhraseErrorCode.ERROR, new String[]
         { "sameThreadStrategy" } );
-        return Futures.makeChecked( ex.submit( input ), mapper );
+        return Futures.makeChecked( SAME_THREAD_EXECUTOR.submit( input ), mapper );
       }
     } );
   }
@@ -202,4 +202,5 @@ public final class ParallelStrategy<T, E extends Exception>
           }
         } ) );
   }
+
 }
