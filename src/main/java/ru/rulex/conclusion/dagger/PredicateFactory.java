@@ -10,14 +10,14 @@ import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessOr
  * @author haghard
  *
  */
-public final class PredicateCreators
+public final class PredicateFactory
 {
-  public interface PredicateCreator<T extends Comparable<? super T>> 
+  public interface Factory<T extends Comparable<? super T>> 
   {
     ConclusionPredicate<T> createPredicate(T value);
   }
 
-  static class LessPredicateCreator<T extends Comparable<? super T>> implements PredicateCreator<T> 
+  static class LessPredicateFactory<T extends Comparable<? super T>> implements Factory<T> 
   {
     @Override
     public InjectableLessConclusionPredicate<T> createPredicate( T value )
@@ -26,7 +26,7 @@ public final class PredicateCreators
     }
   }
 
-  static class MorePredicateCreator<T extends Comparable<? super T>> implements PredicateCreator<T> 
+  static class MorePredicateFactory<T extends Comparable<? super T>> implements Factory<T> 
   {
     @Override
     public InjectableMoreConclusionPredicate<T> createPredicate( T value )
@@ -35,7 +35,7 @@ public final class PredicateCreators
     }
   }
 
-  static class MoreOrEqualsPredicateCreator<T extends Comparable<? super T>> implements PredicateCreator<T>
+  static class MoreOrEqualsPredicateFactory<T extends Comparable<? super T>> implements Factory<T>
   {
     @Override
     public ConclusionPredicate<T> createPredicate( T value )
@@ -44,7 +44,7 @@ public final class PredicateCreators
     }
   }
 
-  static class LessOrEqualsPredicateCreator<T extends Comparable<? super T>> implements PredicateCreator<T>
+  static class LessOrEqualsPredicateFactory<T extends Comparable<? super T>> implements Factory<T>
   {
     @Override
     public ConclusionPredicate<T> createPredicate( T value )

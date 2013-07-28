@@ -8,7 +8,7 @@ import ru.rulex.conclusion.ConclusionStatePathTrace;
 import ru.rulex.conclusion.Selector;
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 
-public final class AssertionUnits
+public final class DaggerAssertionUnits
 {
 
   static class IntExpression<T> implements AssertionUnit<T>

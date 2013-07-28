@@ -8,9 +8,9 @@ import com.google.common.collect.ImmutableMap;
 
 import ru.rulex.conclusion.AssertionUnit;
 import ru.rulex.conclusion.Selector;
-import ru.rulex.conclusion.dagger.AssertionUnits.IntExpression;
-import ru.rulex.conclusion.dagger.AssertionUnits.StringExpression;
-import ru.rulex.conclusion.dagger.AssertionUnits.FloatExpression;
+import ru.rulex.conclusion.dagger.DaggerAssertionUnits.IntExpression;
+import ru.rulex.conclusion.dagger.DaggerAssertionUnits.StringExpression;
+import ru.rulex.conclusion.dagger.DaggerAssertionUnits.FloatExpression;
 
 @SuppressWarnings("rawtypes")
 public enum SelectorKeeper implements Selector<Object, Object>
@@ -18,22 +18,22 @@ public enum SelectorKeeper implements Selector<Object, Object>
   INSTANCE
   {
 
-    //Map for association Class MethodName 
+    // Map for association Class MethodName
     final ImmutableMap<String, Class<? extends AssertionUnit>> map = ImmutableMap.of( "getInteger",
-        IntExpression.class, "getOtherInteger", IntExpression.class, "getFloat", FloatExpression.class,
-        "", StringExpression.class );
+        IntExpression.class, "getOtherInteger", IntExpression.class, "getFloat", FloatExpression.class, "",
+        StringExpression.class );
 
-    final Queue<Class<? extends AssertionUnit>> classesQueue = new ArrayDeque<>();
+    final Queue<Class<? extends AssertionUnit>> classesQueue = new ArrayDeque<Class<? extends AssertionUnit>>();
 
-    final Queue<Selector> selectorsQueue = new ArrayDeque<>();
+    final Queue<Selector> selectorsQueue = new ArrayDeque<Selector>();
 
     @Override
     @SuppressWarnings("unchecked")
     public Object select( Object argument )
     {
-       Selector selector = selectorsQueue.poll();
-       Preconditions.checkNotNull( selector );
-       return selector.select( argument );
+      Selector selector = selectorsQueue.poll();
+      Preconditions.checkNotNull( selector );
+      return selector.select( argument );
     }
 
     @Override

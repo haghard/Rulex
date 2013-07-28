@@ -1,68 +1,58 @@
 package ru.rulex.conclusion.dagger;
 
-import dagger.Module;
-import dagger.Provides;
-import ru.rulex.conclusion.AssertionUnit;
 import ru.rulex.conclusion.Selector;
+import ru.rulex.conclusion.AssertionUnit;
 import com.google.common.collect.ImmutableMap;
 import ru.rulex.conclusion.ConclusionPredicate;
-import ru.rulex.conclusion.dagger.AssertionUnits.IntExpression;
-import ru.rulex.conclusion.dagger.AssertionUnits.FloatExpression;
-import ru.rulex.conclusion.dagger.PredicateCreators.PredicateCreator;
-import ru.rulex.conclusion.dagger.PredicateCreators.LessPredicateCreator;
-import ru.rulex.conclusion.dagger.PredicateCreators.MorePredicateCreator;
-import ru.rulex.conclusion.dagger.PredicateCreators.MoreOrEqualsPredicateCreator;
-import ru.rulex.conclusion.dagger.PredicateCreators.LessOrEqualsPredicateCreator;
+import ru.rulex.conclusion.dagger.PredicateFactory.Factory;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
+import ru.rulex.conclusion.dagger.DaggerAssertionUnits.IntExpression;
+import ru.rulex.conclusion.dagger.DaggerAssertionUnits.FloatExpression;
+import ru.rulex.conclusion.dagger.PredicateFactory.LessPredicateFactory;
+import ru.rulex.conclusion.dagger.PredicateFactory.MorePredicateFactory;
+import ru.rulex.conclusion.dagger.PredicateFactory.MoreOrEqualsPredicateFactory;
+import ru.rulex.conclusion.dagger.PredicateFactory.LessOrEqualsPredicateFactory;
 
-
-//StringExpression.class 
-@Module(
-    injects = { IntExpression.class, FloatExpression.class},
+ 
+@dagger.Module(
+    injects = { IntExpression.class, FloatExpression.class }, 
     library = true)
 @SuppressWarnings("rawtypes")
 public class DaggerPredicateModule
 {
-  private static ImmutableMap<LogicOperation, PredicateCreator<?>> map;
-  private final ValueSuppler<Comparable<?>> suppler = Generefier.INSTANCE.withNarrowType();
-  private PredicateCreator builder;
   private Comparable<?> value;
-  private SelectorKeeper selector;
+  private final Factory factory;
+  private final SelectorKeeper selector;
+  private static ImmutableMap<LogicOperation, Factory<?>> map;
 
   static
   {
-    ImmutableMap.Builder<LogicOperation, PredicateCreator<?>> mapBuilder = ImmutableMap.builder();
-    mapBuilder.put( LogicOperation.lessThan, builderInstance( LogicOperation.lessThan ) );
-    mapBuilder.put( LogicOperation.moreThan, builderInstance( LogicOperation.moreThan ) );
-    mapBuilder.put( LogicOperation.lessOrEquals, builderInstance( LogicOperation.lessOrEquals ) );
-    mapBuilder.put( LogicOperation.moreOrEquals, builderInstance( LogicOperation.moreOrEquals ) );
+    ImmutableMap.Builder<LogicOperation, Factory<?>> mapBuilder = ImmutableMap.builder();
+    mapBuilder.put( LogicOperation.lessThan, newInstance( LogicOperation.lessThan ) );
+    mapBuilder.put( LogicOperation.moreThan, newInstance( LogicOperation.moreThan ) );
+    mapBuilder.put( LogicOperation.lessOrEquals, newInstance( LogicOperation.lessOrEquals ) );
+    mapBuilder.put( LogicOperation.moreOrEquals, newInstance( LogicOperation.moreOrEquals ) );
     map = mapBuilder.build();
   }
-  
+
   @SuppressWarnings("unchecked")
-  static <T extends Comparable<? super T>, E extends PredicateCreator<T>> E builderInstance(
-      LogicOperation operation )
+  static <T extends Comparable<? super T>, E extends Factory<T>> E newInstance( LogicOperation operation )
   {
     switch (operation)
     {
-    case lessThan:
-      return (E) new LessPredicateCreator<T>();
-    case moreThan:
-      return (E) new MorePredicateCreator<T>();
-    case moreOrEquals:
-      return (E) new MoreOrEqualsPredicateCreator<T>();
-    case lessOrEquals:
-      return (E) new LessOrEqualsPredicateCreator<T>();
-    default:
-      throw new IllegalArgumentException( "Invalid operation" );
+      case lessThan: return (E) new LessPredicateFactory<T>();
+      case moreThan: return (E) new MorePredicateFactory<T>();
+      case moreOrEquals: return (E) new MoreOrEqualsPredicateFactory<T>();
+      case lessOrEquals: return (E) new LessOrEqualsPredicateFactory<T>();
+      default: throw new IllegalArgumentException( "Unsupported operation in DaggerPredicateModule" );
     }
   }
 
-  protected <T extends Comparable<? super T>> DaggerPredicateModule( T value, PredicateCreator<?> builder, 
+  protected <T extends Comparable<? super T>> DaggerPredicateModule( T value, Factory<?> factory,
       SelectorKeeper selector )
   {
     this.value = value;
-    this.builder = builder;
+    this.factory = factory;
     this.selector = selector;
   }
 
@@ -72,33 +62,42 @@ public class DaggerPredicateModule
     this( value, map.get( operation ), selector );
   }
 
-  @Provides Selector<Object, Integer> intSelector()
+  @dagger.Provides
+  Selector<Object, Integer> intSelector()
   {
-    return selector.cast(); 
+    return selector.cast();
   }
 
-  @Provides Selector<Object, Float> floatSelector()
+  @dagger.Provides
+  Selector<Object, Float> floatSelector()
   {
-    return selector.cast(); 
+    return selector.cast();
   }
 
-  @Provides
-  @SuppressWarnings({"unchecked" })
+  /**
+   * Return ConclusionPredicate with Integer
+   * 
+   * @return ConclusionPredicate
+   */
+  @dagger.Provides
+  @SuppressWarnings({ "unchecked" })
   ConclusionPredicate<Integer> intPredicate()
   {
-    //proxy object with intercepted toString()
-    final ConclusionPredicate<Integer> conclusionPredicate = callOn( ConclusionPredicate.class,
-        ConclusionPredicate.class.cast(builder.createPredicate(suppler.supply(value))));
-    return conclusionPredicate;
+    return callOn( ConclusionPredicate.class, 
+        ConclusionPredicate.class.cast( factory.createPredicate( value ) ) );
   }
 
-  @Provides
-  @SuppressWarnings({"unchecked" })
+  /**
+   * Return ConclusionPredicate with Float
+   * 
+   * @return ConclusionPredicate
+   */
+  @dagger.Provides
+  @SuppressWarnings({ "unchecked" })
   ConclusionPredicate<Float> floatPredicate()
   {
-    final ConclusionPredicate<Float> conclusionPredicate = callOn( ConclusionPredicate.class,
-        ConclusionPredicate.class.cast(builder.createPredicate(suppler.supply(value))));
-    return conclusionPredicate;
+    return callOn( ConclusionPredicate.class,
+        ConclusionPredicate.class.cast( factory.createPredicate(  value ) ) );
   }
 
   public Class<? extends AssertionUnit> getExpressionClass()

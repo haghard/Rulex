@@ -16,9 +16,13 @@
 package ru.rulex.conclusion;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.util.GroovyScriptEngine;
+
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -27,13 +31,12 @@ import static org.junit.Assert.*;
 
 public class GroovyScriptEngineTest
 {
-
-  String[] roots =
-  { "./groovy-script" };
+  String[] roots = { "./groovy-script" };
 
   @Test
   public void testRunLocalGuiceBasedScriptsAll()
   {
+
     GroovyShell groovyShell = new GroovyShell();
     try
     {

@@ -71,7 +71,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
    * adding it in {@code AbstractPhrase}
    * 
    */
-  public static final BindingVisitorAdapter<BindingVisitor> PREDICATE_INJECTION_INTERCEPTOR = new BindingVisitorAdapter<BindingVisitor>()
+  private static final BindingVisitorAdapter<BindingVisitor> PREDICATE_INJECTION_INTERCEPTOR = new BindingVisitorAdapter<BindingVisitor>()
   {
     @Override
     public BindingVisitor asVisitor( final AbstractPhrase<?> phrase )
