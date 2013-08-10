@@ -13,13 +13,13 @@ import ru.rulex.conclusion.dagger.DaggerAssertionUnits.StringExpression;
 import ru.rulex.conclusion.dagger.DaggerAssertionUnits.FloatExpression;
 
 @SuppressWarnings("rawtypes")
-public enum SelectorKeeper implements Selector<Object, Object>
+public enum SelectorPipeline implements Selector<Object, Object>
 {
   INSTANCE
   {
 
     // Map for association Class MethodName
-    final ImmutableMap<String, Class<? extends AssertionUnit>> map = ImmutableMap.of( "getInteger",
+    final ImmutableMap<String, Class<? extends AssertionUnit>> methodToUnitMapping = ImmutableMap.of( "getInteger",
         IntExpression.class, "getOtherInteger", IntExpression.class, "getFloat", FloatExpression.class, "",
         StringExpression.class );
 
@@ -50,7 +50,7 @@ public enum SelectorKeeper implements Selector<Object, Object>
     @Override
     public void setExpressionClass( String methodName )
     {
-      classesQueue.offer( map.get( methodName ) );
+      classesQueue.offer( methodToUnitMapping.get( methodName ) );
     }
   };
 

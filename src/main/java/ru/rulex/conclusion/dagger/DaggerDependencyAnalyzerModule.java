@@ -71,8 +71,9 @@ public final class DaggerDependencyAnalyzerModule
   {
     this.phrase = phrase;
     this.phraseBuilder = new DaggerEventOrientedPhrasesBuilder( phrase );
-    for (DaggerPredicateModule module: array)
+    for (DaggerPredicateModule module: array) {
       fillPhraseFrom( module );
+    }
   }
 
   private void fillPhraseFrom( DaggerPredicateModule element )

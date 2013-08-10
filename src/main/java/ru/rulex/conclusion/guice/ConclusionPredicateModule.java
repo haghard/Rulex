@@ -273,7 +273,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
       return null;
     }
 
-    protected boolean isApplyMethod( Method method )
+    protected boolean isApplyMethodPresent( Method method )
     {
       return method.getName().equals( INTERCEPTOR_METHOD ) && (method.getParameterTypes()[0] == Object.class);
     }
@@ -299,7 +299,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
 
       for ( Method method : klass.getDeclaredMethods() )
       {
-        if ( isApplyMethod( method ) )
+        if ( isApplyMethodPresent( method ) )
         {
           PredicateApplyMethodInterceptor<U, T> interceptor = new PredicateApplyMethodInterceptor<U, T>(
               toStringMethod, (Selector<U, T>) selector );

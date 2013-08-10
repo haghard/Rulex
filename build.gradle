@@ -168,6 +168,7 @@ dependencies {
   
   compile 'com.squareup.dagger:dagger:1.0.1'
   compile 'com.squareup.dagger:dagger-compiler:1.0.1'
+  compile 'org.apache.onami:org.apache.onami.test:1.4.0-incubating'
 
   testCompile 'com.squareup.dagger:dagger:1.0.1'
   testCompile 'com.squareup.dagger:dagger-compiler:1.0.1'

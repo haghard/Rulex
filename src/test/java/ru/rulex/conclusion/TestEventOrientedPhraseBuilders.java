@@ -159,7 +159,7 @@ public class TestEventOrientedPhraseBuilders
     final ParallelStrategy<Boolean, PhraseExecutionException> separateThreadStrategy = ParallelStrategy
         .separateThreadStrategy();
 
-    final Selector<Model, Integer> selector = createSameThMockSelector( mainThread );
+    final Selector<Model, Integer> selector = createSameThreadMockSelector( mainThread );
     final ConclusionPredicate<Integer> predicate = createSameThMockPredicate( mainThread );
 
     AbstractEventOrientedPhrasesBuilder sameThreadBuilder = new EventOrientedPhrasesBuilder()
@@ -171,7 +171,7 @@ public class TestEventOrientedPhraseBuilders
       }
     };
 
-    final Selector<Model, Integer> selector0 = createSeparateThMockSelector( mainThread );
+    final Selector<Model, Integer> selector0 = createSeparateTheadMockSelector( mainThread );
     final ConclusionPredicate<Integer> predicate0 = createSeparateThMockPredicate( mainThread );
 
     AbstractEventOrientedPhrasesBuilder separateThreadBuilder = new EventOrientedPhrasesBuilder()
@@ -198,7 +198,7 @@ public class TestEventOrientedPhraseBuilders
     final ParallelStrategy<Boolean, PhraseExecutionException> separateThreadStrategy = ParallelStrategy
         .separateThreadStrategy();
 
-    final Selector<Model, Integer> selector = createSeparateThMockSelector( mainThread );
+    final Selector<Model, Integer> selector = createSeparateTheadMockSelector( mainThread );
 
     final ConclusionPredicate<Integer> lambda = createSeparateThMockPredicate( mainThread );
 
@@ -386,7 +386,7 @@ public class TestEventOrientedPhraseBuilders
     return predicate;
   }
 
-  private Selector<Model, Integer> createSameThMockSelector( final Thread mainThread )
+  private Selector<Model, Integer> createSameThreadMockSelector( final Thread mainThread )
   {
     final Selector<Model, Integer> selector = mock( Selector.class );
     when( selector.select( any( Model.class ) ) ).thenAnswer( new Answer<Integer>()
@@ -402,7 +402,7 @@ public class TestEventOrientedPhraseBuilders
     return selector;
   }
 
-  private Selector<Model, Integer> createSeparateThMockSelector( final Thread mainThread )
+  private Selector<Model, Integer> createSeparateTheadMockSelector( final Thread mainThread )
   {
     final Selector<Model, Integer> selector = mock( Selector.class );
     when( selector.select( any( Model.class ) ) ).thenAnswer( new Answer<Integer>()

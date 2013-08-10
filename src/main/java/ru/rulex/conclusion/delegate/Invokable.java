@@ -24,8 +24,6 @@ import ru.rulex.conclusion.Selector;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-
 /**
  *
  *
@@ -40,6 +38,8 @@ abstract class Invokable<T, E>
     this.reflectionMember = reflectionMember;
   }
 
+  public abstract Class<E> accessorType();
+
   /**
    * @param receiver
    * @param args
@@ -51,8 +51,7 @@ abstract class Invokable<T, E>
       IllegalAccessException;
 
   @SuppressWarnings("unchecked")
-  public final E invoke( T receiver, Object... args ) throws InvocationTargetException,
-      IllegalAccessException
+  public final E invoke( T receiver, Object... args ) throws InvocationTargetException, IllegalAccessException
   {
     return (E) invokeInternal( receiver, Preconditions.checkNotNull( args ) );
   }
@@ -70,34 +69,7 @@ abstract class Invokable<T, E>
   public static <T, E> Selector<T, E> invokableSelector( Invokable<T, E> invokable )
   {
     return new InvokableSelector<T, E>( invokable );
-  }
-
-  static class MethodInvokable<T, E> extends Invokable<T, E>
-  {
-    private final Method method;
-    private final Object[] arguments;
-
-    MethodInvokable( Method method, Object[] arguments )
-    {
-      super( method );
-      this.method = method;
-      this.arguments = Arrays.copyOf( arguments, arguments.length );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    E invokeInternal( T receiver, Object... args ) throws InvocationTargetException,
-        IllegalAccessException
-    {
-      return (E) method.invoke( receiver, arguments );
-    }
-
-    @Override
-    public String toString()
-    {
-      return method.getName();
-    }
-  }
+  } 
 
   static final class InvokableSelector<T, E> implements Selector<T, E>
   {

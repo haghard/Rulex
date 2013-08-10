@@ -22,7 +22,7 @@ public class DaggerPredicateModule
 {
   private Comparable<?> value;
   private final Factory factory;
-  private final SelectorKeeper selector;
+  private final SelectorPipeline selector;
   private static ImmutableMap<LogicOperation, Factory<?>> map;
 
   static
@@ -49,14 +49,14 @@ public class DaggerPredicateModule
   }
 
   protected <T extends Comparable<? super T>> DaggerPredicateModule( T value, Factory<?> factory,
-      SelectorKeeper selector )
+      SelectorPipeline selector )
   {
     this.value = value;
     this.factory = factory;
     this.selector = selector;
   }
 
-  public <T extends Comparable<? super T>> DaggerPredicateModule( T value, SelectorKeeper selector,
+  public <T extends Comparable<? super T>> DaggerPredicateModule( T value, SelectorPipeline selector,
       LogicOperation operation )
   {
     this( value, map.get( operation ), selector );
