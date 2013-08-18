@@ -1,68 +1,54 @@
 package ru.rulex.matchers;
 
+import org.junit.Test;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
-import static ru.rulex.matchers.RulexObjectMatcher.selector;
-
-import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.Map;
-
+import static ru.rulex.matchers.Rulex.verb;
 import org.fest.assertions.api.Assertions;
 import org.hamcrest.Matcher;
-import org.junit.Test;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-
 import ru.rulex.conclusion.Model;
-import ru.rulex.matchers.RulexMatcher;
-import ru.rulex.matchers.RulexAnalyzer;
-import ru.rulex.matchers.RulexMatchersBuilder;
-import ru.rulex.matchers.AssertionAwareListener;
-import static ru.rulex.matchers.RulexObjectMatcher.projection;
+import static ru.rulex.matchers.Rulex.projection;
 
 public class RulexMatchersTest
 {
   @Test
   public void testRulexMatcherChainCalls()
   {
-    Model model = Model.values( 4, 56.7f );
+    final Model model = Model.values( 4, 56.7f );
 
-    RulexMatcher<Model> matcher0 = selector( Model.class, callOn( Model.class ).getInteger() )
-        .lessThan( 5 ).and(
-            selector( Model.class, callOn( Model.class ).getInteger() ).lessThan( 6 ) );
+    final RulexVerb<Model> verb0 = verb(Model.class, callOn(Model.class).getInteger()).lessThan(5)
+            .and(verb(Model.class, callOn(Model.class).getInteger()).lessThan(6));
 
-    assertThat( matcher0.matches( model ) ).isTrue();
+    assertThat( verb0.matches( model ) ).isTrue();
 
-    RulexMatcher<Model> matcher = selector( Model.class, callOn( Model.class ).getInteger() )
-        .lessThan( 5 ).and(
-            selector( Model.class, callOn( Model.class ).getFloat() ).lessThan( 56.8f ) );
+    final RulexVerb<Model> verb = verb(Model.class, callOn(Model.class).getInteger()).lessThan( 5 )
+            .and(verb(Model.class, callOn(Model.class).getFloat()).lessThan( 56.8f ) );
 
-    assertThat( matcher.matches( model ) ).isTrue();
+    assertThat( verb.matches( model ) ).isTrue();
   }
 
   @Test
   public void shouldBeEqualsOnSameFields()
   {
-    RulexMatcher<Model> matcher = selector( Model.class, callOn( Model.class ).getInteger() )
-        .isEquals( selector( Model.class, callOn( Model.class ).getInteger() ) );
+    final RulexVerb<Model> verb = verb(Model.class, callOn(Model.class).getInteger())
+        .isEquals( verb(Model.class, callOn(Model.class).getInteger()) );
 
-    Model model = Model.values( 4, 5 );
-    assertThat( matcher.matches( model ) ).isTrue();
+    final Model model = Model.values( 4, 5 );
+    assertThat( verb.matches( model ) ).isTrue();
   }
 
   @Test
   public void oneIntegerShouldBeLessOtherInteger()
   {
-    RulexMatcher<Model> matcher = modelSelector( callOn( Model.class ).getInteger() ).lessThan(
-        modelSelector( callOn( Model.class ).getOtherInteger() ) );
-
     final Model model = Model.values( 1, 2 );
 
-    // separate configuration from processing
-    RulexAnalyzer analyzed = projection( Model.class ).assertThat( matcher )
+    //configure specific verb
+    final RulexVerb<Model> verb = modelVerb( callOn(Model.class).getInteger()).lessThan(
+            modelVerb(callOn(Model.class).getOtherInteger()));
+
+    //processing
+    final RulexAnalyzer analyzed = projection( Model.class ).assertThat( verb )
         .on( model );
     analyzed.analyze( new AssertionAwareListener()
     {
@@ -106,9 +92,9 @@ public class RulexMatchersTest
 
     final ImmutableList<Model> list = ImmutableList.of( first, second );
 
-    RulexMatcher<Model> filter = modelSelector( callOn( Model.class ).getInteger() ).lessThan( 122 );
+    RulexVerb<Model> filter = modelVerb(callOn(Model.class).getInteger()).lessThan(122);
 
-    RulexMatcher<Model> matcher = modelSelector( callOn( Model.class ).getInteger() ).moreThan( 50 );
+    RulexVerb<Model> matcher = modelVerb(callOn(Model.class).getInteger()).moreThan(50);
 
     projection( Model.class ).forEach( filter ).assertThat( matcher ).in( list )
         .analyze( new AssertionAwareListener()
@@ -151,9 +137,9 @@ public class RulexMatchersTest
    * @param arg
    * @return
    */
-  public static <E extends Comparable<? super E>> RulexMatchersBuilder<Model> modelSelector(
-      final E arg )
+  public static <E extends Comparable<? super E>> RulexMatchersBuilder<Model> modelVerb(
+          final E arg)
   {
-    return selector( Model.class, arg );
+    return verb(Model.class, arg);
   }
 }

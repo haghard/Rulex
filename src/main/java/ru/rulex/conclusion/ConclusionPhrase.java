@@ -57,7 +57,7 @@ public final class ConclusionPhrase
       final ConclusionPredicate<E> predicate )
   {
     return phrase( termName, value, argumentClass, methodName, predicate,
-        ParallelStrategy.<Boolean, PhraseExecutionException> serial() );
+        ParallelStrategy.<Boolean> serial() );
   }
 
   /**
@@ -73,7 +73,7 @@ public final class ConclusionPhrase
   public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(
       final String termName, final E value, final Class<T> argumentClass, final String methodName,
       final ConclusionPredicate<E> predicate,
-      final ParallelStrategy<Boolean, PhraseExecutionException> pStrategy0 )
+      final ParallelStrategy<Boolean> pStrategy0 )
   {
     return new EventOrientedPhrasesBuilder()
     {
@@ -102,7 +102,7 @@ public final class ConclusionPhrase
     {
       protected void build()
       {
-        rule( phraseSettings.<Boolean, PhraseExecutionException> getParallelStrategy(),
+        rule( phraseSettings.<Boolean> getParallelStrategy(),
             phraseSettings.getTargetClass(), termName ).shouldMatch(
             typeSafeQuery(
                 number( phraseSettings.getTargetClass(), (Class<E>) phraseSettings.getValue()

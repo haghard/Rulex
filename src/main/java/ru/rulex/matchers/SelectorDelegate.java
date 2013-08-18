@@ -16,13 +16,12 @@
  */
 package ru.rulex.matchers;
 
+import com.google.common.base.Supplier;
 import ru.rulex.conclusion.Selector;
 
-public interface SelectorAdapter<T>
+public interface SelectorDelegate<T>
 {
+    Selector<T, ?> selector(T value);
 
-  Selector<T, ?> selector( T value );
-
-  String matcherDisplayName();
-
+    String matcherDisplayName();
 }

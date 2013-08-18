@@ -24,11 +24,10 @@ import com.google.common.collect.Iterables;
 import ru.rulex.conclusion.delegate.ProxyUtils;
 
 /**
- * 
- * @author haghard
- * @param <T>
+ *
+ * @author Vadim Bondarev(haghard84@gmail.com)
  */
-public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRule<T>,
+public final class Rulex<T> implements RulexRuleBuilder<T>, RulexRule<T>,
     RulexAnalyzer
 {
   private final Class<T> clazz;
@@ -36,22 +35,19 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRu
   private Matcher<T> filterMatcher;
   private Iterable<T> iterator;
 
-  private RulexObjectMatcher( Class<T> clazz )
+  private Rulex(Class<T> clazz)
   {
     this.clazz = clazz;
   }
 
   /**
-   * Simple, one level selector
-   * 
-   * @param type
-   * @param arg
-   * @return builder
+   * Factory method
+   * @return RulexMatchersBuilder
    */
-  public static <T, E extends Comparable<? super E>> RulexMatchersBuilder<T> selector(
-      final Class<T> type, final E arg )
+  public static <T, E extends Comparable<? super E>> RulexMatchersBuilder<T> verb(
+          final Class<T> type, final E arg)
   {
-    return new RulexMatchersBuilder<T>( new SelectorAdapter<T>()
+    return new RulexMatchersBuilder<T>( new SelectorDelegate<T>()
     {
       @Override
       public Selector<T, E> selector( final T matched )
@@ -69,7 +65,7 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRu
 
   public static <T> RulexRuleBuilder<T> projection( Class<T> clazz )
   {
-    return new RulexObjectMatcher<T>( clazz );
+    return new Rulex<T>( clazz );
   }
 
   @Override
@@ -87,14 +83,6 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRu
     this.assertionMatcher = toStatefulMatcher( assertionMatcher );
 
     return this;
-  }
-
-  private RulexMatcher<T> toStatefulMatcher( Matcher<T> matcher )
-  {
-    if ( matcher instanceof RulexMatcher )
-      return ((RulexMatcher<T>) matcher).toStateful();
-    else
-      throw new IllegalArgumentException( "This type can't be adapted to stateful matcher" );
   }
 
   @Override
@@ -162,7 +150,7 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRu
 
   private Matcher<T> trueMatcher()
   {
-    return new RulexMatcher<T>( null )
+    return new RulexVerb<T>( null )
     {
       @Override
       protected boolean matchesSafely( final T item )
@@ -176,5 +164,13 @@ public final class RulexObjectMatcher<T> implements RulexRuleBuilder<T>, RulexRu
         description.appendText( "TRUE" );
       }
     };
+  }
+
+  private RulexVerb<T> toStatefulMatcher( Matcher<T> matcher )
+  {
+    if ( matcher instanceof RulexVerb)
+      return ((RulexVerb<T>) matcher).toStatefull();
+    else
+      throw new IllegalArgumentException( "This type can't be adapted to stateful matcher" );
   }
 }

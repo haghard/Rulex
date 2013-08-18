@@ -21,12 +21,13 @@ import ru.rulex.conclusion.PhraseExecutionException;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
+
 import com.google.common.util.concurrent.CheckedFuture;
 
 public final class Callables
 {
 
-  public static <A> Callable<A> unit( final A argument )
+  public static <A> Callable<A> identity( final A argument )
   {
     return new Callable<A>()
     {
@@ -138,6 +139,27 @@ public final class Callables
       {
         future.addListener( listener, executor );
         return future.checkedGet();
+      }
+    };
+  }
+
+  /**
+   * 
+   * @param effectFunction
+   * @return
+   */
+  public static <T, E> ConclusionFunction<T, Callable<E>> curry(final ConclusionFunction<T, E> effectFunction) {
+    return new ConclusionFunction<T, Callable<E>>() {
+      @Override
+      public Callable<E> apply( final T argument )
+      {
+        return new Callable<E>() {
+          @Override
+          public E call() throws Exception
+          {
+            return effectFunction.apply( argument );
+          }
+        };
       }
     };
   }

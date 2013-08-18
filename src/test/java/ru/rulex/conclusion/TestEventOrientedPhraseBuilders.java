@@ -156,7 +156,7 @@ public class TestEventOrientedPhraseBuilders
   public void testEventOrientedPhrasesBuilderWithParallelStrategy()
   {
     final Thread mainThread = Thread.currentThread();
-    final ParallelStrategy<Boolean, PhraseExecutionException> separateThreadStrategy = ParallelStrategy
+    final ParallelStrategy<Boolean> separateThreadStrategy = ParallelStrategy
         .separateThreadStrategy();
 
     final Selector<Model, Integer> selector = createSameThreadMockSelector( mainThread );
@@ -195,7 +195,7 @@ public class TestEventOrientedPhraseBuilders
   public void testEventOrientedFactConsequencePhrasesBuilderWithParallelStrategy()
   {
     final Thread mainThread = Thread.currentThread();
-    final ParallelStrategy<Boolean, PhraseExecutionException> separateThreadStrategy = ParallelStrategy
+    final ParallelStrategy<Boolean> separateThreadStrategy = ParallelStrategy
         .separateThreadStrategy();
 
     final Selector<Model, Integer> selector = createSeparateTheadMockSelector( mainThread );
@@ -252,7 +252,7 @@ public class TestEventOrientedPhraseBuilders
   public void testSingleEventFactConsequenceExecutionPhrasesBuilderWithException()
   {
     final Thread mainThread = Thread.currentThread();
-    final ParallelStrategy<Boolean, PhraseExecutionException> builderStrategy = ParallelStrategy
+    final ParallelStrategy<Boolean> builderStrategy = ParallelStrategy
         .separateThreadStrategy();
 
     AbstractEventOrientedPhrasesBuilder builder = new EventOrientedFactConsequencePhrasesBuilder()
@@ -322,7 +322,7 @@ public class TestEventOrientedPhraseBuilders
     final String methodName = Model.INT_ACCESSOR;
     ListeningExecutorService executor = MoreExecutors.listeningDecorator( Executors
         .newFixedThreadPool( 2 ) );
-    final ParallelStrategy<Boolean, PhraseExecutionException> pStrategy = ParallelStrategy
+    final ParallelStrategy<Boolean> pStrategy = ParallelStrategy
         .listenableFutureStrategy( executor );
     try
     {

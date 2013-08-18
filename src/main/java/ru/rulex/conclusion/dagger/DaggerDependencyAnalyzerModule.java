@@ -44,7 +44,7 @@ public final class DaggerDependencyAnalyzerModule
   {
     DaggerPredicateModule[] array = (DaggerPredicateModule[]) Array.newInstance(DaggerPredicateModule.class, modules.length);
     System.arraycopy( modules, 0, array, 0, modules.length );
-    return new DaggerDependencyAnalyzerModule( Phrases.ALL_TRUE.withNarrowedType(), array); 
+    return new DaggerDependencyAnalyzerModule( Phrases.ALL_TRUE.withNarrowedType(), array );
   }
 
   public static <T extends Comparable<? super T>> DaggerPredicateModule $less( final T value, final T argument )

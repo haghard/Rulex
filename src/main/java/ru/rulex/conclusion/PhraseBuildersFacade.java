@@ -100,15 +100,13 @@ public final class PhraseBuildersFacade
   public static abstract class AbstractEventOrientedPhrasesBuilder
   {
 
-    protected ParallelStrategy<Boolean, PhraseExecutionException> pStrategy;
+    protected ParallelStrategy<Boolean> pStrategy;
 
     /**
      * 
-     * @param pStrategy
-     *          execution strategy
+     * @param pStrategy execution strategy
      */
-    protected void setParallelStrategy(
-        ParallelStrategy<Boolean, PhraseExecutionException> pStrategy )
+    protected void setParallelStrategy(ParallelStrategy<Boolean> pStrategy )
     {
       this.pStrategy = pStrategy;
     }
@@ -210,7 +208,7 @@ public final class PhraseBuildersFacade
     protected final AbstractPhrase<?> delegate;
 
     private <T> AbstractEventOrientedBuilderImpl( AbstractPhrase<T> delegate,
-        ParallelStrategy<Boolean, PhraseExecutionException> pStrategy )
+        ParallelStrategy<Boolean> pStrategy )
     {
       this.delegate = delegate;
       this.pStrategy = pStrategy;
@@ -288,8 +286,7 @@ public final class PhraseBuildersFacade
 
     public <T> EventOrientedPhrasesBuilder()
     {
-      super( Phrases.ALL_TRUE.withNarrowedType(), ParallelStrategy
-          .<Boolean, PhraseExecutionException> serial() );
+      super( Phrases.ALL_TRUE.withNarrowedType(), ParallelStrategy.<Boolean> serial() );
       build();
     }
 
@@ -301,12 +298,11 @@ public final class PhraseBuildersFacade
 
     protected <T> WithParser<T> through( Class<T> clazz, String description )
     {
-      return rule( ParallelStrategy.<Boolean, PhraseExecutionException> serial(), clazz,
+      return rule( ParallelStrategy.<Boolean> serial(), clazz,
           description );
     }
 
-    protected <T> WithParser<T> rule(
-        ParallelStrategy<Boolean, PhraseExecutionException> pStrategy, Class<T> clazz,
+    protected <T> WithParser<T> rule(ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
         String description )
     {
       setParallelStrategy( pStrategy );
@@ -320,8 +316,7 @@ public final class PhraseBuildersFacade
 
     public <T> SimpleEventOrientedPhrasesBuilder()
     {
-      super( Phrases.ALL_TRUE.withNarrowedType(), ParallelStrategy
-          .<Boolean, PhraseExecutionException> serial() );
+      super( Phrases.ALL_TRUE.withNarrowedType(), ParallelStrategy.<Boolean> serial() );
       build();
     }
 
@@ -333,10 +328,10 @@ public final class PhraseBuildersFacade
 
     public SimpleWithParser as( String description )
     {
-      return rule( ParallelStrategy.<Boolean, PhraseExecutionException> serial(), description );
+      return rule( ParallelStrategy.<Boolean> serial(), description );
     }
 
-    protected SimpleWithParser rule( ParallelStrategy<Boolean, PhraseExecutionException> pStrategy,
+    protected SimpleWithParser rule( ParallelStrategy<Boolean> pStrategy,
         String description )
     {
       setParallelStrategy( pStrategy );
@@ -358,7 +353,7 @@ public final class PhraseBuildersFacade
     public <T> EventOrientedFactConsequencePhrasesBuilder()
     {
       super( Phrases.ALL_TRUE.withNarrowedType(), ParallelStrategy
-          .<Boolean, PhraseExecutionException> serial() );
+          .<Boolean> serial() );
       build();
     }
 
@@ -369,7 +364,7 @@ public final class PhraseBuildersFacade
     protected abstract void build();
 
     protected <T> FactConsequenceParser<T> through(
-        ParallelStrategy<Boolean, PhraseExecutionException> pStrategy, Class<T> clazz,
+        ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
         String description )
     {
       setParallelStrategy( pStrategy );
@@ -419,7 +414,7 @@ public final class PhraseBuildersFacade
   {
     public <T> GuiceEventOrientedPhrasesBuilder( AbstractPhrase<T> delegate )
     {
-      super( delegate, ParallelStrategy.<Boolean, PhraseExecutionException> serial() );
+      super( delegate, ParallelStrategy.<Boolean> serial() );
     }
   }
   /**
@@ -431,7 +426,7 @@ public final class PhraseBuildersFacade
   {
     public <T> DaggerEventOrientedPhrasesBuilder( AbstractPhrase<T> delegate )
     {
-      super( delegate, ParallelStrategy.<Boolean, PhraseExecutionException> serial() );
+      super( delegate, ParallelStrategy.<Boolean> serial() );
     }
   }
   /**
@@ -459,10 +454,10 @@ public final class PhraseBuildersFacade
   public static abstract class AbstractIterableOrientedPhrasesBuilder
   {
 
-    protected ParallelStrategy<Boolean, PhraseExecutionException> pStrategy;
+    protected ParallelStrategy<Boolean> pStrategy;
 
     protected void setParallelStrategy(
-        ParallelStrategy<Boolean, PhraseExecutionException> pStrategy )
+        ParallelStrategy<Boolean> pStrategy )
     {
       this.pStrategy = pStrategy;
     }
@@ -572,7 +567,7 @@ public final class PhraseBuildersFacade
     }
 
     private <T> AbstractIterableOrientedPhrasesBuilderImpl( IterablePhrases<T> delegate,
-        ParallelStrategy<Boolean, PhraseExecutionException> pStrategy )
+        ParallelStrategy<Boolean> pStrategy )
     {
       this.delegate = delegate;
       this.pStrategy = pStrategy;
@@ -641,8 +636,7 @@ public final class PhraseBuildersFacade
 
     public IterableOrientedPhrasesBuilder()
     {
-      super( AbstractIterablePhrases.defaultInstance(), ParallelStrategy
-          .<Boolean, PhraseExecutionException> serial() );
+      super( AbstractIterablePhrases.defaultInstance(), ParallelStrategy.<Boolean> serial() );
       build();
     }
 
@@ -664,8 +658,7 @@ public final class PhraseBuildersFacade
       return new IterableParserBuilder<T>( this.<T> getIterablePhrase(), clazz, description );
     }
 
-    protected <T> IterableParser<T> through(
-        ParallelStrategy<Boolean, PhraseExecutionException> pStrategy, Class<T> clazz,
+    protected <T> IterableParser<T> through(ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
         String description )
     {
       setParallelStrategy( pStrategy );
@@ -745,7 +738,7 @@ public final class PhraseBuildersFacade
     public <T> ImperativeIterableOrientedPhrasesBuilder()
     {
       super( AbstractImperativePhrases.delegatePhrases(), ParallelStrategy
-          .<Boolean, PhraseExecutionException> serial() );
+          .<Boolean> serial() );
       build();
     }
 
@@ -763,7 +756,7 @@ public final class PhraseBuildersFacade
     }
 
     protected <T, E> DelegateParser<T, E> rule(
-        ParallelStrategy<Boolean, PhraseExecutionException> pStrategy, Class<T> clazz,
+        ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
         Class<E> argClass, String description )
     {
       setParallelStrategy( pStrategy );

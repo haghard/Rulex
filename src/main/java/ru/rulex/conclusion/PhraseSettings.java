@@ -22,7 +22,7 @@ public class PhraseSettings<E, T>
 
   private final Class<T> targetClass;
   private final String accessorName;
-  private final ParallelStrategy<Object, CodedException> pStrategy;
+  private final ParallelStrategy<Object> pStrategy;
   private final E value;
   private final ConclusionPredicate<E> predicate;
 
@@ -44,7 +44,7 @@ public class PhraseSettings<E, T>
   {
     private Class<T> targetClass;
     private String accessorName;
-    private ParallelStrategy<Object, CodedException> pStrategy;
+    private ParallelStrategy<Object> pStrategy;
     private E value;
     private ConclusionPredicate<E> predicate;
 
@@ -73,10 +73,10 @@ public class PhraseSettings<E, T>
     }
 
     @SuppressWarnings("unchecked")
-    public <U, X extends CodedException> PhraseSettingsBuilder<E, T> pStrategy(
-        ParallelStrategy<U, X> pStrategy )
+    public <U> PhraseSettingsBuilder<E, T> pStrategy(
+        ParallelStrategy<U> pStrategy )
     {
-      this.pStrategy = (ParallelStrategy<Object, CodedException>) pStrategy;
+      this.pStrategy = (ParallelStrategy<Object>) pStrategy;
       return this;
     }
 
@@ -98,9 +98,9 @@ public class PhraseSettings<E, T>
   }
 
   @SuppressWarnings("unchecked")
-  public <U, X extends CodedException> ParallelStrategy<U, X> getParallelStrategy()
+  public <U> ParallelStrategy<U> getParallelStrategy()
   {
-    return (ParallelStrategy<U, X>) pStrategy;
+    return (ParallelStrategy<U>) pStrategy;
   }
 
   public E getValue()

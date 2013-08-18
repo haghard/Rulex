@@ -17,57 +17,52 @@
 package ru.rulex.matchers;
 
 import org.hamcrest.Description;
-
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.RulexMatchersDsl;
 import ru.rulex.conclusion.Selector;
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 
-/**
- * @author haghard
- * @param <T>
- */
 @SuppressWarnings("unchecked")
 public final class RulexMatchersBuilder<T>
 {
-  private final SelectorAdapter<T> adapter;
+  private final SelectorDelegate<T> delegate;
 
-  public RulexMatchersBuilder( SelectorAdapter<T> adapter )
+  public RulexMatchersBuilder( SelectorDelegate<T> delegate )
   {
-    this.adapter = adapter;
+    this.delegate = delegate;
   }
 
-  public <E extends Number & Comparable<? super E>> RulexMatcher<T> lessThan(
+  public <E extends Number & Comparable<? super E>> RulexVerb<T> lessThan(
       final RulexMatchersBuilder<T> otherBuilder )
   {
-    return new RulexMatcher<T>( getAdapter() )
+    return new RulexVerb<T>( getDelegate() )
     {
       @Override
       protected boolean matchesSafely( final T item )
       {
-        Selector<T, E> lSelector = (Selector<T, E>) getAdapter().selector( item );
-        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getAdapter().selector( item );
+        final Selector<T, E> lSelector = (Selector<T, E>) getDelegate().selector( item );
+        final Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getDelegate().selector( item );
         return lSelector.select( item ).compareTo( rSelector.select( item ) ) < 0;
       }
 
       @Override
       public void describeTo( final Description description )
       {
-        description.appendText( adapter.matcherDisplayName() + " $lessThan "
-            + otherBuilder.getAdapter().matcherDisplayName() );
+        description.appendText( getDelegate().matcherDisplayName() + " $lessThan "
+            + otherBuilder.getDelegate().matcherDisplayName() );
       }
     };
   }
 
-  public <E extends Number & Comparable<? super E>> RulexMatcher<T> lessThan( final E value )
+  public <E extends Number & Comparable<? super E>> RulexVerb<T> lessThan( final E value )
   {
-    return new RulexMatcher<T>( getAdapter() )
+    return new RulexVerb<T>( getDelegate() )
     {
       @Override
       protected boolean matchesSafely( final T item )
       {
         ConclusionPredicate<E> pred = RulexMatchersDsl.<E> lessThan( value );
-        Selector<T, E> selector = (Selector<T, E>) getAdapter().selector( item );
+        Selector<T, E> selector = (Selector<T, E>) getDelegate().selector( item );
         ConclusionPredicate<T> p = new SelectorPredicate<T, E>( pred, selector );
         return p.apply( item );
       }
@@ -75,21 +70,21 @@ public final class RulexMatchersBuilder<T>
       @Override
       public void describeTo( final Description description )
       {
-        description.appendText( adapter.matcherDisplayName() + " $lessThan " + value );
+        description.appendText( delegate.matcherDisplayName() + " $lessThan " + value );
       }
     };
   }
 
-  public <E extends Comparable<? super E>> RulexMatcher<T> isEquals(
+  public <E extends Comparable<? super E>> RulexVerb<T> isEquals(
       final RulexMatchersBuilder<T> otherBuilder )
   {
-    return new RulexMatcher<T>( getAdapter() )
+    return new RulexVerb<T>( getDelegate() )
     {
       @Override
       protected boolean matchesSafely( T item )
       {
-        Selector<T, E> lSelector = (Selector<T, E>) getAdapter().selector( item );
-        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getAdapter().selector( item );
+        Selector<T, E> lSelector = (Selector<T, E>) getDelegate().selector( item );
+        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getDelegate().selector( item );
         return lSelector.select( item ).compareTo( rSelector.select( item ) ) == 0;
       }
 
@@ -101,16 +96,16 @@ public final class RulexMatchersBuilder<T>
     };
   }
 
-  public <E extends Comparable<? super E>> RulexMatcher<T> isEquals( final E value )
+  public <E extends Comparable<? super E>> RulexVerb<T> isEquals( final E value )
   {
-    return new RulexMatcher<T>( getAdapter() )
+    return new RulexVerb<T>( getDelegate() )
     {
 
       @Override
       protected boolean matchesSafely( T item )
       {
         ConclusionPredicate<E> pred = RulexMatchersDsl.<E> eq( value );
-        Selector<T, E> selector = (Selector<T, E>) getAdapter().selector( item );
+        Selector<T, E> selector = (Selector<T, E>) getDelegate().selector( item );
         ConclusionPredicate<T> p = new SelectorPredicate<T, E>( pred, selector );
         return p.apply( item );
       }
@@ -118,20 +113,20 @@ public final class RulexMatchersBuilder<T>
       @Override
       public void describeTo( Description description )
       {
-        description.appendText( adapter.matcherDisplayName() + " $isEquals: " + value );
+        description.appendText( delegate.matcherDisplayName() + " $isEquals: " + value );
       }
     };
   }
 
-  public <E extends Number & Comparable<? super E>> RulexMatcher<T> moreThan( final E value )
+  public <E extends Number & Comparable<? super E>> RulexVerb<T> moreThan( final E value )
   {
-    return new RulexMatcher<T>( getAdapter() )
+    return new RulexVerb<T>( getDelegate() )
     {
       @Override
       protected boolean matchesSafely( T item )
       {
         ConclusionPredicate<E> pred = RulexMatchersDsl.<E> greaterThan( value );
-        Selector<T, E> selector = (Selector<T, E>) getAdapter().selector( item );
+        Selector<T, E> selector = (Selector<T, E>) getDelegate().selector( item );
         ConclusionPredicate<T> p = new SelectorPredicate<T, E>( pred, selector );
         return p.apply( item );
       }
@@ -139,21 +134,21 @@ public final class RulexMatchersBuilder<T>
       @Override
       public void describeTo( Description description )
       {
-        description.appendText( adapter.matcherDisplayName() + " $moreThan: " + value );
+        description.appendText( delegate.matcherDisplayName() + " $moreThan: " + value );
       }
     };
   }
 
-  public <E extends Comparable<? super E>> RulexMatcher<T> moreThan(
+  public <E extends Comparable<? super E>> RulexVerb<T> moreThan(
       final RulexMatchersBuilder<T> otherBuilder )
   {
-    return new RulexMatcher<T>( getAdapter() )
+    return new RulexVerb<T>( getDelegate() )
     {
       @Override
       protected boolean matchesSafely( T item )
       {
-        Selector<T, E> lSelector = (Selector<T, E>) getAdapter().selector( item );
-        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getAdapter().selector( item );
+        Selector<T, E> lSelector = (Selector<T, E>) getDelegate().selector( item );
+        Selector<T, E> rSelector = (Selector<T, E>) otherBuilder.getDelegate().selector( item );
         return lSelector.select( item ).compareTo( rSelector.select( item ) ) > 0;
       }
 
@@ -165,8 +160,8 @@ public final class RulexMatchersBuilder<T>
     };
   }
 
-  private SelectorAdapter<T> getAdapter()
+  private SelectorDelegate<T> getDelegate()
   {
-    return adapter;
+    return delegate;
   }
 }

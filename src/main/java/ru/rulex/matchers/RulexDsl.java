@@ -22,17 +22,16 @@ import org.hamcrest.Matcher;
 import ru.rulex.conclusion.Selector;
 import ru.rulex.conclusion.delegate.ProxyUtils;
 
-public class RulexDsl
+public final class RulexDsl
 {
 
   private RulexDsl()
   {
-    // static utility
   }
 
-  public static <T> RulexMatcher<T> no( final RulexMatcher<T> matcher )
+  public static <T> RulexVerb<T> no( final RulexVerb<T> matcher )
   {
-    return new RulexMatcher<T>( matcher.getAdapter() )
+    return new RulexVerb<T>( matcher.getDelegate() )
     {
       @Override
       public boolean matchesSafely( final T item )
@@ -50,9 +49,9 @@ public class RulexDsl
     };
   }
 
-  public static <T> RulexMatcher<T> and( final RulexMatcher<T> matcher1, final Matcher<T> matcher2 )
+  public static <T> RulexVerb<T> and( final RulexVerb<T> matcher1, final Matcher<T> matcher2 )
   {
-    return new RulexMatcher<T>( matcher1.getAdapter() )
+    return new RulexVerb<T>( matcher1.getDelegate() )
     {
       @Override
       public boolean matchesSafely( final T item )
@@ -72,9 +71,9 @@ public class RulexDsl
     };
   }
 
-  public static <T> RulexMatcher<T> or( final RulexMatcher<T> matcher1, final Matcher<T> matcher2 )
+  public static <T> RulexVerb<T> or( final RulexVerb<T> matcher1, final Matcher<T> matcher2 )
   {
-    return new RulexMatcher<T>( matcher1.getAdapter() )
+    return new RulexVerb<T>( matcher1.getDelegate() )
     {
       @Override
       public boolean matchesSafely( final T item )
@@ -94,25 +93,21 @@ public class RulexDsl
     };
   }
 
-  public static <T> RulexMatcher<T> statefull( final RulexMatcher<T> matcher )
+  static <T> RulexVerb<T> toStatefull(final RulexVerb<T> matcher)
   {
+    matcher.setDelegate(new SelectorDelegate<T>() {
+        final Selector<T, ?> selector = ProxyUtils.toSelector(null);
 
-    matcher.setAdapter( new SelectorAdapter<T>()
-    {
-      Selector<T, ?> selector = ProxyUtils.toSelector( null );
+        @Override
+        public Selector<T, ?> selector(final T matched) {
+            return selector;
+        }
 
-      @Override
-      public Selector<T, ?> selector( final T matched )
-      {
-        return selector;
-      }
-
-      @Override
-      public String matcherDisplayName()
-      {
-        return "";
-      }
-    } );
+        @Override
+        public String matcherDisplayName() {
+            return "";
+        }
+    });
     return matcher;
   }
 }

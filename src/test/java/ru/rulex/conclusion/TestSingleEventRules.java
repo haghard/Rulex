@@ -1,4 +1,4 @@
-package ru.rulex.tests;
+package ru.rulex.conclusion;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;
@@ -15,7 +15,6 @@ import org.apache.onami.test.annotation.GuiceProvidedModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import ru.rulex.conclusion.Model;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.EventOrientedPhrasesBuilder;
 

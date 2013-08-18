@@ -294,7 +294,7 @@ public class TestImperativeIterableOrientedPhrasesBuilder
             @Override
             protected void build()
             {
-              rule( ParallelStrategy.<Boolean, PhraseExecutionException> separateThreadStrategy(),
+              rule( ParallelStrategy.<Boolean> separateThreadStrategy(),
                   Model.class, FluentConclusionPredicate.class, "builder" ).lambda(
                   compositionPredicate ).delegate( targetDelegate );
             }

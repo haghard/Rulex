@@ -70,7 +70,7 @@ public class TestParallelStrategyExecution
   {
     Model en = Model.values( 40 );
     assertTrue( "testBind error !!!",
-        Callables.bind( Callables.unit( en ), new ConclusionFunction<Model, Callable<Boolean>>()
+        Callables.bind( Callables.identity( en ), new ConclusionFunction<Model, Callable<Boolean>>()
         {
           @Override
           public Callable<Boolean> apply( final Model argument )
@@ -99,7 +99,7 @@ public class TestParallelStrategyExecution
   {
     // explicitly block execution thread
     assertTrue( "testBlockToGetResult 1 error !!!",
-        ParallelStrategy.<Boolean, PhraseExecutionException> listenableFutureStrategy( service )
+        ParallelStrategy.<Boolean>listenableFutureStrategy( service )
             .lift( new ConclusionFunction<Integer, Boolean>()
             {
               @Override
@@ -113,7 +113,7 @@ public class TestParallelStrategyExecution
     assertTrue(
         "testBlockToGetResult 2 error !!!",
         Callables.obtain(
-            ParallelStrategy.<Boolean, PhraseExecutionException> listenableFutureStrategy( service )
+            ParallelStrategy.<Boolean> listenableFutureStrategy( service )
                 .lift( new ConclusionFunction<Integer, Boolean>()
                 {
                   @Override
@@ -135,7 +135,7 @@ public class TestParallelStrategyExecution
       {
         return always().apply( argument );
       }
-    } ).apply( Callables.unit( en ) ).call() );
+    } ).apply( Callables.identity( en ) ).call() );
   }
 
   @Test
@@ -158,7 +158,7 @@ public class TestParallelStrategyExecution
       }
     };
 
-    ParallelStrategy<Boolean, PhraseExecutionException> pStrategy = ParallelStrategy
+    ParallelStrategy<Boolean> pStrategy = ParallelStrategy
         .listenableFutureStrategy( service );
 
     ImmutableList.Builder<ListenableFuture<Boolean>> blist = ImmutableList.builder();
@@ -200,7 +200,7 @@ public class TestParallelStrategyExecution
   public void testObtainWithException() throws Exception
   {
     Model en = Model.values( 40 );
-    ParallelStrategy<Boolean, PhraseExecutionException> pStrategy = ParallelStrategy
+    ParallelStrategy<Boolean> pStrategy = ParallelStrategy
         .listenableFutureStrategy( service );
     try
     {
@@ -218,7 +218,7 @@ public class TestParallelStrategyExecution
         {
           // post action, executed in main thread after function completion
           // 0 could be possitive result marker
-          return Callables.unit( 0 );
+          return Callables.identity( 0 );
         }
       } ).call();
     }
