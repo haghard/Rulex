@@ -123,7 +123,7 @@ public final class ParallelStrategy<T>
    * @return instance {@code ParallelStrategy} with has function parameter as
    *         delegate
    */
-  private static <T> ParallelStrategy<T> checkedStrategy(
+  private static <T> ParallelStrategy<T> toCheckedStrategy(
       ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>> function )
   {
     return new ParallelStrategy<T>( function );
@@ -135,7 +135,7 @@ public final class ParallelStrategy<T>
    */
   public static <T> ParallelStrategy<T> separateThreadStrategy()
   {
-    return checkedStrategy( new ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>>()
+    return toCheckedStrategy( new ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>>()
     {
       @Override
       public CheckedFuture<T, PhraseExecutionException> apply( Callable<T> input )
@@ -155,13 +155,13 @@ public final class ParallelStrategy<T>
    */
   public static <T> ParallelStrategy<T> serial()
   {
-    return checkedStrategy( new ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>>()
+    return toCheckedStrategy( new ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>>()
     {
       @Override
       public CheckedFuture<T, PhraseExecutionException> apply( Callable<T> input )
       {
-        Function<Exception, PhraseExecutionException> mapper = createMapper( PhraseErrorCode.ERROR, new String[] { "sameThreadStrategy" } );
-        return Futures.makeChecked( SAME_THREAD_EXECUTOR.submit( input ), mapper );
+        return Futures.makeChecked( SAME_THREAD_EXECUTOR.submit( input ), 
+            createMapper( PhraseErrorCode.ERROR, new String[] { "sameThreadStrategy" } ));
       }
     } );
   }
@@ -172,7 +172,7 @@ public final class ParallelStrategy<T>
   public static <T> ParallelStrategy<T> listenableFutureStrategy(
       final ListeningExecutorService es )
   {
-    return checkedStrategy( new ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>>()
+    return toCheckedStrategy( new ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>>()
     {
       @Override
       public CheckedFuture<T, PhraseExecutionException> apply( Callable<T> task )
@@ -189,7 +189,7 @@ public final class ParallelStrategy<T>
    */
   public static <T> ParallelStrategy<T> defaultListenableFutureStrategy()
   {
-    return checkedStrategy( new ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>>()
+    return toCheckedStrategy( new ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>>()
     {
       @Override
       public CheckedFuture<T, PhraseExecutionException> apply( Callable<T> task )
