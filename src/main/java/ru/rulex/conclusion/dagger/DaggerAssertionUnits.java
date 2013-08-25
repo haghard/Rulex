@@ -24,7 +24,7 @@ public final class DaggerAssertionUnits
     }
 
     @Override
-    public boolean satisfies( ConclusionStatePathTrace conclusionPathTrace, T event )
+    public boolean satisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )
     {
       return new SelectorPredicate<Object, Integer>( predicate, selector ).apply( event );
     }

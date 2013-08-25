@@ -35,39 +35,9 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class GuiceEventOrientedEngineModuleTest
 {
-
-  final Model andFoo = Model.values( 6, 0, "aaaaaaa", false );
-
   final Model orFoo = Model.values( 91, 100.91f );
-
+  final Model andFoo = Model.values( 6, 0, "aaaaaaa", false );
   final Model disjFoo = Model.values( 6, 0, "aaaaaaa", false );
-
-  final Selector<Model, Integer> intSelector = new Selector<Model, Integer>()
-  {
-    @Override
-    public Integer select( Model input )
-    {
-      return input.getInteger();
-    }
-  };
-
-  final Selector<Model, String> stringSelector = new Selector<Model, String>()
-  {
-    @Override
-    public String select( Model input )
-    {
-      return input.getString();
-    }
-  };
-
-  final Selector<Model, Float> floatSelector = new Selector<Model, Float>()
-  {
-    @Override
-    public Float select( Model input )
-    {
-      return input.getFloat();
-    }
-  };
 
   @Test
   @SuppressWarnings("unchecked")
@@ -97,11 +67,8 @@ public class GuiceEventOrientedEngineModuleTest
         "aaaaaaa" );
   }
 
-  /**
-   * test and condition
-   */
   @Test
-  public void testAndGuiceModuleWithProxy()
+  public void shouldBeValidWithTwoConditionsAsync()
   {
     final Model foo = Model.values( 10, 0, "aaaaaaa", false );
     try
@@ -113,144 +80,104 @@ public class GuiceEventOrientedEngineModuleTest
       AbstractEventOrientedPhrasesBuilder phraseBuilder = injector
           .getInstance( AbstractEventOrientedPhrasesBuilder.class );
       Boolean result = phraseBuilder.async( foo ).checkedGet();
-      assertThat( result ).as( "testAndGuiceModuleWithProxy error !!!" ).isTrue();
+      assertThat( result ).as( "shouldBeValidWithTwoConditionsAsync error !!!" ).isTrue();
     }
     catch (Exception ex)
     {
-      fail( "testAndGuiceModuleWithProxy result error  ex!!!" + ex.getMessage() );
+      fail( "shouldBeValidWithTwoConditionsAsync result error  ex!!!" + ex.getMessage() );
     }
   }
 
   @Test
-  public void testAndGuiceModuleWithProxyAndExplicitlySelector()
+  public void shouldBeValidWithTwoConditionsSync()
   {
     final Model foo = Model.values( 23, 0, "aaaaaaa", false );
     try
     {
       Injector injector = createInjector( $expression(
-          $less( 22, toSelector( callOn( Model.class ).getInteger() ), "22 < en.getInput()" ),
-          $eq( "aaaaaaa", toSelector( callOn( Model.class ).getString() ),
-              "aaaaaaa eq en.getString()" ) ) );
+        $less( 22, callOn( Model.class ).getInteger(), "22 < en.getInput()" ),
+        $eq( "aaaaaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) );
 
       AbstractEventOrientedPhrasesBuilder phraseBuilder = injector
           .getInstance( AbstractEventOrientedPhrasesBuilder.class );
       Boolean result = phraseBuilder.async( foo ).checkedGet();
-      assertThat( result ).as( "testAndGuiceModuleWithProxyAndExplicitlySelector error !!!" )
+      assertThat( result ).as( "shouldBeValidWithTwoConditionsSync error !!!" )
           .isTrue();
     }
     catch (Exception ex)
     {
-      fail( "testAndGuiceModuleWithProxyAndExplicitlySelector result error  ex!!!"
+      fail( "shouldBeValidWithTwoConditionsSync result error  ex!!!"
           + ex.getMessage() );
     }
   }
 
   @Test
-  public void testAndGuiceModuleWithSelectors()
-  {
-    final Model foo = Model.values( 3, 89.56f, "aaaaaaa", false );
-    try
-    {
-      Injector injector = createInjector( $expression(
-          $less( 89.55f, floatSelector, "89.55 < en.getInput()" ),
-          $eq( "aaaaaaa", stringSelector, "aaaaaaa eq en.getString()" ) ) );
-
-      AbstractEventOrientedPhrasesBuilder phraseBuilder = injector
-          .getInstance( AbstractEventOrientedPhrasesBuilder.class );
-      Boolean result = phraseBuilder.async( foo ).checkedGet();
-      assertThat( result ).as( "testAndGuiceModuleWithSelectors error !!!" ).isTrue();
-    }
-    catch (Exception ex)
-    {
-      fail( "testAndGuiceModuleWithSelectors result error  ex!!!" + ex.getMessage() );
-    }
-  }
-
-  /**
-   * test or condition on single event fields through
-   * {@code Phrases.SINGLE_ANY_TRUE}
-   */
-  @Test
-  public void testAnyGuiceModuleWithSelectors()
+  public void shouldBeValidBetweenConditions()
   {
     Injector injector = createInjector(
-        $expression( Phrases.ANY_TRUE, $more( 92, intSelector, "92 > en.getInput()" ) ),
-        $less( 56, intSelector, "56 > en.getInput()" ) );
+        $expression( Phrases.ANY_TRUE,
+          $more( 92, callOn( Model.class ).getInteger(), "92 > en.getInput()" ) ),
+          $less( 56, callOn( Model.class ).getInteger(), "56 > en.getInput()" ) );
 
     final AbstractEventOrientedPhrasesBuilder phraseBuilder = injector
         .getInstance( AbstractEventOrientedPhrasesBuilder.class );
     try
     {
       boolean result = phraseBuilder.async( orFoo ).get();
-      assertThat( result ).as( "testAnyGuiceModuleWithSelectors error !!!" ).isTrue();
+      assertThat( result ).as( "shouldBeValidBetweenConditions error !!!" ).isTrue();
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
-      fail( "testAnyGuiceModuleWithSelectors ex error !!!" );
+      fail( "shouldBeValidBetweenConditions ex error !!!" );
     }
   }
 
-  /**
-   * <p>
-   * ( 8 > getInteger()) and (( 7 > getFloat()) OR ( "aaaaaaa" eq en.getString()
-   * ))
-   * </p>
-   */
   @Test
-  public void testDisjunctionGuiceModuleWithSelectors()
+  public void shouldBeValidWithComplexConditionsAsync()
   {
     Injector injector = createInjector( $expression(
-        $more( 8f, floatSelector, "8 > en.getFloat()" ),
-        $or( "or test condition", $more( 7, intSelector, "7 > en.getInteger()" ),
-            $eq( "aaaa", stringSelector, "aaaaaaa eq en.getString()" ) ) ) );
+        $more( 8f, callOn( Model.class ).getFloat(), "8 > en.getFloat()" ),
+          $or( "or test condition",
+        $more( 7, callOn( Model.class ).getInteger(), "7 > en.getInteger()" ),
+        $eq( "aaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) ) );
 
     final AbstractEventOrientedPhrasesBuilder enginePhrase = injector
         .getInstance( AbstractEventOrientedPhrasesBuilder.class );
     try
     {
       boolean result = enginePhrase.async( disjFoo ).checkedGet();
-      assertThat( result ).as( "testDisjunctionGuiceModuleWithSelectors error !!!" ).isTrue();
+      assertThat( result ).as( "shouldBeValidWithComplexConditionsAsync error !!!" ).isTrue();
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
-      fail( "testDisjunctionGuiceModuleWithSelectors result error ex !!!" );
+      fail( "shouldBeValidWithComplexConditionsAsync result error ex !!!" );
     }
   }
 
   @Test
-  public void testDisjunctionGuiceModuleWithProxy()
+  public void shouldBeValidWithComplexConditionsSync()
   {
     final Model foo = Model.values( 6, 0, "aaaaaaa", false );
     Injector injector = createInjector( $expression(
         $more( 8f, callOn( Model.class ).getFloat(), "8 > en.getFloat()" ),
-        $or( "or test condition",
-            $eq( true, callOn( Model.class ).getBoolean(), "false eq en.getBoolean()" ),
-            $more( 7, callOn( Model.class ).getInteger(), "7 > en.getInteger()" ),
-            $eq( "aaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) ) );
+          $or( "or test condition",
+        $eq( true, callOn( Model.class ).getBoolean(), "false eq en.getBoolean()" ),
+        $more( 7, callOn( Model.class ).getInteger(), "7 > en.getInteger()" ),
+        $eq( "aaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) ) );
 
     final AbstractEventOrientedPhrasesBuilder enginePhrase = injector
         .getInstance( AbstractEventOrientedPhrasesBuilder.class );
     try
     {
       boolean result = enginePhrase.async( foo ).checkedGet();
-      assertThat( result ).as( "testDisjunctionGuiceModuleWithProxy error !!!" ).isTrue();
+      assertThat( result ).as( "shouldBeValidWithComplexConditionsSync error !!!" ).isTrue();
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
-      fail( "testDisjunctionGuiceModuleWithProxy result error ex !!!" );
+      fail( "shouldBeValidWithComplexConditionsSync result error ex !!!" );
     }
   }
-
-  /*
-   * TODO: implement like this API , with AnnotationProcessor
-  public void testAnnotationApi() {
-    //@Module(addsTo = RootModule.class, injects = { C.class, D.class })
-    @Expression( onClass = Model.class,
-        conditions = { callOn( Model.class ).getFloat(), callOn( Model.class ).getFloat() } )
-    
-  }
-  */
 }

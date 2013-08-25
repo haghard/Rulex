@@ -145,27 +145,6 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
   }
 
   /**
-   * @param conditionName
-   * @param pvalue
-   * @param selector
-   * @param <E>
-   * @param <T>
-   * @return ConclusionPredicateModule<T>
-   */
-  public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $more(
-      final T pvalue, final Selector<E, T> selector, final String conditionName )
-  {
-    return new ConclusionPredicateModule<T>()
-    {
-      @Override
-      protected void bindPredicate()
-      {
-        majority( conditionName, pvalue, selector );
-      }
-    };
-  }
-
-  /**
    * method for use with external language
    * 
    * @param conditionName
@@ -207,28 +186,6 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
     };
   }
 
-  /**
-   * 
-   * @param conditionName
-   * @param pvalue
-   * @param selector
-   * @param <E>
-   * @param <T>
-   * @return ConclusionPredicateModule<T>
-   */
-  public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $less(
-      final T pvalue, final Selector<E, T> selector, final String conditionName )
-  {
-    return new ConclusionPredicateModule<T>()
-    {
-      @Override
-      protected void bindPredicate()
-      {
-        minority( conditionName, pvalue, selector );
-      }
-    };
-  }
-
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $less(
       final T pvalue, final T argument, final String conditionName )
   {
@@ -260,27 +217,6 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
       protected void bindPredicate()
       {
         minority( conditionName, pvalue, selector0 );
-      }
-    };
-  }
-
-  /**
-   * @param conditionName
-   * @param pvalue
-   * @param selector
-   * @param <E>
-   * @param <T>
-   * @return ConclusionPredicateModule<T>
-   */
-  public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq( final T pvalue,
-      final Selector<E, T> selector, final String conditionName )
-  {
-    return new ConclusionPredicateModule<T>()
-    {
-      @Override
-      protected void bindPredicate()
-      {
-        equality( conditionName, pvalue, selector );
       }
     };
   }

@@ -296,9 +296,11 @@ task testTestSet(type: Test) {
   }
 }
 
-//test.dependsOn testDagger
+test.dependsOn testDagger
 test.dependsOn testGuice
 test.dependsOn testGroovyScripts
+
+
 
 tasks.addRule("Pattern: <TaskName>-desc: Show description of a task.") { taskName ->
   if (taskName.endsWith('-desc')) {

@@ -15,7 +15,8 @@ import ru.rulex.conclusion.dagger.PredicateFactory.LessOrEqualsPredicateFactory;
 
  
 @dagger.Module(
-    injects = { IntExpression.class, FloatExpression.class }, 
+    injects = { IntExpression.class, FloatExpression.class },
+    complete = false,
     library = true)
 @SuppressWarnings("rawtypes")
 public class DaggerPredicateModule
@@ -103,5 +104,15 @@ public class DaggerPredicateModule
   public Class<? extends AssertionUnit> getExpressionClass()
   {
     return selector.getExpressionClass();
+  }
+
+  @dagger.Provides
+  public IntExpression intExpression(ConclusionPredicate<Integer> predicate, Selector<Object, Integer> selector) {
+    return new IntExpression<Integer>( predicate, selector );
+  }
+
+  @dagger.Provides
+  public FloatExpression floatExpression(ConclusionPredicate<Float> predicate, Selector<Object, Float> selector) {
+    return new FloatExpression<Float>( predicate, selector );
   }
 }
