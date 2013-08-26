@@ -17,11 +17,11 @@ public class DaggerEventOrientedEngineTest
   public void testDaggerBuilderWithDifferentTypes()
   {
     final AbstractEventOrientedPhrasesBuilder builder = create(
-            $expression(
-              $less( 19, callOn( Model.class ).getInteger() ),
-              $less( 19, callOn( Model.class ).getOtherInteger() ),
-              $more( 56.78f, callOn( Model.class ).getFloat() ) ) )
-            .get( AbstractEventOrientedPhrasesBuilder.class );
+      $expression(
+        $less( 19, callOn( Model.class ).getInteger() ),
+        $less( 19, callOn( Model.class ).getOtherInteger() ),
+        $more( 56.78f, callOn( Model.class ).getFloat() ) ) )
+      .get( AbstractEventOrientedPhrasesBuilder.class );
 
     assertThat( builder.sync( Model.values( 20, 78 ) ) ).isTrue();
   }
