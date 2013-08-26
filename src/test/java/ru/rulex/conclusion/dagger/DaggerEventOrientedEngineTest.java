@@ -18,9 +18,9 @@ public class DaggerEventOrientedEngineTest
   {
     final AbstractEventOrientedPhrasesBuilder builder = create(
             $expression(
-                    $less( 19, callOn( Model.class ).getInteger() ),
-                    $less( 19, callOn( Model.class ).getOtherInteger() ),
-                    $more( 56.78f, callOn( Model.class ).getFloat() ) ) )
+              $less( 19, callOn( Model.class ).getInteger() ),
+              $less( 19, callOn( Model.class ).getOtherInteger() ),
+              $more( 56.78f, callOn( Model.class ).getFloat() ) ) )
             .get( AbstractEventOrientedPhrasesBuilder.class );
 
     assertThat( builder.sync( Model.values( 20, 78 ) ) ).isTrue();
@@ -30,11 +30,11 @@ public class DaggerEventOrientedEngineTest
   public void testDaggerBuilderWithSameType()
   {
     final AbstractEventOrientedPhrasesBuilder builder = create(
-            $expression(
-                    $less( 19, callOn( Model.class ).getInteger() ),
-                    $more( 79, callOn( Model.class ).getOtherInteger() ),
-                    $moreOrEquals( 56.78f, callOn( Model.class ).getFloat() ) ) )
-            .get( AbstractEventOrientedPhrasesBuilder.class );
+      $expression(
+        $less( 19, callOn( Model.class ).getInteger() ),
+        $more( 79, callOn( Model.class ).getOtherInteger() ),
+        $moreOrEquals( 56.78f, callOn( Model.class ).getFloat() ) ) )
+          .get( AbstractEventOrientedPhrasesBuilder.class );
 
     assertThat( builder.sync( Model.values( 20, 78 ) ) ).isTrue();
   }

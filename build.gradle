@@ -155,6 +155,11 @@ repositories {
   //mavenRepo url: 'http://maven.davidtrott.com/repository'
 }
 
+//http://blog.codeaholics.org/2012/emulating-mavens-provided-scope-in-gradle/
+configurations {
+    provided
+}
+
 dependencies {
   compile 'log4j:log4j:[1.2,)'
   compile group: 'com.google.guava', name: 'guava', version: '14.0.1'
@@ -168,7 +173,7 @@ dependencies {
   compile 'com.google.inject.extensions:guice-assistedinject:3.0'
 
   compile 'com.squareup.dagger:dagger:1.1.0'
-  compile 'com.squareup.dagger:dagger-compiler:1.1.0'
+  provided 'com.squareup.dagger:dagger-compiler:1.1.0'
 
   testCompile group: 'org.testng', name: 'testng', version: '6.8'
   // Add at least version 4.8 of JUnit as dependency.
@@ -188,9 +193,12 @@ dependencies {
 sourceSets {
   main {
     runtimeClasspath = files(output.resourcesDir) + runtimeClasspath
+    compileClasspath += configurations.provided
   }
   test {
     runtimeClasspath = files(output.resourcesDir) + runtimeClasspath
+    compileClasspath += configurations.provided
+    runtimeClasspath += configurations.provided
   }
 
   perf {
