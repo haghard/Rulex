@@ -6,10 +6,25 @@ package ru.rulex.conclusion.dagger;
  */
 public enum LogicOperation
 {
-  lessThan("less", OperationType.Binary), 
-  lessOrEquals("lessOrEq", OperationType.Binary), 
-  moreThan("moreThan", OperationType.Binary), 
-  moreOrEquals("moreOrEquals", OperationType.Binary);
+  lessThan("less", OperationType.Binary)
+  {
+    @Override boolean eval(int result) { return result < 0; }
+  },
+
+  lessOrEquals("lessOrEq", OperationType.Binary)
+  {
+    @Override boolean eval(int result) { return result <= 0; }
+  },
+
+  moreThan("moreThan", OperationType.Binary)
+  {
+    @Override boolean eval(int result) { return result > 0; }
+  },
+
+  moreOrEquals("moreOrEquals", OperationType.Binary)
+  {
+    @Override boolean eval(int result) { return result >= 0; }
+  };
 
   private final String name;
   private final OperationType operationType;
@@ -43,4 +58,6 @@ public enum LogicOperation
 
     throw new IllegalArgumentException( "LogicOperation not found by alias: " + alias );
   }
+
+  abstract boolean eval(int result);
 }

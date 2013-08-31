@@ -18,7 +18,6 @@ package ru.rulex.conclusion;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * <p>
@@ -90,7 +89,7 @@ public abstract class AbstractPhrase<T>
 
       for (AssertionUnit<T> unit : units)
       {
-        if ( !unit.satisfies( conclusionPathTrace, event ) )
+        if ( !unit.isSatisfies( conclusionPathTrace, event ) )
         {
           return Boolean.FALSE;
         }
@@ -126,7 +125,7 @@ public abstract class AbstractPhrase<T>
     {
       for (AssertionUnit<T> unit : units)
       {
-        if ( unit.satisfies( conclusionPathTrace, event ) )
+        if ( unit.isSatisfies( conclusionPathTrace, event ) )
         {
           return Boolean.TRUE;
         }

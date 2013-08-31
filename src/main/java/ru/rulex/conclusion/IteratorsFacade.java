@@ -71,7 +71,7 @@ public final class IteratorsFacade
           while (iterator.hasNext())
           {
             T event = iterator.next();
-            if ( !excepts.contains( event ) && assertionUnit.satisfies( pathTrace, event ) )
+            if ( !excepts.contains( event ) && assertionUnit.isSatisfies( pathTrace, event ) )
             {
               state = IterationState.Exit;
               return computeNext( event );

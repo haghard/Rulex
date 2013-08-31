@@ -5,17 +5,21 @@ import ru.rulex.conclusion.AssertionUnit;
 import com.google.common.collect.ImmutableMap;
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.dagger.PredicateFactory.Factory;
-import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
-import ru.rulex.conclusion.dagger.DaggerAssertionUnits.IntExpression;
-import ru.rulex.conclusion.dagger.DaggerAssertionUnits.FloatExpression;
+
+import ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.IntAssertionUnit;
+import ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.FloatAssertionUnit;
+import ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.StringAssertionUnit;
+
 import ru.rulex.conclusion.dagger.PredicateFactory.LessPredicateFactory;
 import ru.rulex.conclusion.dagger.PredicateFactory.MorePredicateFactory;
 import ru.rulex.conclusion.dagger.PredicateFactory.MoreOrEqualsPredicateFactory;
 import ru.rulex.conclusion.dagger.PredicateFactory.LessOrEqualsPredicateFactory;
 
+import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
+
  
 @dagger.Module(
-    injects = { IntExpression.class, FloatExpression.class },
+    injects = { IntAssertionUnit.class, FloatAssertionUnit.class },
     complete = false,
     library = true)
 @SuppressWarnings("rawtypes")
@@ -57,6 +61,11 @@ public class DaggerPredicateModule
     this.selector = selector;
   }
 
+  public <T extends Comparable<? super T>> DaggerPredicateModule( T value, LogicOperation operation )
+  {
+    this( value, map.get( operation ), null );
+  }
+
   public <T extends Comparable<? super T>> DaggerPredicateModule( T value, SelectorPipeline selector,
       LogicOperation operation )
   {
@@ -75,6 +84,13 @@ public class DaggerPredicateModule
     return selector.cast();
   }
 
+  @dagger.Provides
+  Selector<Object, String> stringSelector()
+  {
+    return selector.cast();
+  }
+
+
   /**
    * Return ConclusionPredicate with Integer
    * 
@@ -90,7 +106,6 @@ public class DaggerPredicateModule
 
   /**
    * Return ConclusionPredicate with Float
-   * 
    * @return ConclusionPredicate
    */
   @dagger.Provides
@@ -107,12 +122,17 @@ public class DaggerPredicateModule
   }
 
   @dagger.Provides
-  public IntExpression intExpression(ConclusionPredicate<Integer> predicate, Selector<Object, Integer> selector) {
-    return new IntExpression<Integer>( predicate, selector );
+  public IntAssertionUnit intExpression(ConclusionPredicate<Integer> predicate, Selector<Object, Integer> selector) {
+    return new IntAssertionUnit<Integer>( predicate, selector );
   }
 
   @dagger.Provides
-  public FloatExpression floatExpression(ConclusionPredicate<Float> predicate, Selector<Object, Float> selector) {
-    return new FloatExpression<Float>( predicate, selector );
+  public FloatAssertionUnit floatExpression(ConclusionPredicate<Float> predicate, Selector<Object, Float> selector) {
+    return new FloatAssertionUnit<Float>( predicate, selector );
+  }
+
+  @dagger.Provides
+  public StringAssertionUnit stringExpression(ConclusionPredicate<String> predicate, Selector<Object, String> selector) {
+    return new StringAssertionUnit<String>( predicate, selector );
   }
 }

@@ -32,7 +32,7 @@ public class SimpleAssertionUnit<T> implements AssertionUnit<T>
   }
 
   @Override
-  public boolean satisfies( ConclusionStatePathTrace conclusionPathTrace, T event )
+  public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, T event )
   {
     return conclusionPathTrace.isWorkingState() ? predicate.apply( event ) : false;
   }

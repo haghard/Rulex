@@ -19,5 +19,5 @@ package ru.rulex.conclusion;
 
 public interface AssertionUnit<T>
 {
-  public boolean satisfies( ConclusionStatePathTrace conclusionPathTrace, T event );
+  public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, T event );
 }

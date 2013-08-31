@@ -245,7 +245,7 @@ public final class ParserBuilders
       phrase.addUnit( new AssertionUnit<T>()
       {
         @Override
-        public boolean satisfies( ConclusionStatePathTrace conclusionPathTrace, final T event )
+        public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, final T event )
         {
           if ( conclusionPathTrace.isWorkingState() && predicate.apply( event ) )
           {

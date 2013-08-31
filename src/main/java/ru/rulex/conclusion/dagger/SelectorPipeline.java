@@ -8,9 +8,9 @@ import com.google.common.collect.ImmutableMap;
 
 import ru.rulex.conclusion.AssertionUnit;
 import ru.rulex.conclusion.Selector;
-import ru.rulex.conclusion.dagger.DaggerAssertionUnits.IntExpression;
-import ru.rulex.conclusion.dagger.DaggerAssertionUnits.StringExpression;
-import ru.rulex.conclusion.dagger.DaggerAssertionUnits.FloatExpression;
+import ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.StringAssertionUnit;
+import ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.FloatAssertionUnit;
+import ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.IntAssertionUnit;
 
 @SuppressWarnings("rawtypes")
 public enum SelectorPipeline implements Selector<Object, Object>
@@ -19,9 +19,11 @@ public enum SelectorPipeline implements Selector<Object, Object>
   {
 
     // Map for association Class MethodName
-    final ImmutableMap<String, Class<? extends AssertionUnit>> methodToUnitMapping = ImmutableMap.of( "getInteger",
-        IntExpression.class, "getOtherInteger", IntExpression.class, "getFloat", FloatExpression.class, "",
-        StringExpression.class );
+    final ImmutableMap<String, Class<? extends AssertionUnit>> methodToUnitMapping = ImmutableMap.of(
+            "getInteger", IntAssertionUnit.class,
+            "getOtherInteger", IntAssertionUnit.class,
+            "getFloat", FloatAssertionUnit.class,
+            "getString", StringAssertionUnit.class );
 
     final Queue<Class<? extends AssertionUnit>> classesQueue = new ArrayDeque<Class<? extends AssertionUnit>>();
 
@@ -31,7 +33,7 @@ public enum SelectorPipeline implements Selector<Object, Object>
     @SuppressWarnings("unchecked")
     public Object select( Object argument )
     {
-      Selector selector = selectorsQueue.poll();
+      final Selector selector = selectorsQueue.poll();
       Preconditions.checkNotNull( selector );
       return selector.select( argument );
     }

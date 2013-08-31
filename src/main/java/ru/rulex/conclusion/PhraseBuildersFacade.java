@@ -15,10 +15,12 @@
  */
 package ru.rulex.conclusion;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import ru.rulex.conclusion.ParserBuilders.*;
+import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.execution.ParallelStrategy;
 import java.util.concurrent.*;
 import org.apache.log4j.Logger;
@@ -191,6 +193,12 @@ public final class PhraseBuildersFacade
         }
       };
     }
+
+    public AbstractEventOrientedPhrasesBuilder eval(ValEnvironment environment)
+    {
+      return this;
+    }
+
   }
 
   /**
@@ -769,4 +777,17 @@ public final class PhraseBuildersFacade
       return ParserBuilders.newDelegateParser( this.<T> getIterablePhrase(), clazz, description );
     }
   }
+
+  public static <T> ValEnvironment environment(T ... values) {
+    return null;
+  }
+
+  public static <T, E> Selector<T, E> var( String name, E value ) {
+    return ProxyUtils.<T, E>toSelector( value );
+  }
+
+  public class ValEnvironment {
+
+  }
+
 }
