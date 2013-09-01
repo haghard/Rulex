@@ -47,11 +47,6 @@ public class ProxyUtils
     return manager;
   }
 
-  /**
-   * @param ignoredValue
-   * @param <T>
-   * @return ConclusionPredicate<T>
-   */
   public static <T> ConclusionPredicate<T> toPredicate( Object ignoredValue )
   {
     final Invokable<T, Boolean> invokable = ProxyUtils.<T, Boolean> poolInvokable();
@@ -59,12 +54,6 @@ public class ProxyUtils
     return Invokable.invokablePredicate( invokable );
   }
 
-  /**
-   * 
-   * @param ignoredValue
-   * @return Selector<T, E>
-   * 
-   */
   public static <T, E> Selector<T, E> toSelector( E ignoredValue )
   {
     final Invokable<T, E> invokable = ProxyUtils.<T, E> poolInvokable();
@@ -76,9 +65,8 @@ public class ProxyUtils
   {
     final Invokable<T, E> invokable = ProxyUtils.<T, E> poolInvokable();
     Preconditions.checkNotNull( invokable );
-    SelectorPipeline.INSTANCE.setDelegate( Invokable.invokableSelector( invokable ) );
-    SelectorPipeline.INSTANCE.setExpressionClass( invokable.toString()  );
-    return SelectorPipeline.INSTANCE;
+    SelectorPipeline.PIPELINE_INSTANCE.setDelegate( Invokable.invokableSelector( invokable ) );
+    return SelectorPipeline.PIPELINE_INSTANCE;
   }
 
   public static <T> T callOn( Class<T> clazz, final T original )
@@ -124,8 +112,9 @@ public class ProxyUtils
     @SuppressWarnings("unchecked")
     public <T> T imposterise( Class<T> mockedType, Class<?>... types )
     {
-      return canImposterise( mockedType ) ? createNativeJavaProxy( mockedType, new PushableHandler() )
-          : (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
+      return canImposterise( mockedType ) ?
+        createNativeJavaProxy( mockedType, new PushableHandler() ):
+        (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
     }
 
     private Class<?>[] prepend( Class<?> first, Class<?>... rest )
@@ -140,15 +129,15 @@ public class ProxyUtils
     @SuppressWarnings("unchecked")
     public <T> T imposterise( Class<T> mockedType, final T original, Class<?>... types )
     {
-      return canImposterise( mockedType ) ? createNativeJavaProxy( mockedType, new InterceptableHandler<T>(
-          original ) ) : (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
+      return canImposterise( mockedType ) ?
+        createNativeJavaProxy( mockedType, new InterceptableHandler<T>( original ) ) :
+        (T) createEnhancer( new PredicateProxyArgument(), mockedType, types ).create();
     }
   }
 
   private static <T> T createNativeJavaProxy( Class<T> mockedType, InvocationHandler interceptor )
   {
-    // guava way instead Proxy.newProxyInstance(classLoader, interfaces,
-    // interceptor);
+    // guava way instead Proxy.newProxyInstance(classLoader, interfaces, interceptor);
     return Reflection.newProxy( mockedType, interceptor );
   }
 

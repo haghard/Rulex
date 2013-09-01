@@ -1,104 +1,97 @@
 package ru.rulex.conclusion.dagger;
 
-import java.lang.reflect.Array;
-
-import ru.rulex.conclusion.*;
-import ru.rulex.conclusion.delegate.ProxyUtils;
+import dagger.ObjectGraph;
+import ru.rulex.conclusion.AssertionUnit;
+import ru.rulex.conclusion.ImmutableAbstractPhrase;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerEventOrientedPhrasesBuilder;
+import ru.rulex.conclusion.dagger.DaggerPredicateModule.CompleteDaggerPredicateModule;
+import ru.rulex.conclusion.delegate.ProxyUtils;
 
-import javax.inject.Inject;
+import java.lang.reflect.Array;
 
 import static dagger.ObjectGraph.create;
 
 @dagger.Module(
-    injects = AbstractEventOrientedPhrasesBuilder.class,
-    library = true)
+        injects = AbstractEventOrientedPhrasesBuilder.class,
+        library = true )
 public final class DaggerDependencyAnalyzerModule
 {
   private final AbstractEventOrientedPhrasesBuilder phraseBuilder;
-  private final AbstractPhrase<?> phrase;
+  private final ImmutableAbstractPhrase<?> phrase;
 
-  public static DaggerDependencyAnalyzerModule $lazyExpression(DaggerPredicateModule module) {
 
-  }
-
-  public static DaggerDependencyAnalyzerModule $lazyExpression(DaggerPredicateModule module0, DaggerPredicateModule module1) {
-
-  }
-
-  public static DaggerDependencyAnalyzerModule $expression(DaggerPredicateModule module)
+  public static DaggerDependencyAnalyzerModule $expression( ObjectGraph module )
   {
     return compose( module );
   }
 
-  public static DaggerDependencyAnalyzerModule $expression( DaggerPredicateModule module0, DaggerPredicateModule module1 ) 
+  public static DaggerDependencyAnalyzerModule $expression( ObjectGraph module0, ObjectGraph module1 )
   {
-    return compose(module0, module1);
+    return compose( module0, module1 );
   }
 
-  public static DaggerDependencyAnalyzerModule $expression( DaggerPredicateModule module0, DaggerPredicateModule module1,
-      DaggerPredicateModule module2 ) 
+  public static DaggerDependencyAnalyzerModule $expression( ObjectGraph module0, ObjectGraph module1,
+                                                            ObjectGraph module2 )
   {
     return compose( module0, module1, module2 );
   }
 
-  public static DaggerDependencyAnalyzerModule $expression( DaggerPredicateModule module0, DaggerPredicateModule module1, 
-      DaggerPredicateModule module2, DaggerPredicateModule module3) 
+  public static DaggerDependencyAnalyzerModule $expression( ObjectGraph module0, ObjectGraph module1,
+                                                            ObjectGraph module2, ObjectGraph module3 )
   {
-    return compose(module0, module1, module2, module3);
+    return compose( module0, module1, module2, module3 );
   }
-  
-  private static DaggerDependencyAnalyzerModule compose(Object... modules)
+
+  private static DaggerDependencyAnalyzerModule compose( Object... modules )
   {
-    DaggerPredicateModule[] array = (DaggerPredicateModule[]) Array.newInstance(DaggerPredicateModule.class, modules.length);
+    ObjectGraph[] array = ( ObjectGraph[] ) Array.newInstance( ObjectGraph.class, modules.length );
     System.arraycopy( modules, 0, array, 0, modules.length );
-    return new DaggerDependencyAnalyzerModule( Phrases.ALL_TRUE.withNarrowedType(), array );
+    return new DaggerDependencyAnalyzerModule( ImmutableAbstractPhrase.all(), array );
   }
 
-  public static <T extends Comparable<? super T>> DaggerPredicateModule $less( final T value, final T argument )
+
+  public static <T extends Comparable<? super T>> ObjectGraph $less( final T value, final T argument )
   {
-    return new DaggerPredicateModule( value, ProxyUtils.toCastedSelector( argument ), LogicOperation.lessThan );
+    return create(
+            new DaggerPredicateModule( value, LogicOperation.lessThan ),
+            new CompleteDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
   }
 
-  public static <T extends Comparable<? super T>> DaggerPredicateModule $less( final T value, final String varName )
+  public static <T extends Comparable<? super T>> ObjectGraph $more( final T value, final T argument )
   {
-    return new DaggerPredicateModule( value, LogicOperation.lessThan );
+    return create(
+            new DaggerPredicateModule( value, LogicOperation.moreThan ),
+            new CompleteDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
   }
 
-  public static <T extends Comparable<? super T>> DaggerPredicateModule $more( final T value, final T argument )
+  public static <T extends Comparable<? super T>> ObjectGraph $lessOrEquals( final T value, final T argument )
   {
-    return new DaggerPredicateModule( value, ProxyUtils.toCastedSelector( argument ), LogicOperation.moreThan );
+    return create(
+            new DaggerPredicateModule( value, LogicOperation.lessOrEquals ),
+            new CompleteDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
   }
 
-  public static <T extends Comparable<? super T>> DaggerPredicateModule $more( final T value, final String varName )
+  public static <T extends Comparable<? super T>> ObjectGraph $moreOrEquals( final T value, final T argument )
   {
-
+    return create(
+            new DaggerPredicateModule( value, LogicOperation.moreOrEquals ),
+            new CompleteDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
   }
 
-  public static <T extends Comparable<? super T>> DaggerPredicateModule $lessOrEquals( final T value, final T argument )
-  {
-    return new DaggerPredicateModule( value, ProxyUtils.toCastedSelector( argument ), LogicOperation.lessOrEquals );
-  }
 
-  public static <T extends Comparable<? super T>> DaggerPredicateModule $moreOrEquals( final T value, final T argument )
-  {
-    return new DaggerPredicateModule( value, ProxyUtils.toCastedSelector( argument ), LogicOperation.moreOrEquals );
-  }
-
-  private DaggerDependencyAnalyzerModule(AbstractPhrase<?> phrase, DaggerPredicateModule[] array)
+  private DaggerDependencyAnalyzerModule( ImmutableAbstractPhrase<?> phrase, ObjectGraph[] graph )
   {
     this.phrase = phrase;
     this.phraseBuilder = new DaggerEventOrientedPhrasesBuilder( phrase );
-    for (DaggerPredicateModule module: array) {
-      providePhrases( module );
-    }
+
+    for ( ObjectGraph graph0 : graph )
+      providePhrases( graph0 );
   }
 
-  private void providePhrases( DaggerPredicateModule element )
-  {    
-    final AssertionUnit ex = create( element ).get( element.getExpressionClass() );
-    phrase.addUnit( ex );
+  private void providePhrases( ObjectGraph element )
+  {
+    phrase.addUnit( create( element ).get( AssertionUnit.class ) );
   }
 
   @dagger.Provides
@@ -106,63 +99,4 @@ public final class DaggerDependencyAnalyzerModule
   {
     return phraseBuilder;
   }
-
-
-  static class IntAssertionUnit<T> implements AssertionUnit<T>
-  {
-    private final ConclusionPredicate<Integer> predicate;
-    private final Selector<Object, Integer> selector;
-
-    @Inject
-    IntAssertionUnit( ConclusionPredicate<Integer> predicate, Selector<Object, Integer> selector )
-    {
-      this.predicate = predicate;
-      this.selector = selector;
-    }
-
-    @Override
-    public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )
-    {
-      return new FluentConclusionPredicate.SelectorPredicate<Object, Integer>( predicate, selector ).apply( event );
-    }
-  }
-
-  static class FloatAssertionUnit<T> implements AssertionUnit<T>
-  {
-    private final ConclusionPredicate<Float> predicate;
-    private final Selector<Object, Float> selector;
-
-    @Inject
-    FloatAssertionUnit( ConclusionPredicate<Float> predicate, Selector<Object, Float> selector )
-    {
-      this.predicate = predicate;
-      this.selector = selector;
-    }
-
-    @Override
-    public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )
-    {
-      return new FluentConclusionPredicate.SelectorPredicate<Object, Float>( predicate, selector ).apply( event );
-    }
-  }
-
-  static class StringAssertionUnit<T> implements AssertionUnit<T>
-  {
-    private final ConclusionPredicate<String> predicate;
-    private final Selector<Object, String> selector;
-
-    @Inject
-    StringAssertionUnit( ConclusionPredicate<String> predicate, Selector<Object, String> selector )
-    {
-      this.predicate = predicate;
-      this.selector = selector;
-    }
-
-    @Override
-    public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )
-    {
-      return new FluentConclusionPredicate.SelectorPredicate<Object, String>( predicate, selector ).apply( event );
-    }
-  }
-
 }

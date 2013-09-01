@@ -29,108 +29,15 @@ import java.util.List;
  * </p>
  * </p>
  */
-public abstract class AbstractPhrase<T>
+public interface AbstractPhrase<T, E extends AssertionUnit<T>>
 {
 
-  protected List<AssertionUnit<T>> units = new ArrayList<AssertionUnit<T>>();
+  abstract void addUnit( E ruleEntry );
 
-  protected final ConclusionStatePathTrace conclusionPathTrace = ConclusionStatePathTrace
-      .defaultInstance();
+  abstract Boolean evaluate();
 
-  protected Class<T> clazz;
+  abstract void setEventClass( Class<T> clazz );
 
-  public abstract void setEvent( T event );
+  abstract void setEvent( T event );
 
-  public abstract void addUnit( AssertionUnit<T> ruleEntry );
-
-  protected abstract Boolean evaluate();
-
-  public void setEventClass( Class<T> clazz )
-  {
-    this.clazz = clazz;
-  }
-
-  public static <T> AbstractPhrase<T> all()
-  {
-    return new AllTruePhrase<T>();
-  }
-
-  public static <T> AbstractPhrase<T> any()
-  {
-    return new AnyTruePhrases<T>();
-  }
-
-  private static final class AllTruePhrase<T> extends AbstractPhrase<T>
-  {
-    private T event;
-
-    @Override
-    public void addUnit( AssertionUnit<T> ruleEntry )
-    {
-      units.add( ruleEntry );
-    }
-
-    @Override
-    public void setEvent( T event )
-    {
-      if ( clazz != null && !clazz.isAssignableFrom( event.getClass() ) )
-      {
-        conclusionPathTrace.addBlockingError( MessageFormat.format(
-            "Class {0} is not a subclass of {1} ", event.getClass(), clazz ) );
-      }
-
-      this.event = event;
-    }
-
-    @Override
-    protected Boolean evaluate()
-    {
-      if ( units.size() == 0 ) return Boolean.FALSE;
-
-      for (AssertionUnit<T> unit : units)
-      {
-        if ( !unit.isSatisfies( conclusionPathTrace, event ) )
-        {
-          return Boolean.FALSE;
-        }
-      }
-      return Boolean.TRUE;
-    }
-  }
-
-  private static final class AnyTruePhrases<T> extends AbstractPhrase<T>
-  {
-    private T event;
-
-    @Override
-    public void setEvent( T event )
-    {
-      if ( clazz != null && !clazz.isAssignableFrom( event.getClass() ) )
-      {
-        conclusionPathTrace.addBlockingError( MessageFormat.format(
-            "Class {0} is not a subclass of {1} ", event.getClass(), clazz ) );
-      }
-
-      this.event = event;
-    }
-
-    @Override
-    public void addUnit( AssertionUnit<T> ruleEntry )
-    {
-      units.add( ruleEntry );
-    }
-
-    @Override
-    protected Boolean evaluate()
-    {
-      for (AssertionUnit<T> unit : units)
-      {
-        if ( unit.isSatisfies( conclusionPathTrace, event ) )
-        {
-          return Boolean.TRUE;
-        }
-      }
-      return Boolean.FALSE;
-    }
-  }
 }

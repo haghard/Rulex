@@ -15,14 +15,19 @@
  */
 package ru.rulex.conclusion;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+
 import ru.rulex.conclusion.ParserBuilders.*;
 import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.execution.ParallelStrategy;
+
+import java.lang.reflect.Array;
 import java.util.concurrent.*;
+
 import org.apache.log4j.Logger;
 
 import static ru.rulex.conclusion.execution.Callables.*;
@@ -116,7 +121,7 @@ public final class PhraseBuildersFacade
     /**
      * @return AbstractPhrase
      */
-    protected abstract <T> AbstractPhrase<T> getPhrase();
+    protected abstract <T, E extends AssertionUnit<T>> AbstractPhrase<T, E> getPhrase();
 
     /**
      * Submits a event instance for execution and initiate an asynchronous
@@ -194,11 +199,7 @@ public final class PhraseBuildersFacade
       };
     }
 
-    public AbstractEventOrientedPhrasesBuilder eval(ValEnvironment environment)
-    {
-      return this;
-    }
-
+    abstract <E extends AbstractEventOrientedPhrasesBuilder> E eval( VarEnvironment environment );
   }
 
   /**
@@ -213,19 +214,19 @@ public final class PhraseBuildersFacade
 
     private static final Logger logger = Logger.getLogger( AbstractEventOrientedBuilderImpl.class );
 
-    protected final AbstractPhrase<?> delegate;
+    protected final AbstractPhrase<?, AssertionUnit<?>> delegate;
 
-    private <T> AbstractEventOrientedBuilderImpl( AbstractPhrase<T> delegate,
+    private <T> AbstractEventOrientedBuilderImpl( AbstractPhrase<?, AssertionUnit<?>> delegate,
         ParallelStrategy<Boolean> pStrategy )
     {
       this.delegate = delegate;
       this.pStrategy = pStrategy;
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T> AbstractPhrase<T> getPhrase()
+    @Override
+    protected <T> AbstractPhrase<T, AssertionUnit<T>> getPhrase()
     {
-      return (AbstractPhrase<T>) delegate;
+      return delegate;
     }
 
     @Override
@@ -304,6 +305,11 @@ public final class PhraseBuildersFacade
      */
     protected abstract void build();
 
+    public EventOrientedPhrasesBuilder eval( VarEnvironment environment )
+    {
+      return this;
+    }
+
     protected <T> WithParser<T> through( Class<T> clazz, String description )
     {
       return rule( ParallelStrategy.<Boolean> serial(), clazz,
@@ -333,6 +339,11 @@ public final class PhraseBuildersFacade
      * include logic for construction underline engine with predicates.
      */
     protected abstract void build();
+
+    public SimpleEventOrientedPhrasesBuilder eval( VarEnvironment environment )
+    {
+      return this;
+    }
 
     public SimpleWithParser as( String description )
     {
@@ -370,6 +381,11 @@ public final class PhraseBuildersFacade
      * logic for construction underline phrase with predicates.
      */
     protected abstract void build();
+
+    public EventOrientedFactConsequencePhrasesBuilder eval( VarEnvironment environment )
+    {
+      return this;
+    }
 
     protected <T> FactConsequenceParser<T> through(
         ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
@@ -424,6 +440,12 @@ public final class PhraseBuildersFacade
     {
       super( delegate, ParallelStrategy.<Boolean> serial() );
     }
+
+    @Override
+    public GuiceEventOrientedPhrasesBuilder eval( VarEnvironment environment )
+    {
+      return this;
+    }
   }
   /**
    * 
@@ -436,7 +458,15 @@ public final class PhraseBuildersFacade
     {
       super( delegate, ParallelStrategy.<Boolean> serial() );
     }
+
+    @Override
+    public DaggerEventOrientedPhrasesBuilder eval( VarEnvironment environment )
+    {
+      delegate.setEnvironment( environment );
+      return this;
+    }
   }
+
   /**
    * {@code AbstractIterableOrientedPhrasesBuilder} class is a root of class
    * hierarchy define a base abstraction for collection oriented PhraseBuilders
@@ -512,8 +542,7 @@ public final class PhraseBuildersFacade
     }
 
     /**
-     * 
-     * @param iterable
+     *
      * @param callback
      * @param service
      * @return Boolean
@@ -778,16 +807,44 @@ public final class PhraseBuildersFacade
     }
   }
 
-  public static <T> ValEnvironment environment(T ... values) {
-    return null;
+  public static VarEnvironment environment(Object ... varEntries) {
+	  if ( ! ( varEntries[0] instanceof VarEntry ) )
+		  throw new IllegalArgumentException("VarEntry type expected");
+
+    final VarEntry[] params = (VarEntry[]) Array.newInstance( VarEntry.class, varEntries.length );
+    System.arraycopy( varEntries, 0, params, 0, varEntries.length );
+    return new VarEnvironment( params );
   }
 
-  public static <T, E> Selector<T, E> var( String name, E value ) {
-    return ProxyUtils.<T, E>toSelector( value );
+  public static <T, E> VarEntry<T, E> var( final String pname, final E value ) {
+    return new VarEntry<T, E>() {{
+      this.name = pname;
+      this.selector = ProxyUtils.<T, E>toSelector( value );
+    }};
   }
 
-  public class ValEnvironment {
+  static class VarEnvironment
+  {
+    ImmutableMap<String, Selector<?,?>> environmentSelectors =
+            ImmutableMap.of();
 
+    public VarEnvironment( VarEntry[] varEntryList )
+    {
+      final ImmutableMap.Builder<String, Selector<?,?>> builder = ImmutableMap.builder();
+      for ( VarEntry varEntry : varEntryList )
+        builder.put( varEntry.name, varEntry.selector );
+
+      environmentSelectors = builder.build();
+    }
+
+    public Optional<? extends Selector<?, ?>> get(String name) {
+      return Optional.fromNullable( environmentSelectors.get( name ) );
+    }
+  }
+
+  static class VarEntry<T, E> {
+    String name;
+    Selector<T, E> selector;
   }
 
 }

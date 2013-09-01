@@ -84,6 +84,12 @@ public final class ConclusionPhrase
             typeSafeQuery( number( argumentClass, (Class<E>) value.getClass(), methodName ),
                 lambda( predicate ) ) );
       }
+
+      @Override
+      <E extends AbstractEventOrientedPhrasesBuilder> E eval( PhraseBuildersFacade.VarEnvironment environment )
+      {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+      }
     };
   }
 
@@ -108,6 +114,12 @@ public final class ConclusionPhrase
                 number( phraseSettings.getTargetClass(), (Class<E>) phraseSettings.getValue()
                     .getClass(), phraseSettings.getAccessorName() ), lambda( phraseSettings
                     .getPredicate() ) ) );
+      }
+
+      @Override
+      <E extends AbstractEventOrientedPhrasesBuilder> E eval( PhraseBuildersFacade.VarEnvironment environment )
+      {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
       }
     };
   }

@@ -1,138 +1,146 @@
 package ru.rulex.conclusion.dagger;
 
-import ru.rulex.conclusion.Selector;
-import ru.rulex.conclusion.AssertionUnit;
-import com.google.common.collect.ImmutableMap;
-import ru.rulex.conclusion.ConclusionPredicate;
-import ru.rulex.conclusion.dagger.PredicateFactory.Factory;
+import javax.inject.Named;
 
-import ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.IntAssertionUnit;
-import ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.FloatAssertionUnit;
-import ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.StringAssertionUnit;
-
-import ru.rulex.conclusion.dagger.PredicateFactory.LessPredicateFactory;
-import ru.rulex.conclusion.dagger.PredicateFactory.MorePredicateFactory;
-import ru.rulex.conclusion.dagger.PredicateFactory.MoreOrEqualsPredicateFactory;
-import ru.rulex.conclusion.dagger.PredicateFactory.LessOrEqualsPredicateFactory;
+import ru.rulex.conclusion.*;
+import com.google.common.base.Optional;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessOrEqualsConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreOrEqualsConclusionPredicate;
 
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
- 
 @dagger.Module(
-    injects = { IntAssertionUnit.class, FloatAssertionUnit.class },
-    complete = false,
-    library = true)
-@SuppressWarnings("rawtypes")
+        complete = false, library = true,
+        injects = ConclusionPredicate.class
+)
 public class DaggerPredicateModule
 {
-  private Comparable<?> value;
-  private final Factory factory;
-  private final SelectorPipeline selector;
-  private static ImmutableMap<LogicOperation, Factory<?>> map;
-
-  static
-  {
-    ImmutableMap.Builder<LogicOperation, Factory<?>> mapBuilder = ImmutableMap.builder();
-    mapBuilder.put( LogicOperation.lessThan, newInstance( LogicOperation.lessThan ) );
-    mapBuilder.put( LogicOperation.moreThan, newInstance( LogicOperation.moreThan ) );
-    mapBuilder.put( LogicOperation.lessOrEquals, newInstance( LogicOperation.lessOrEquals ) );
-    mapBuilder.put( LogicOperation.moreOrEquals, newInstance( LogicOperation.moreOrEquals ) );
-    map = mapBuilder.build();
-  }
-
-  @SuppressWarnings("unchecked")
-  static <T extends Comparable<? super T>, E extends Factory<T>> E newInstance( LogicOperation operation )
-  {
-    switch (operation)
-    {
-      case lessThan: return (E) new LessPredicateFactory<T>();
-      case moreThan: return (E) new MorePredicateFactory<T>();
-      case moreOrEquals: return (E) new MoreOrEqualsPredicateFactory<T>();
-      case lessOrEquals: return (E) new LessOrEqualsPredicateFactory<T>();
-      default: throw new IllegalArgumentException( "Unsupported operation in DaggerPredicateModule" );
-    }
-  }
-
-  protected <T extends Comparable<? super T>> DaggerPredicateModule( T value, Factory<?> factory,
-      SelectorPipeline selector )
-  {
-    this.value = value;
-    this.factory = factory;
-    this.selector = selector;
-  }
+  private final Optional<?> value;
+  private final LogicOperation operation;
 
   public <T extends Comparable<? super T>> DaggerPredicateModule( T value, LogicOperation operation )
   {
-    this( value, map.get( operation ), null );
+    this.operation = operation;
+    this.value = Optional.of( value );
   }
 
-  public <T extends Comparable<? super T>> DaggerPredicateModule( T value, SelectorPipeline selector,
-      LogicOperation operation )
+  @dagger.Provides
+  protected <T> ConclusionPredicate providePredicate()
   {
-    this( value, map.get( operation ), selector );
+    final Comparable<T> v = ( Comparable<T> ) value.get();
+    switch ( operation )
+    {
+      case lessThan:
+        return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
+                new InjectableLessConclusionPredicate( v ) ) );
+      case moreThan:
+        return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
+                new InjectableMoreConclusionPredicate( v ) ) );
+      case moreOrEquals:
+        return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
+                new InjectableMoreOrEqualsConclusionPredicate( v ) ) );
+      case lessOrEquals:
+        return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
+                new InjectableLessOrEqualsConclusionPredicate( v ) ) );
+
+      default:
+        throw new IllegalArgumentException( "DaggerPredicateModule.providePredicate() unsupported operation " );
+    }
   }
 
-  @dagger.Provides
-  Selector<Object, Integer> intSelector()
+  @dagger.Module(
+          addsTo = DaggerPredicateModule.class,
+          injects = AssertionUnit.class,
+          complete = false, library = true )
+  static class CompleteDaggerPredicateModule
   {
-    return selector.cast();
+    private final SelectorPipeline selectorPipeline;
+
+    public CompleteDaggerPredicateModule( SelectorPipeline selectorPipeline )
+    {
+      this.selectorPipeline = selectorPipeline;
+    }
+
+    @dagger.Provides
+    <T, E> Selector provideSelector()
+    {
+      return selectorPipeline.cast();
+    }
+
+    @dagger.Provides
+    AssertionUnit provideAssertionUnit( final ConclusionPredicate conclusionPredicate, final Selector selector )
+    {
+      return new AssertionUnit()
+      {
+        @Override
+        public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )
+        {
+          return new FluentConclusionPredicate.SelectorPredicate( conclusionPredicate, selector )
+                  .apply( event );
+        }
+      };
+    }
   }
 
-  @dagger.Provides
-  Selector<Object, Float> floatSelector()
+  @dagger.Module(
+          addsTo = DaggerPredicateModule.class,
+          injects = MutableAssertionUnit.class,
+          complete = false, library = true )
+  static class UncompletedDaggerPredicateModule
   {
-    return selector.cast();
-  }
+    private final String varName;
 
-  @dagger.Provides
-  Selector<Object, String> stringSelector()
-  {
-    return selector.cast();
-  }
+    public UncompletedDaggerPredicateModule( String varName )
+    {
+      this.varName = varName;
+    }
 
+    @dagger.Provides
+    @Named( "emptySelector" )
+    <T, E> Selector provideSelector()
+    {
+      return new Selector<T, E>()
+      {
+        @Override
+        public E select( T argument )
+        {
+          throw new IllegalStateException( "empty selector was called" );
+        }
+      };
+    }
 
-  /**
-   * Return ConclusionPredicate with Integer
-   * 
-   * @return ConclusionPredicate
-   */
-  @dagger.Provides
-  @SuppressWarnings({ "unchecked" })
-  ConclusionPredicate<Integer> intPredicate()
-  {
-    return callOn( ConclusionPredicate.class, 
-        ConclusionPredicate.class.cast( factory.createPredicate( value ) ) );
-  }
+    @dagger.Provides
+    <T> MutableAssertionUnit provideAssertionUnit(
+            final ConclusionPredicate conclusionPredicate,
+            @Named( "emptySelector" ) final Selector pSelector )
+    {
+      return new MutableAssertionUnit<T>()
+      {
+        String varName;
+        Selector<T, ?> selector = pSelector;
 
-  /**
-   * Return ConclusionPredicate with Float
-   * @return ConclusionPredicate
-   */
-  @dagger.Provides
-  @SuppressWarnings({ "unchecked" })
-  ConclusionPredicate<Float> floatPredicate()
-  {
-    return callOn( ConclusionPredicate.class,
-        ConclusionPredicate.class.cast( factory.createPredicate(  value ) ) );
-  }
+        @Override
+        public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )
+        {
+          return new FluentConclusionPredicate.SelectorPredicate( conclusionPredicate, selector )
+                  .apply( event );
+        }
 
-  public Class<? extends AssertionUnit> getExpressionClass()
-  {
-    return selector.getExpressionClass();
-  }
+        @Override
+        public void setVar( String varName )
+        {
+          this.varName = varName;
+        }
 
-  @dagger.Provides
-  public IntAssertionUnit intExpression(ConclusionPredicate<Integer> predicate, Selector<Object, Integer> selector) {
-    return new IntAssertionUnit<Integer>( predicate, selector );
-  }
+        @Override
+        public void setSelector( Selector<T, ?> selector )
+        {
+          this.selector = selector;
+        }
 
-  @dagger.Provides
-  public FloatAssertionUnit floatExpression(ConclusionPredicate<Float> predicate, Selector<Object, Float> selector) {
-    return new FloatAssertionUnit<Float>( predicate, selector );
-  }
-
-  @dagger.Provides
-  public StringAssertionUnit stringExpression(ConclusionPredicate<String> predicate, Selector<Object, String> selector) {
-    return new StringAssertionUnit<String>( predicate, selector );
+      };
+    }
   }
 }
