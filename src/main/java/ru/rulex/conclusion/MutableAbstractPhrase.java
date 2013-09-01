@@ -46,7 +46,7 @@ public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, Muta
     {
       if ( units.size() == 0 ) return Boolean.FALSE;
 
-      for (AssertionUnit<T> unit : units)
+      for (ImmutableAssertionUnit<T> unit : units)
       {
         if ( ! unit.isSatisfies( conclusionPathTrace, event ) )
         {
@@ -62,7 +62,7 @@ public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, Muta
 
     @Override public Boolean evaluate()
     {
-      for (AssertionUnit<T> unit : units)
+      for (ImmutableAssertionUnit<T> unit : units)
       {
         if ( unit.isSatisfies( conclusionPathTrace, event ) )
         {

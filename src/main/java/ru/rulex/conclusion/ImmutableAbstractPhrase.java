@@ -4,11 +4,11 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, AssertionUnit<T>>
+public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, ImmutableAssertionUnit<T>>
 {
   protected T event;
   protected Class<T> clazz;
-  protected List<AssertionUnit<T>> units = new ArrayList<AssertionUnit<T>>();
+  protected List<ImmutableAssertionUnit<T>> units = new ArrayList<ImmutableAssertionUnit<T>>();
 
   protected final ConclusionStatePathTrace conclusionPathTrace =
           ConclusionStatePathTrace.defaultInstance();
@@ -20,7 +20,7 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, As
   }
 
   @Override
-  public void addUnit( AssertionUnit<T> ruleEntry )
+  public void addUnit( ImmutableAssertionUnit<T> ruleEntry )
   {
     units.add( ruleEntry );
   }
@@ -45,7 +45,7 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, As
     {
       if ( units.size() == 0 ) return Boolean.FALSE;
 
-      for (AssertionUnit<T> unit : units)
+      for (ImmutableAssertionUnit<T> unit : units)
       {
         if ( ! unit.isSatisfies( conclusionPathTrace, event ) )
         {
@@ -61,7 +61,7 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, As
     @Override
     public Boolean evaluate()
     {
-      for (AssertionUnit<T> unit : units)
+      for (ImmutableAssertionUnit<T> unit : units)
       {
         if ( unit.isSatisfies( conclusionPathTrace, event ) )
         {

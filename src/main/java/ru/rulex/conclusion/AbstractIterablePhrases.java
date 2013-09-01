@@ -26,7 +26,7 @@ public abstract class AbstractIterablePhrases<T> implements IterablePhrases<T>
 
   protected ImmutableList<T> collection;
 
-  protected AssertionUnit<T> ruleEntry;
+  protected ImmutableAssertionUnit<T> ruleEntry;
 
   protected ImmutableSet<T> excepts = ImmutableSet.of();
 
@@ -41,7 +41,7 @@ public abstract class AbstractIterablePhrases<T> implements IterablePhrases<T>
     this.collection = ImmutableList.copyOf( collection );
   }
 
-  public void addUnit( AssertionUnit<T> ruleEntry )
+  public void addUnit( ImmutableAssertionUnit<T> ruleEntry )
   {
     this.ruleEntry = ruleEntry;
   }

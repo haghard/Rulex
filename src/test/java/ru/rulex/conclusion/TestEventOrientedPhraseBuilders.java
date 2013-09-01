@@ -26,11 +26,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import ru.rulex.conclusion.execution.ParallelStrategy;
-import ru.rulex.conclusion.ConclusionPhrase;
-import ru.rulex.conclusion.ConclusionPredicate;
-import ru.rulex.conclusion.PhraseExecutionException;
-import ru.rulex.conclusion.PhraseSettings;
-import ru.rulex.conclusion.Selector;
 import ru.rulex.conclusion.ParserBuilders.Consequence;
 import ru.rulex.conclusion.ParserBuilders.ConsequenceSupplier;
 import ru.rulex.conclusion.PhraseBuildersFacade.*;
@@ -59,7 +54,7 @@ public class TestEventOrientedPhraseBuilders
   @Test
   public void testEventOrientedPhrasesBuilderWithProxy()
   {
-    final AbstractEventOrientedPhrasesBuilder builder0 = new EventOrientedPhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder builder0 = new EventOrientedPhrasesBuilder()
     {
       protected void build()
       {
@@ -86,7 +81,7 @@ public class TestEventOrientedPhraseBuilders
   @Test
   public void testEventOrientedPhrasesBuilderWithTypeSafeSelector()
   {
-    final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder builder = new EventOrientedPhrasesBuilder()
     {
       @Override
       protected void build()
@@ -128,7 +123,7 @@ public class TestEventOrientedPhraseBuilders
       }
     };
 
-    final AbstractEventOrientedPhrasesBuilder builder = new EventOrientedPhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder builder = new EventOrientedPhrasesBuilder()
     {
       protected void build()
       {
@@ -162,7 +157,7 @@ public class TestEventOrientedPhraseBuilders
     final Selector<Model, Integer> selector = createSameThreadMockSelector( mainThread );
     final ConclusionPredicate<Integer> predicate = createSameThMockPredicate( mainThread );
 
-    AbstractEventOrientedPhrasesBuilder sameThreadBuilder = new EventOrientedPhrasesBuilder()
+    AbstractEventOrientedPhraseBuilder sameThreadBuilder = new EventOrientedPhrasesBuilder()
     {
       protected void build()
       {
@@ -174,7 +169,7 @@ public class TestEventOrientedPhraseBuilders
     final Selector<Model, Integer> selector0 = createSeparateTheadMockSelector( mainThread );
     final ConclusionPredicate<Integer> predicate0 = createSeparateThMockPredicate( mainThread );
 
-    AbstractEventOrientedPhrasesBuilder separateThreadBuilder = new EventOrientedPhrasesBuilder()
+    AbstractEventOrientedPhraseBuilder separateThreadBuilder = new EventOrientedPhrasesBuilder()
     {
       protected void build()
       {
@@ -218,7 +213,7 @@ public class TestEventOrientedPhraseBuilders
       }
     };
 
-    final AbstractEventOrientedPhrasesBuilder sameThreadBuilder = new EventOrientedFactConsequencePhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder sameThreadBuilder = new EventOrientedFactConsequencePhrasesBuilder()
     {
       @Override
       protected void build()
@@ -255,7 +250,7 @@ public class TestEventOrientedPhraseBuilders
     final ParallelStrategy<Boolean> builderStrategy = ParallelStrategy
         .separateThreadStrategy();
 
-    AbstractEventOrientedPhrasesBuilder builder = new EventOrientedFactConsequencePhrasesBuilder()
+    AbstractEventOrientedPhraseBuilder builder = new EventOrientedFactConsequencePhrasesBuilder()
     {
       @Override
       protected void build()
@@ -326,7 +321,7 @@ public class TestEventOrientedPhraseBuilders
         .listenableFutureStrategy( executor );
     try
     {
-      AbstractEventOrientedPhrasesBuilder nbuilder = ConclusionPhrase.phrase(
+      AbstractEventOrientedPhraseBuilder nbuilder = ConclusionPhrase.phrase(
           "default-phrase",
           PhraseSettings.<Integer, Model> newBuilder().accessorName( methodName )
               .pStrategy( pStrategy ).targetClass( Model.class ).value( 11 )

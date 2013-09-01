@@ -25,7 +25,7 @@ public class IteratorBuilderImpl
 
   public static class WhereIteratorElement<T> implements IteratorElement<T>
   {
-    private AssertionUnit<T> conclusionPredicate;
+    private ImmutableAssertionUnit<T> conclusionPredicate;
 
     private ImmutableList<T> source;
 
@@ -38,7 +38,7 @@ public class IteratorBuilderImpl
     }
 
     @Override
-    public void accept( AssertionUnit<T> conclusionPredicate, ImmutableList<T> source,
+    public void accept( ImmutableAssertionUnit<T> conclusionPredicate, ImmutableList<T> source,
         ImmutableSet<T> excepts )
     {
       this.conclusionPredicate = conclusionPredicate;

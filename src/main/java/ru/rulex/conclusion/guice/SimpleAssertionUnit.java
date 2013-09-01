@@ -17,9 +17,9 @@ package ru.rulex.conclusion.guice;
 
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.ConclusionStatePathTrace;
-import ru.rulex.conclusion.AssertionUnit;
+import ru.rulex.conclusion.ImmutableAssertionUnit;
 
-public class SimpleAssertionUnit<T> implements AssertionUnit<T>
+public class SimpleAssertionUnit<T> implements ImmutableAssertionUnit<T>
 {
   
   private final ConclusionPredicate<T> predicate;

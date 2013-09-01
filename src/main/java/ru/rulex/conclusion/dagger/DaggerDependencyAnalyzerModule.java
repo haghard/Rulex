@@ -1,9 +1,9 @@
 package ru.rulex.conclusion.dagger;
 
 import dagger.ObjectGraph;
-import ru.rulex.conclusion.AssertionUnit;
+import ru.rulex.conclusion.ImmutableAssertionUnit;
 import ru.rulex.conclusion.ImmutableAbstractPhrase;
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
+import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerEventOrientedPhrasesBuilder;
 import ru.rulex.conclusion.dagger.DaggerPredicateModule.CompleteDaggerPredicateModule;
 import ru.rulex.conclusion.delegate.ProxyUtils;
@@ -13,11 +13,11 @@ import java.lang.reflect.Array;
 import static dagger.ObjectGraph.create;
 
 @dagger.Module(
-        injects = AbstractEventOrientedPhrasesBuilder.class,
+        injects = AbstractEventOrientedPhraseBuilder.class,
         library = true )
 public final class DaggerDependencyAnalyzerModule
 {
-  private final AbstractEventOrientedPhrasesBuilder phraseBuilder;
+  private final AbstractEventOrientedPhraseBuilder phraseBuilder;
   private final ImmutableAbstractPhrase<?> phrase;
 
 
@@ -91,11 +91,11 @@ public final class DaggerDependencyAnalyzerModule
 
   private void providePhrases( ObjectGraph element )
   {
-    phrase.addUnit( create( element ).get( AssertionUnit.class ) );
+    phrase.addUnit( create( element ).get( ImmutableAssertionUnit.class ) );
   }
 
   @dagger.Provides
-  AbstractEventOrientedPhrasesBuilder getPhraseBuilder()
+  AbstractEventOrientedPhraseBuilder getPhraseBuilder()
   {
     return phraseBuilder;
   }

@@ -4,7 +4,7 @@ import static ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule.$more;
 
 import static com.google.inject.Guice.createInjector;
 import ru.rulex.conclusion.*
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder
+import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder
 import ru.rulex.conclusion.PhraseBuildersFacade.EventOrientedPhrasesBuilder
 
 import static ru.rulex.conclusion.FluentConclusionPredicate.fromSelector
@@ -42,7 +42,7 @@ def injector = createInjector(
     $more(90, { foo0 -> return foo0.getInteger() }, "(90 > x.getInt() )"),
     $less(56, { foo0 -> return foo0.getInteger() }, "(56 < x.getInt() )",)))
 
-println "All ${injector.getInstance(AbstractEventOrientedPhrasesBuilder.class).async(foo).checkedGet()} "
+println "All ${injector.getInstance(PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class).async(foo).checkedGet()} "
 
 // do the same
 def injector0 = createInjector(
@@ -51,4 +51,4 @@ def injector0 = createInjector(
       $more(90, { foo0 -> return foo0.getInteger() }, "90 > x.getInt()"),
       $less(56, { foo0 -> return foo0.getInteger() }, "56 < x.getInt()"))))
 
-println "All ${injector0.getInstance(AbstractEventOrientedPhrasesBuilder.class).async(foo).checkedGet()} "
+println "All ${injector0.getInstance(PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class).async(foo).checkedGet()} "

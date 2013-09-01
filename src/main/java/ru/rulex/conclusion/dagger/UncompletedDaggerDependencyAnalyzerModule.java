@@ -7,15 +7,15 @@ import java.lang.reflect.Array;
 import ru.rulex.conclusion.dagger.DaggerPredicateModule.UncompletedDaggerPredicateModule;
 
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerEventOrientedPhrasesBuilder;
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
+import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
 
 @dagger.Module(
-        injects = AbstractEventOrientedPhrasesBuilder.class,
+        injects = AbstractEventOrientedPhraseBuilder.class,
         library = true )
 public class UncompletedDaggerDependencyAnalyzerModule
 {
   private final MutableAbstractPhrase<?> phrase;
-  private final AbstractEventOrientedPhrasesBuilder phraseBuilder;
+  private final AbstractEventOrientedPhraseBuilder phraseBuilder;
 
   public static UncompletedDaggerDependencyAnalyzerModule $lazyExpression( ObjectGraph graph )
   {
@@ -57,7 +57,7 @@ public class UncompletedDaggerDependencyAnalyzerModule
   }
 
   @dagger.Provides
-  AbstractEventOrientedPhrasesBuilder providePhraseBuilder()
+  AbstractEventOrientedPhraseBuilder providePhraseBuilder()
   {
     return phraseBuilder;
   }

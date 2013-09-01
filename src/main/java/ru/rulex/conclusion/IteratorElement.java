@@ -35,6 +35,6 @@ public interface IteratorElement<T>
    * @param source
    * @param except
    */
-  void accept( AssertionUnit<T> conclusionPredicate, ImmutableList<T> source, ImmutableSet<T> except );
+  void accept( ImmutableAssertionUnit<T> conclusionPredicate, ImmutableList<T> source, ImmutableSet<T> except );
 
 }

@@ -15,7 +15,6 @@ import org.apache.onami.test.annotation.GuiceProvidedModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.EventOrientedPhrasesBuilder;
 
 import com.google.common.base.Joiner;
@@ -32,17 +31,17 @@ public class TestSingleEventRules {
 	final static String NAME1 = "testEventOrientedPhrasesBuilderWithTypeSafeSelector";
 
 	@Inject @Named( NAME )
-	AbstractEventOrientedPhrasesBuilder builder;
+  PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder builder;
 
 	@Inject @Named( NAME1 )
-	AbstractEventOrientedPhrasesBuilder builder1;
+  PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder builder1;
 	
 	@GuiceProvidedModules
 	public static Module createEventOrientedPhrasesBuilderWithProxy() {
 		return new AbstractModule() {
 			@Override
 			protected void configure() {
-				bind(AbstractEventOrientedPhrasesBuilder.class).annotatedWith(named(NAME)).toInstance(
+				bind(PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class).annotatedWith(named(NAME)).toInstance(
 					new EventOrientedPhrasesBuilder() 
 					{
 					  @Override
@@ -53,7 +52,7 @@ public class TestSingleEventRules {
 					  }
 					});
 
-				bind(AbstractEventOrientedPhrasesBuilder.class).annotatedWith(named(NAME1)).toInstance(
+				bind(PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class).annotatedWith(named(NAME1)).toInstance(
 				  new EventOrientedPhrasesBuilder()
 				  {
 					@Override

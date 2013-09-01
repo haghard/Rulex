@@ -121,7 +121,7 @@ public final class ParallelStrategy<T>
    * @param function
    *          which implement concrete thread strategy
    * @return instance {@code ParallelStrategy} with has function parameter as
-   *         delegate
+   *         phrase
    */
   private static <T> ParallelStrategy<T> toCheckedStrategy(
       ConclusionFunction<Callable<T>, CheckedFuture<T, PhraseExecutionException>> function )

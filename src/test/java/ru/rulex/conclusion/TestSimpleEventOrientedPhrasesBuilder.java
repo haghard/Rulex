@@ -1,7 +1,7 @@
 package ru.rulex.conclusion;
 
 import org.junit.Test;
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
+import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.SimpleEventOrientedPhrasesBuilder;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -14,7 +14,7 @@ public class TestSimpleEventOrientedPhrasesBuilder
   @Test
   public void testSimpleEventOrientedPhrasesBuilder() throws PhraseExecutionException
   {
-    final AbstractEventOrientedPhrasesBuilder builder = new SimpleEventOrientedPhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder builder = new SimpleEventOrientedPhrasesBuilder()
     {
       protected void build()
       {

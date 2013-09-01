@@ -21,7 +21,6 @@ import static ru.rulex.conclusion.FluentConclusionPredicate.typeSafeQuery;
 import static ru.rulex.conclusion.FluentConclusionPredicate.lambda;
 import static ru.rulex.conclusion.FluentConclusionPredicate.number;
 import ru.rulex.conclusion.execution.ParallelStrategy;
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.EventOrientedPhrasesBuilder;
 
 public final class ConclusionPhrase
@@ -35,7 +34,7 @@ public final class ConclusionPhrase
    * @return
    * 
    */
-  public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(
+  public static <E extends Number & Comparable<? super E>, T> PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder phrase(
       final E value, final Class<T> argumentClass, final String methodName,
       final ConclusionPredicate<E> predicate )
   {
@@ -52,7 +51,7 @@ public final class ConclusionPhrase
    * @return AbstractConclusionExecutionPhrasesBuilder
    * 
    */
-  public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(
+  public static <E extends Number & Comparable<? super E>, T> PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder phrase(
       final String termName, final E value, final Class<T> argumentClass, final String methodName,
       final ConclusionPredicate<E> predicate )
   {
@@ -70,7 +69,7 @@ public final class ConclusionPhrase
    * @param pStrategy
    * @return AbstractConclusionExecutionPhrasesBuilder
    */
-  public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(
+  public static <E extends Number & Comparable<? super E>, T> PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder phrase(
       final String termName, final E value, final Class<T> argumentClass, final String methodName,
       final ConclusionPredicate<E> predicate,
       final ParallelStrategy<Boolean> pStrategy0 )
@@ -86,7 +85,7 @@ public final class ConclusionPhrase
       }
 
       @Override
-      <E extends AbstractEventOrientedPhrasesBuilder> E eval( PhraseBuildersFacade.VarEnvironment environment )
+      <E extends PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder> E eval( PhraseBuildersFacade.VarEnvironment environment )
       {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
       }
@@ -101,7 +100,7 @@ public final class ConclusionPhrase
    * 
    */
   @SuppressWarnings("unchecked")
-  public static <E extends Number & Comparable<? super E>, T> AbstractEventOrientedPhrasesBuilder phrase(
+  public static <E extends Number & Comparable<? super E>, T> PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder phrase(
       final String termName, final PhraseSettings<E, T> phraseSettings )
   {
     return new EventOrientedPhrasesBuilder()
@@ -117,7 +116,7 @@ public final class ConclusionPhrase
       }
 
       @Override
-      <E extends AbstractEventOrientedPhrasesBuilder> E eval( PhraseBuildersFacade.VarEnvironment environment )
+      <E extends PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder> E eval( PhraseBuildersFacade.VarEnvironment environment )
       {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
       }

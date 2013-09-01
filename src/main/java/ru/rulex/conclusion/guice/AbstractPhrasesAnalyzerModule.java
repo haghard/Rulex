@@ -25,12 +25,7 @@ import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.google.inject.spi.InstanceBinding;
 
-import ru.rulex.conclusion.AbstractPhrase;
-import ru.rulex.conclusion.ConclusionPredicate;
-import ru.rulex.conclusion.FluentConclusionPredicate;
-import ru.rulex.conclusion.Phrases;
-import ru.rulex.conclusion.Selector;
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
+import ru.rulex.conclusion.*;
 import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder;
 
 import java.util.List;
@@ -304,7 +299,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
   static final class InternalDslPhrasesBuilderModule extends AbstractPhrasesAnalyzerModule
   {
 
-    private final AbstractEventOrientedPhrasesBuilder phraseBuilder;
+    private final PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder phraseBuilder;
 
     InternalDslPhrasesBuilderModule( AbstractPhrase<?> phrase0, List<Element> elements )
     {
@@ -316,7 +311,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
     protected void configure()
     {
       // phrase builder class binding
-      bind( AbstractEventOrientedPhrasesBuilder.class ).toInstance( phraseBuilder );
+      bind( PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class ).toInstance( phraseBuilder );
       interceptEarlierBinding();
     }
 

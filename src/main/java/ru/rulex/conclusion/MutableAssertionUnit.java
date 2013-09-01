@@ -1,7 +1,7 @@
 package ru.rulex.conclusion;
 
 
-public interface MutableAssertionUnit<T> extends AssertionUnit<T>
+public interface MutableAssertionUnit<T> extends ImmutableAssertionUnit<T>
 {
 
   void setVar(String varName);

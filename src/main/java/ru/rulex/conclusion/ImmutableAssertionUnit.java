@@ -17,7 +17,7 @@
  */
 package ru.rulex.conclusion;
 
-public interface AssertionUnit<T>
+public interface ImmutableAssertionUnit<T>
 {
   public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, T event );
 }

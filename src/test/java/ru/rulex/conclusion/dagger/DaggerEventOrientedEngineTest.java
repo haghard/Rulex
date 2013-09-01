@@ -2,7 +2,7 @@ package ru.rulex.conclusion.dagger;
 
 import org.junit.Test;
 import ru.rulex.conclusion.*;
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhrasesBuilder;
+import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
 
 import javax.inject.Named;
 
@@ -20,12 +20,12 @@ public class DaggerEventOrientedEngineTest
   @Test
   public void testDaggerBuilderWithDifferentTypes()
   {
-    final AbstractEventOrientedPhrasesBuilder builder = create(
+    final AbstractEventOrientedPhraseBuilder builder = create(
       $expression(
         $less( 19, callOn( Model.class ).getInteger() ),
         $less( 19, callOn( Model.class ).getOtherInteger() ),
         $more( 56.78f, callOn( Model.class ).getFloat() ) ))
-      .get( AbstractEventOrientedPhrasesBuilder.class );
+      .get( PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class );
 
     assertThat( builder.sync( Model.values( 20, 78 ) ) ).isTrue();
   }
@@ -34,12 +34,12 @@ public class DaggerEventOrientedEngineTest
   public void testDaggerBuilderWithSameType()
   {
     /*
-    final AbstractEventOrientedPhrasesBuilder builder = create(
+    final AbstractEventOrientedPhraseBuilder builder = create(
       $expression(
         $less( 19, callOn( Model.class ).getInteger() ),
         $more( 79, callOn( Model.class ).getOtherInteger() ),
         $moreOrEquals( 56.78f, callOn( Model.class ).getFloat() ) ) )
-      .get( AbstractEventOrientedPhrasesBuilder.class );
+      .get( AbstractEventOrientedPhraseBuilder.class );
 
     assertThat( builder.sync( Model.values( 20, 78 ) ) ).isTrue();
     */

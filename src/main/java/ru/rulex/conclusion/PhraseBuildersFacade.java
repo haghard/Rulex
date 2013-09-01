@@ -35,9 +35,9 @@ import static ru.rulex.conclusion.execution.Callables.*;
 /**
  * <pre>
  *                         <b> Classes hierarchy (single object oriented)</b>
- *                            __________________________________________                                  __________________      
- *                           |   AbstractEventOrientedPhrasesBuilder   |-------------------------------->|  AbstractPhrase |
- *                           |_________________________________________|                                 |_________________|  
+ *                            __________________________________________                                  __________________
+ *                           |   AbstractEventOrientedPhraseBuilder   |-------------------------------->|  AbstractPhrase |
+ *                           |_________________________________________|                                 |_________________|
  *                                             |                                                      ___________|____________
  *                          ___________________|______________________                               |                       |
  *                         |    AbstractEventOrientedBuilderImpl     |
@@ -52,10 +52,10 @@ import static ru.rulex.conclusion.execution.Callables.*;
  *  ______|_______________________    ______________________________|_____________
  * | EventOrientedPhrasesBuilder |   | EventOrientedFactConsequencePhrasesBuilder|
  * |_____________________________|   |___________________________________________|
- * 
+ *
  *                             <b> Classes hierarchy (collection oriented)</b>
  *                             ___________________________________________                            ___________________
- *                            |   AbstractIterableOrientedPhrasesBuilder |-------------------------->| IterablePhrases  | 
+ *                            |   AbstractIterableOrientedPhrasesBuilder |-------------------------->| IterablePhrases  |
  *                            |__________________________________________|                           |__________________|
  *                                                 |                                              ____________|_____________
  *                         ________________________|___________________                          |                         |
@@ -84,36 +84,32 @@ public final class PhraseBuildersFacade
   }
 
   /**
-   * 
-   * {@code AbstractEventOrientedPhrasesBuilder} class is a root of class
+   * {@code AbstractEventOrientedPhraseBuilder} class is a root of class
    * hierarchy define a base abstraction for single event oriented
    * PhraseBuilders
    * <p/>
    * This class extended for implementation specific behavior.
    * <p/>
-   * <p>
-   * <b>Note:</b> {@code AbstractEventOrientedPhrasesBuilder}'s class hierarchy
+   * <p/>
+   * <b>Note:</b> {@code AbstractEventOrientedPhraseBuilder}'s class hierarchy
    * is a abstraction part of <b>pattern bridge </b>. Every subclass relies on a
    * set of abstract operations, where several implementations of the set of
    * abstract operations are possible. The implementation part (Bridge Pattern)
    * is a {@code AbstractPhrase} hierarchy
    * <p/>
-   * <p>
+   * <p/>
    * See wiki article on <a href=<a
    * href="http://en.wikipedia.org/wiki/Bridge_pattern"> Builder Design
    * Pattern</a>.
-   * 
    */
-  public static abstract class AbstractEventOrientedPhrasesBuilder
+  public static abstract class AbstractEventOrientedPhraseBuilder
   {
-
     protected ParallelStrategy<Boolean> pStrategy;
 
     /**
-     * 
      * @param pStrategy execution strategy
      */
-    protected void setParallelStrategy(ParallelStrategy<Boolean> pStrategy )
+    protected void setParallelStrategy( ParallelStrategy<Boolean> pStrategy )
     {
       this.pStrategy = pStrategy;
     }
@@ -121,7 +117,7 @@ public final class PhraseBuildersFacade
     /**
      * @return AbstractPhrase
      */
-    protected abstract <T, E extends AssertionUnit<T>> AbstractPhrase<T, E> getPhrase();
+    protected abstract <T> ImmutableAbstractPhrase<T> getPhrase();
 
     /**
      * Submits a event instance for execution and initiate an asynchronous
@@ -132,7 +128,7 @@ public final class PhraseBuildersFacade
      * <p/>
      * The CheckedFuture <tt>addListener</tt> method will return the task's
      * result upon successful completion in asynch way.
-     * 
+     *
      * @param event
      * @return CheckedFuture<Boolean> representing the pending results of the
      *         task.
@@ -142,7 +138,7 @@ public final class PhraseBuildersFacade
     /**
      * Always block current thread on {@code future.get()} until result was not
      * received
-     * 
+     *
      * @param event
      * @return Boolean
      */
@@ -151,7 +147,7 @@ public final class PhraseBuildersFacade
     /**
      * Always block current thread on {@code future.get()} until result was not
      * received
-     * 
+     *
      * @param event
      * @param callback
      * @return Boolean
@@ -164,7 +160,7 @@ public final class PhraseBuildersFacade
     /**
      * Always block current thread on {@code future.get()} until result was not
      * received
-     * 
+     *
      * @param event
      * @param callback
      * @param callbackExecutor
@@ -173,20 +169,16 @@ public final class PhraseBuildersFacade
     public abstract <T> Boolean sync( final T event, Runnable callback, Executor callbackExecutor );
 
     /**
-     * 
-     * 
      * @param event
      */
     protected abstract <T> void setEvent( T event );
 
     /**
-     * 
      * @param event
      * @return ConclusionFunction
-     * 
      */
-    protected <T, E extends AbstractEventOrientedPhrasesBuilder> ConclusionFunction<E, Boolean> makePhraseFunction(
-        final T event )
+    protected <T, E extends AbstractEventOrientedPhraseBuilder> ConclusionFunction<E, Boolean> makePhraseFunction(
+            final T event )
     {
       return new ConclusionFunction<E, Boolean>()
       {
@@ -198,35 +190,32 @@ public final class PhraseBuildersFacade
         }
       };
     }
-
-    abstract <E extends AbstractEventOrientedPhrasesBuilder> E eval( VarEnvironment environment );
   }
 
   /**
-   * 
    * {@code AbstractEventOrientedBuilderImpl} abstract private class which
-   * extends hierarchy single event oriented PhraseBuiler's. For instantiation
+   * extends hierarchy single event oriented PhraseBuilder's. For instantiation
    * use his subclasses.
    */
   private static abstract class AbstractEventOrientedBuilderImpl extends
-      AbstractEventOrientedPhrasesBuilder
+          AbstractEventOrientedPhraseBuilder
   {
 
     private static final Logger logger = Logger.getLogger( AbstractEventOrientedBuilderImpl.class );
 
-    protected final AbstractPhrase<?, AssertionUnit<?>> delegate;
+    protected final ImmutableAbstractPhrase<?> phrase;
 
-    private <T> AbstractEventOrientedBuilderImpl( AbstractPhrase<?, AssertionUnit<?>> delegate,
-        ParallelStrategy<Boolean> pStrategy )
+    private <T> AbstractEventOrientedBuilderImpl( ImmutableAbstractPhrase<?> phrase,
+                                                  ParallelStrategy<Boolean> pStrategy )
     {
-      this.delegate = delegate;
+      this.phrase = phrase;
       this.pStrategy = pStrategy;
     }
 
     @Override
-    protected <T> AbstractPhrase<T, AssertionUnit<T>> getPhrase()
+    protected <T> ImmutableAbstractPhrase<T> getPhrase()
     {
-      return delegate;
+      return ( ImmutableAbstractPhrase<T> ) phrase;
     }
 
     @Override
@@ -247,12 +236,10 @@ public final class PhraseBuildersFacade
       try
       {
         return call( obtain( pStrategy.lift( makePhraseFunction( event ) ).apply( this ) ) );
-      }
-      catch (PhraseExecutionException e)
+      } catch ( PhraseExecutionException e )
       {
         logger.error( e.getMessage() );
-      }
-      catch (Exception e)
+      } catch ( Exception e )
       {
         logger.error( e.getMessage() );
       }
@@ -265,13 +252,11 @@ public final class PhraseBuildersFacade
       try
       {
         return call( obtain( pStrategy.lift( makePhraseFunction( event ) ).apply( this ), callback,
-            callbackExecutor ) );
-      }
-      catch (PhraseExecutionException ex)
+                callbackExecutor ) );
+      } catch ( PhraseExecutionException ex )
       {
         logger.error( ex.getMessage() );
-      }
-      catch (Exception ex)
+      } catch ( Exception ex )
       {
         logger.error( ex.getMessage() );
       }
@@ -285,7 +270,7 @@ public final class PhraseBuildersFacade
    * manually created predicates. Main usage through anonymous inner class
    * instance.
    * </p>
-   * 
+   * <p/>
    * <pre>
    * <b>Usage example in {@code TestEventOrientedPhraseBuilders}</b>
    * </pre>
@@ -295,7 +280,7 @@ public final class PhraseBuildersFacade
 
     public <T> EventOrientedPhrasesBuilder()
     {
-      super( Phrases.ALL_TRUE.withNarrowedType(), ParallelStrategy.<Boolean> serial() );
+      super( ImmutableAbstractPhrase.all(), ParallelStrategy.<Boolean>serial() );
       build();
     }
 
@@ -305,32 +290,27 @@ public final class PhraseBuildersFacade
      */
     protected abstract void build();
 
-    public EventOrientedPhrasesBuilder eval( VarEnvironment environment )
-    {
-      return this;
-    }
-
     protected <T> WithParser<T> through( Class<T> clazz, String description )
     {
-      return rule( ParallelStrategy.<Boolean> serial(), clazz,
-          description );
+      return rule( ParallelStrategy.<Boolean>serial(), clazz,
+              description );
     }
 
-    protected <T> WithParser<T> rule(ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
-        String description )
+    protected <T> WithParser<T> rule( ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
+                                      String description )
     {
       setParallelStrategy( pStrategy );
-      return ParserBuilders.newWithParser( this.<T> getPhrase(), clazz, description );
+      return ParserBuilders.newWithParser( this.<T>getPhrase(), clazz, description );
     }
   }
 
   public static abstract class SimpleEventOrientedPhrasesBuilder extends
-      AbstractEventOrientedBuilderImpl
+          AbstractEventOrientedBuilderImpl
   {
 
     public <T> SimpleEventOrientedPhrasesBuilder()
     {
-      super( Phrases.ALL_TRUE.withNarrowedType(), ParallelStrategy.<Boolean> serial() );
+      super( ImmutableAbstractPhrase.all(), ParallelStrategy.<Boolean>serial() );
       build();
     }
 
@@ -347,11 +327,11 @@ public final class PhraseBuildersFacade
 
     public SimpleWithParser as( String description )
     {
-      return rule( ParallelStrategy.<Boolean> serial(), description );
+      return rule( ParallelStrategy.<Boolean>serial(), description );
     }
 
     protected SimpleWithParser rule( ParallelStrategy<Boolean> pStrategy,
-        String description )
+                                     String description )
     {
       setParallelStrategy( pStrategy );
       return ParserBuilders.newSimpleWithParser( this.getPhrase(), description );
@@ -359,20 +339,17 @@ public final class PhraseBuildersFacade
   }
 
   /**
-   * 
    * <pre>
    * <b>Usage example in {@code TestEventOrientedPhraseBuilders}</b>
    * </pre>
-   * 
    */
   public static abstract class EventOrientedFactConsequencePhrasesBuilder extends
-      AbstractEventOrientedBuilderImpl
+          AbstractEventOrientedBuilderImpl
   {
 
     public <T> EventOrientedFactConsequencePhrasesBuilder()
     {
-      super( Phrases.ALL_TRUE.withNarrowedType(), ParallelStrategy
-          .<Boolean> serial() );
+      super( ImmutableAbstractPhrase.all(), ParallelStrategy.<Boolean>serial() );
       build();
     }
 
@@ -382,14 +359,9 @@ public final class PhraseBuildersFacade
      */
     protected abstract void build();
 
-    public EventOrientedFactConsequencePhrasesBuilder eval( VarEnvironment environment )
-    {
-      return this;
-    }
-
     protected <T> FactConsequenceParser<T> through(
-        ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
-        String description )
+            ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
+            String description )
     {
       setParallelStrategy( pStrategy );
       return rule( clazz, description );
@@ -397,7 +369,7 @@ public final class PhraseBuildersFacade
 
     protected <T> FactConsequenceParser<T> rule( Class<T> clazz, String description )
     {
-      return ParserBuilders.newFactConsequenceParser( this.<T> getPhrase(), clazz, description );
+      return ParserBuilders.newFactConsequenceParser( this.<T>getPhrase(), clazz, description );
     }
   }
 
@@ -410,59 +382,150 @@ public final class PhraseBuildersFacade
    * static methods.
    * </p>
    * <p/>
-   * 
+   * <p/>
    * <pre>
    * <b>Usage example: </b>
-   * {@code 
+   * {@code
    * Injector injector = Guice.createInjector(
    *    $expression(Phrases.ANY_TRUE,
    *      $less(9, callOn(Model.class).getInteger(), "9 < en.getInput()"),
    *      $eq("aaaaaaa", callOn(Model.class).getString(), "aaaaaaa eq en.getString()")));
-   * 
-   * final AbstractEventOrientedPhrasesBuilder phraseBuilder = 
-   *       injector.getInstance(AbstractEventOrientedPhrasesBuilder.class);
-   * 
-   * Boolean result = phraseBuilder.async(andFoo).checkedGet();            
+   *
+   * final AbstractEventOrientedPhraseBuilder phraseBuilder =
+   *       injector.getInstance(AbstractEventOrientedPhraseBuilder.class);
+   *
+   * Boolean result = phraseBuilder.async(andFoo).checkedGet();
    * }
    * </pre>
-   * 
+   * <p/>
    * <b>More examples in {@code GuiceEventOrientedEngineModuleTest} </b>
-   * 
+   * <p/>
    * See Google Guice documentation on <a href=<a
    * href="http://code.google.com/p/google-guice/"> Google Guice DI framework
    * </a>.
-   * 
+   * <p/>
    * <b> Attention !!! </b> Other usages of this class are prohibited
    */
   public static class GuiceEventOrientedPhrasesBuilder extends AbstractEventOrientedBuilderImpl
   {
-    public <T> GuiceEventOrientedPhrasesBuilder( AbstractPhrase<T> delegate )
+    public <T> GuiceEventOrientedPhrasesBuilder( ImmutableAbstractPhrase<T> delegate )
     {
-      super( delegate, ParallelStrategy.<Boolean> serial() );
-    }
-
-    @Override
-    public GuiceEventOrientedPhrasesBuilder eval( VarEnvironment environment )
-    {
-      return this;
+      super( delegate, ParallelStrategy.<Boolean>serial() );
     }
   }
+
   /**
-   * 
    * @author haghard
-   *
    */
   public static class DaggerEventOrientedPhrasesBuilder extends AbstractEventOrientedBuilderImpl
   {
-    public <T> DaggerEventOrientedPhrasesBuilder( AbstractPhrase<T> delegate )
+    public <T> DaggerEventOrientedPhrasesBuilder( ImmutableAbstractPhrase<T> delegate )
     {
-      super( delegate, ParallelStrategy.<Boolean> serial() );
+      super( delegate, ParallelStrategy.<Boolean>serial() );
+    }
+  }
+
+  /**
+   *
+   */
+  public static abstract class AbstractMutableEventOrientedPhraseBuilder
+  {
+    protected MutableAbstractPhrase<?> phrase;
+
+    protected ParallelStrategy<Boolean> pStrategy;
+
+    protected abstract <T> MutableAbstractPhrase<T> getPhrase();
+
+    public abstract <T> CheckedFuture<Boolean, PhraseExecutionException> async( final T event );
+
+    public abstract <T extends AbstractMutableEventOrientedPhraseBuilder> T eval( VarEnvironment environment );
+
+    public abstract <T> Boolean sync( final T event );
+
+    protected abstract <T> void setEvent( T collection );
+
+    protected void setParallelStrategy( ParallelStrategy<Boolean> pStrategy )
+    {
+      this.pStrategy = pStrategy;
+    }
+
+    protected <T, E extends AbstractMutableEventOrientedPhraseBuilder> ConclusionFunction<E, Boolean> makePhraseFunction(
+            final T event )
+    {
+      return new ConclusionFunction<E, Boolean>()
+      {
+        @Override
+        public Boolean apply( E arg )
+        {
+          setEvent( event );
+          return getPhrase().evaluate();
+        }
+      };
+    }
+  }
+
+  private static abstract class AbstractMutableEventOrientedPhraseBuilderImpl extends
+          AbstractMutableEventOrientedPhraseBuilder
+  {
+
+    private static final Logger logger = Logger.getLogger( AbstractMutableEventOrientedPhraseBuilderImpl.class );
+
+    <T> AbstractMutableEventOrientedPhraseBuilderImpl( MutableAbstractPhrase<T> phrase,
+                                                       ParallelStrategy<Boolean> pStrategy )
+    {
+      this.phrase = phrase;
+      this.pStrategy = pStrategy;
     }
 
     @Override
-    public DaggerEventOrientedPhrasesBuilder eval( VarEnvironment environment )
+    public <T> CheckedFuture<Boolean, PhraseExecutionException> async( final T event )
     {
-      delegate.setEnvironment( environment );
+      return pStrategy.lift( makePhraseFunction( event ) ).apply( this );
+    }
+
+    @Override
+    protected <T> void setEvent( T event )
+    {
+      getPhrase().setEvent( event );
+    }
+
+    @Override
+    public <T> Boolean sync( final T event )
+    {
+      try
+      {
+        return call( obtain( pStrategy.lift( makePhraseFunction( event ) ).apply( this ) ) );
+      } catch ( PhraseExecutionException e )
+      {
+        logger.error( e.getMessage() );
+      } catch ( Exception e )
+      {
+        logger.error( e.getMessage() );
+      }
+      return false;
+    }
+  }
+
+  /**
+   *
+   *
+   */
+  public static class DaggerMutableBuilder extends AbstractMutableEventOrientedPhraseBuilderImpl
+  {
+    public <T> DaggerMutableBuilder( MutableAbstractPhrase<T> phrase )
+    {
+      super( phrase, ParallelStrategy.<Boolean>serial() );
+    }
+
+    @Override
+    public <T> MutableAbstractPhrase<T> getPhrase()
+    {
+      return ( MutableAbstractPhrase<T> ) phrase;
+    }
+
+    @Override
+    public DaggerMutableBuilder eval( VarEnvironment environment )
+    {
       return this;
     }
   }
@@ -476,18 +539,16 @@ public final class PhraseBuildersFacade
    * relies on a set of abstract operations, where several implementations of
    * the set of abstract operations are possible. The implementation part
    * (Bridge Pattern) is a {@code IterablePhrases} hierarchy
-   * <p>
+   * <p/>
    * See wiki article on <a href=<a
    * href="http://en.wikipedia.org/wiki/Bridge_pattern"> Builder Design
    * Pattern</a>.
    * <p/>
-   * Class similar to {@code AbstractEventOrientedPhrasesBuilder} by
+   * Class similar to {@code AbstractEventOrientedPhraseBuilder} by
    * functionality, but used for evaluation on Iterable.
-   * 
-   * 
+   *
    * @see PhraseBuildersFacade.IterableOrientedPhrasesBuilder
    * @see PhraseBuildersFacade.ImperativeIterableOrientedPhrasesBuilder
-   * 
    */
   public static abstract class AbstractIterableOrientedPhrasesBuilder
   {
@@ -495,7 +556,7 @@ public final class PhraseBuildersFacade
     protected ParallelStrategy<Boolean> pStrategy;
 
     protected void setParallelStrategy(
-        ParallelStrategy<Boolean> pStrategy )
+            ParallelStrategy<Boolean> pStrategy )
     {
       this.pStrategy = pStrategy;
     }
@@ -509,29 +570,26 @@ public final class PhraseBuildersFacade
      * <p/>
      * The CheckedFuture's <tt>addListener</tt> method will return the task's
      * result upon successful completion in async way.
-     * 
+     *
      * @param <T>
      * @return CheckedFuture<Boolean> representing the pending results of the
      *         task.
      */
     public abstract <T> CheckedFuture<Boolean, PhraseExecutionException> async(
-        final Iterable<T> collection );
+            final Iterable<T> collection );
 
     /**
-     * 
      * @param collection
      */
     public abstract <T> void setIterable( Iterable<T> collection );
 
     /**
-     * 
      * @param iterable
      * @return
      */
     public abstract <T> Boolean sync( final Iterable<T> iterable );
 
     /**
-     * 
      * @param iterable
      * @param callback
      * @return
@@ -542,13 +600,12 @@ public final class PhraseBuildersFacade
     }
 
     /**
-     *
      * @param callback
      * @param service
      * @return Boolean
      */
     public abstract <T> Boolean sync( final Iterable<T> collection, Runnable callback,
-        ListeningExecutorService service );
+                                      ListeningExecutorService service );
 
     /**
      * @return AbstractIterablePhrases
@@ -556,13 +613,12 @@ public final class PhraseBuildersFacade
     protected abstract <T> IterablePhrases<T> getIterablePhrase();
 
     /**
-     * 
      * @param iterable
      * @return ConclusionFunction<? extends
      *         AbstractConclusionCollectionPhrasesBuilder, Boolean>
      */
     protected <T, E extends AbstractIterableOrientedPhrasesBuilder> ConclusionFunction<E, Boolean> makePhraseFunction(
-        final Iterable<T> iterable )
+            final Iterable<T> iterable )
     {
       return new ConclusionFunction<E, Boolean>()
       {
@@ -580,31 +636,30 @@ public final class PhraseBuildersFacade
    * {@code AbstractIterableOrientedPhrasesBuilderImpl} abstract class which
    * extends hierarchy for iterable oriented PhraseBuilders
    * <p/>
-   * <p>
+   * <p/>
    * <b>Note:</b> This class cannot be instantiated directly. It's just
    * implements main behavior
    * <p/>
    * For instantiation use subclasses.
-   * 
    */
   private abstract static class AbstractIterableOrientedPhrasesBuilderImpl extends
-      AbstractIterableOrientedPhrasesBuilder
+          AbstractIterableOrientedPhrasesBuilder
   {
 
     protected final IterablePhrases<?> delegate;
 
     private static final Logger logger = Logger
-        .getLogger( AbstractIterableOrientedPhrasesBuilderImpl.class );
+            .getLogger( AbstractIterableOrientedPhrasesBuilderImpl.class );
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public <T> void setIterable( Iterable<T> collection )
     {
-      getIterablePhrase().setIterable( (Iterable<Object>) collection );
+      getIterablePhrase().setIterable( ( Iterable<Object> ) collection );
     }
 
     private <T> AbstractIterableOrientedPhrasesBuilderImpl( IterablePhrases<T> delegate,
-        ParallelStrategy<Boolean> pStrategy )
+                                                            ParallelStrategy<Boolean> pStrategy )
     {
       this.delegate = delegate;
       this.pStrategy = pStrategy;
@@ -621,12 +676,10 @@ public final class PhraseBuildersFacade
       try
       {
         return call( obtain( pStrategy.lift( makePhraseFunction( iterable ) ).apply( this ) ) );
-      }
-      catch (PhraseExecutionException e)
+      } catch ( PhraseExecutionException e )
       {
         logger.error( e.getMessage() );
-      }
-      catch (Exception e)
+      } catch ( Exception e )
       {
         logger.error( e.getMessage() );
       }
@@ -635,18 +688,16 @@ public final class PhraseBuildersFacade
 
     @Override
     public <T> Boolean sync( final Iterable<T> iterable, Runnable callback,
-        ListeningExecutorService service )
+                             ListeningExecutorService service )
     {
       try
       {
         return call( obtain( pStrategy.lift( makePhraseFunction( iterable ) ).apply( this ),
-            callback, service ) );
-      }
-      catch (PhraseExecutionException e)
+                callback, service ) );
+      } catch ( PhraseExecutionException e )
       {
         logger.error( e.getMessage() );
-      }
-      catch (Exception e)
+      } catch ( Exception e )
       {
         logger.error( e.getMessage() );
       }
@@ -661,27 +712,27 @@ public final class PhraseBuildersFacade
    * This class to direct usage through anonymous inner class instance in client
    * code
    * </p>
-   * 
+   * <p/>
    * <pre>
    * See usage in {@code IterablePhrasesBuilderTest}
-   * 
+   *
    * Class for extending on client side
    */
   public static abstract class IterableOrientedPhrasesBuilder extends
-      AbstractIterableOrientedPhrasesBuilderImpl
+          AbstractIterableOrientedPhrasesBuilderImpl
   {
 
     public IterableOrientedPhrasesBuilder()
     {
-      super( AbstractIterablePhrases.defaultInstance(), ParallelStrategy.<Boolean> serial() );
+      super( AbstractIterablePhrases.defaultInstance(), ParallelStrategy.<Boolean>serial() );
       build();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     protected <T> AbstractIterablePhrases<T> getIterablePhrase()
     {
-      return (AbstractIterablePhrases<T>) delegate;
+      return ( AbstractIterablePhrases<T> ) delegate;
     }
 
     /**
@@ -692,11 +743,11 @@ public final class PhraseBuildersFacade
 
     protected <T> IterableParser<T> through( Class<T> clazz, String description )
     {
-      return new IterableParserBuilder<T>( this.<T> getIterablePhrase(), clazz, description );
+      return new IterableParserBuilder<T>( this.<T>getIterablePhrase(), clazz, description );
     }
 
-    protected <T> IterableParser<T> through(ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
-        String description )
+    protected <T> IterableParser<T> through( ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
+                                             String description )
     {
       setParallelStrategy( pStrategy );
       return through( clazz, description );
@@ -704,7 +755,6 @@ public final class PhraseBuildersFacade
   }
 
   /**
-   * 
    * Imperative way for evaluation :
    * <p>
    * We define and pass to the {@code ImperativeExecutionPhrasesBuilder} two
@@ -713,22 +763,22 @@ public final class PhraseBuildersFacade
    * 1. {@code ConclusionPredicate<Delegate<FluentConclusionPredicate>> } -
    * Simple or complex predicate with conditional logic
    * <p>
-   * 2. {@code Delegate<FluentConclusionPredicate> } delegate, this is the place
+   * 2. {@code Delegate<FluentConclusionPredicate> } phrase, this is the place
    * where in runtime instance of FluentConclusionPredicate will be passed to in
    * {@code Delegate<T>.execute(T... args)} method. This give you opportunity to
    * define evaluation way based on your FluentConclusionPredicate.
    * <p>
-   * 
+   * <p/>
    * <pre>
    *  <b> Simple example: </b>
    *  {@code
    *   final Delegate<FluentConclusionPredicate> targetDelegate = new Delegate<FluentConclusionPredicate>() {
    *    final Iterable<Object> collection;
-   * 
+   *
    *    public void setIterable(Iterable<?> collection) {
    *      this.collection = ImmutableList.copyOf(collection);
    *    }
-   * 
+   *
    *    public boolean execute(FluentConclusionPredicate... fluentPredicate) {
    *      Preconditions.checkArgument(fluentPredicate[0] != null, "null FluentConclusionPredicate");
    *      for (Object object : collection) {
@@ -738,26 +788,26 @@ public final class PhraseBuildersFacade
    *      }
    *      return false;
    *    }
-   *  }; 
+   *  };
    * }
    * </pre>
-   * 
+   * <p/>
    * {@code Delegate<T>execute(FluentConclusionPredicate...)} is a varargs
    * method, you can pass complete FluentConclusionPredicate
    * <p>
    * {@code
-   *  final ConclusionPredicate<Delegate<FluentConclusionPredicate>> startEndPredicates = 
-   *     DelegateFactory.<FluentConclusionPredicate>values(
-   *         fluent().eq(4, Entity.class, Integer.class, "getInteger"), 
-   *         fluent().eq(5, Entity.class, Integer.class, "getInteger")
-   *           .or(fluent().eq(55, Entity.class, Integer.class, "getInt")));
-   * 
-   * 
+   * final ConclusionPredicate<Delegate<FluentConclusionPredicate>> startEndPredicates =
+   * DelegateFactory.<FluentConclusionPredicate>values(
+   * fluent().eq(4, Entity.class, Integer.class, "getInteger"),
+   * fluent().eq(5, Entity.class, Integer.class, "getInteger")
+   * .or(fluent().eq(55, Entity.class, Integer.class, "getInt")));
+   * <p/>
+   * <p/>
    * final Delegate<FluentConclusionPredicate> targetDelegate = new
    * Delegate<FluentConclusionPredicate>() Iterable<Object> collection; public
    * void setContent(Iterable<?> collection) this.collection =
    * ImmutableList.copyOf(collection); }
-   * 
+   * <p/>
    * public boolean execute(FluentConclusionPredicate... arguments) {
    * assertTrue(collection.size() == 4); assertTrue(arguments.length == 2);
    * return arguments[0].apply(collection.get(0)) &&
@@ -769,13 +819,13 @@ public final class PhraseBuildersFacade
   // TO DO : replace Delegate.execute(T...) varargs method with typesafe
   // variation base on BiMap for example
   public static abstract class ImperativeIterableOrientedPhrasesBuilder extends
-      AbstractIterableOrientedPhrasesBuilderImpl
+          AbstractIterableOrientedPhrasesBuilderImpl
   {
 
     public <T> ImperativeIterableOrientedPhrasesBuilder()
     {
       super( AbstractImperativePhrases.delegatePhrases(), ParallelStrategy
-          .<Boolean> serial() );
+              .<Boolean>serial() );
       build();
     }
 
@@ -786,63 +836,68 @@ public final class PhraseBuildersFacade
     protected abstract void build();
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     protected <T> AbstractImperativePhrases<T> getIterablePhrase()
     {
-      return (AbstractImperativePhrases<T>) delegate;
+      return ( AbstractImperativePhrases<T> ) delegate;
     }
 
     protected <T, E> DelegateParser<T, E> rule(
-        ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
-        Class<E> argClass, String description )
+            ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
+            Class<E> argClass, String description )
     {
       setParallelStrategy( pStrategy );
       return through( clazz, argClass, description );
     }
 
     protected <T, E> DelegateParser<T, E> through( Class<T> clazz, Class<E> argClass,
-        String description )
+                                                   String description )
     {
-      return ParserBuilders.newDelegateParser( this.<T> getIterablePhrase(), clazz, description );
+      return ParserBuilders.newDelegateParser( this.<T>getIterablePhrase(), clazz, description );
     }
   }
 
-  public static VarEnvironment environment(Object ... varEntries) {
-	  if ( ! ( varEntries[0] instanceof VarEntry ) )
-		  throw new IllegalArgumentException("VarEntry type expected");
+  public static VarEnvironment environment( Object... varEntries )
+  {
+    if ( !( varEntries[0] instanceof VarEntry ) )
+      throw new IllegalArgumentException( "VarEntry type expected" );
 
-    final VarEntry[] params = (VarEntry[]) Array.newInstance( VarEntry.class, varEntries.length );
+    final VarEntry[] params = ( VarEntry[] ) Array.newInstance( VarEntry.class, varEntries.length );
     System.arraycopy( varEntries, 0, params, 0, varEntries.length );
     return new VarEnvironment( params );
   }
 
-  public static <T, E> VarEntry<T, E> var( final String pname, final E value ) {
-    return new VarEntry<T, E>() {{
-      this.name = pname;
-      this.selector = ProxyUtils.<T, E>toSelector( value );
-    }};
+  public static <T, E> VarEntry<T, E> var( final String pname, final E value )
+  {
+    return new VarEntry<T, E>()
+    {{
+        this.name = pname;
+        this.selector = ProxyUtils.<T, E>toSelector( value );
+      }};
   }
 
   static class VarEnvironment
   {
-    ImmutableMap<String, Selector<?,?>> environmentSelectors =
+    ImmutableMap<String, Selector<?, ?>> environmentSelectors =
             ImmutableMap.of();
 
     public VarEnvironment( VarEntry[] varEntryList )
     {
-      final ImmutableMap.Builder<String, Selector<?,?>> builder = ImmutableMap.builder();
+      final ImmutableMap.Builder<String, Selector<?, ?>> builder = ImmutableMap.builder();
       for ( VarEntry varEntry : varEntryList )
         builder.put( varEntry.name, varEntry.selector );
 
       environmentSelectors = builder.build();
     }
 
-    public Optional<? extends Selector<?, ?>> get(String name) {
+    public Optional<? extends Selector<?, ?>> get( String name )
+    {
       return Optional.fromNullable( environmentSelectors.get( name ) );
     }
   }
 
-  static class VarEntry<T, E> {
+  static class VarEntry<T, E>
+  {
     String name;
     Selector<T, E> selector;
   }

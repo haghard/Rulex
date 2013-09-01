@@ -15,10 +15,6 @@
  */
 package ru.rulex.conclusion;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * <p>
  * This class hierarchy is a <b> implementation </b> path of <b> pattern bridge
@@ -29,15 +25,15 @@ import java.util.List;
  * </p>
  * </p>
  */
-public interface AbstractPhrase<T, E extends AssertionUnit<T>>
+public interface AbstractPhrase<T, E extends ImmutableAssertionUnit<T>>
 {
 
-  abstract void addUnit( E ruleEntry );
+  Boolean evaluate();
 
-  abstract Boolean evaluate();
+  void addUnit( E ruleEntry );
 
-  abstract void setEventClass( Class<T> clazz );
+  void setEventClass( Class<T> clazz );
 
-  abstract void setEvent( T event );
+  void setEvent( T event );
 
 }

@@ -52,7 +52,7 @@ public class DaggerPredicateModule
 
   @dagger.Module(
           addsTo = DaggerPredicateModule.class,
-          injects = AssertionUnit.class,
+          injects = ImmutableAssertionUnit.class,
           complete = false, library = true )
   static class CompleteDaggerPredicateModule
   {
@@ -70,9 +70,9 @@ public class DaggerPredicateModule
     }
 
     @dagger.Provides
-    AssertionUnit provideAssertionUnit( final ConclusionPredicate conclusionPredicate, final Selector selector )
+    ImmutableAssertionUnit provideAssertionUnit( final ConclusionPredicate conclusionPredicate, final Selector selector )
     {
-      return new AssertionUnit()
+      return new ImmutableAssertionUnit()
       {
         @Override
         public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )

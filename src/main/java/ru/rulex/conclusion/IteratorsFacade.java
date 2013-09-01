@@ -38,20 +38,20 @@ public final class IteratorsFacade
    * @param <T>
    * @return Iterator<T>
    */
-  public static <T> Iterator<T> whereIterator( final AssertionUnit<T> validationRuleEntry,
+  public static <T> Iterator<T> whereIterator( final ImmutableAssertionUnit<T> validationRuleEntry,
       final ImmutableList<T> source )
   {
     return whereIterator( validationRuleEntry, source, ImmutableSet.<T> of() );
   }
 
   /**
-   * @param assertionUnit
+   * @param immutableAssertionUnit
    * @param source
    * @param excepts
    * @param <T>
    * @return Iterator<T>
    */
-  public static <T> Iterator<T> whereIterator( final AssertionUnit<T> assertionUnit,
+  public static <T> Iterator<T> whereIterator( final ImmutableAssertionUnit<T> immutableAssertionUnit,
       final ImmutableList<T> source, final ImmutableSet<T> excepts )
   {
     return new AbstractIterator<T>()
@@ -71,7 +71,7 @@ public final class IteratorsFacade
           while (iterator.hasNext())
           {
             T event = iterator.next();
-            if ( !excepts.contains( event ) && assertionUnit.isSatisfies( pathTrace, event ) )
+            if ( !excepts.contains( event ) && immutableAssertionUnit.isSatisfies( pathTrace, event ) )
             {
               state = IterationState.Exit;
               return computeNext( event );
