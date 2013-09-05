@@ -84,20 +84,19 @@ public final class ParserBuilders
 
   }
 
-  private static class SimpleWithParserImpl implements SimpleWithParser
+  private static class SimpleWithParserImpl<T> implements SimpleWithParser
   {
-    private final AbstractPhrase<?, ImmutableAssertionUnit<Object>> phrase;
+    private final ImmutableAbstractPhrase<T> phrase;
     private final String description;
 
-    SimpleWithParserImpl( AbstractPhrase<?, ImmutableAssertionUnit<Object>> phrase, String description )
+    SimpleWithParserImpl( ImmutableAbstractPhrase<T> phrase, String description )
     {
       this.phrase = phrase;
       this.description = description;
     }
 
     @Override
-    @SuppressWarnings(
-    { "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> void shouldMatch( T argument, ConclusionPredicate<T> predicate )
     {
       Selector<?, T> selector = ProxyUtils.toSelector( argument );
@@ -106,9 +105,9 @@ public final class ParserBuilders
     }
   }
 
-  public static <T> SimpleWithParser newSimpleWithParser( AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase, String desc )
+  public static <T> SimpleWithParser newSimpleWithParser( ImmutableAbstractPhrase<T> phrase, String desc )
   {
-    return new SimpleWithParserImpl( ( AbstractPhrase<?, ImmutableAssertionUnit<Object>> ) phrase, desc );
+    return new SimpleWithParserImpl<T>( phrase, desc );
   }
 
   public static <T> WithParser<T> newWithParser( AbstractPhrase<T, ImmutableAssertionUnit<T>> conclusionTask, Class<T> clazz,

@@ -4,6 +4,7 @@ package ru.rulex.conclusion;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import ru.rulex.conclusion.MutableAssertionUnit.DefaultMutableAssertionUnit;
 
 public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, MutableAssertionUnit<T>>
 {
@@ -28,7 +29,18 @@ public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, Muta
     units.add( ruleEntry );
   }
 
-  @Override public void setEvent( T event )
+  public MutableAssertionUnit<T> correspondingUnit( String varName )
+  {
+    for( MutableAssertionUnit<T> unit: units )
+    {
+      if ( varName.equals( unit.getVar() ) )
+        return unit;
+    }
+    return DefaultMutableAssertionUnit.INSTANCE.withNarrowType();
+  }
+
+  @Override
+  public void setEvent( T event )
   {
     if ( clazz != null && !clazz.isAssignableFrom( event.getClass() ) )
     {

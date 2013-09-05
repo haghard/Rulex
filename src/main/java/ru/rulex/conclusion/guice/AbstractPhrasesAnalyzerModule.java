@@ -27,6 +27,7 @@ import com.google.inject.spi.InstanceBinding;
 
 import ru.rulex.conclusion.*;
 import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder;
+import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
 
 import java.util.List;
 
@@ -41,17 +42,16 @@ import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
  * @author haghard
  * 
  */
-public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
+public abstract class AbstractPhrasesAnalyzerModule<T> extends AbstractModule
 {
-
   protected final ImmutableList<Element> elements;
 
-  protected final AbstractPhrase<?> phrase;
+  protected final ImmutableAbstractPhrase<T> phrase;
 
   public static final Key<ConclusionPredicate> OR_KEY = Key.get( ConclusionPredicate.class,
       named( "disjunction" ) );
 
-  protected AbstractPhrasesAnalyzerModule( ImmutableList<Element> elements, AbstractPhrase<?> phrase )
+  protected AbstractPhrasesAnalyzerModule( ImmutableList<Element> elements, ImmutableAbstractPhrase<T> phrase )
   {
     this.elements = elements;
     this.phrase = phrase;
@@ -69,7 +69,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
   private static final BindingVisitorAdapter<BindingVisitor> PREDICATE_INJECTION_INTERCEPTOR = new BindingVisitorAdapter<BindingVisitor>()
   {
     @Override
-    public BindingVisitor asVisitor( final AbstractPhrase<?> phrase )
+    public BindingVisitor asVisitor( final ImmutableAbstractPhrase<?> phrase )
     {
       return new BindingVisitor()
       {
@@ -124,9 +124,9 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
    *          {@code Module...}
    * @return {@code Module}
    */
-  public static Module $expression( Module... modules )
+  public static <T> Module $expression( Module... modules )
   {
-    return new InternalDslPhrasesBuilderModule( Phrases.ALL_TRUE.withNarrowedType(), getElements( modules ) );
+    return new InternalDslPhrasesBuilderModule<T>( ImmutableAbstractPhrase.<T>all(), getElements( modules ) );
   }
 
   /**
@@ -134,9 +134,9 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
    * @param modules
    * @return subclass {@code AbstractPhrasesAnalyzerModule}
    */
-  public static Module $expression( Phrases phrase, Module... modules )
+  public static <T> Module $expression( Phrases phrase, Module... modules )
   {
-    return new InternalDslPhrasesBuilderModule( phrase.withNarrowedType(), Elements.getElements( modules ) );
+    return new InternalDslPhrasesBuilderModule<T>( phrase.<T>getImmutableConclusionPhrase() , Elements.getElements( modules ) );
   }
 
   /**
@@ -273,10 +273,10 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
    * TO DO : implement this
    * 
    */
-  static final class InternalTokenPhrasesAnalyzerModule extends AbstractPhrasesAnalyzerModule
+  static final class InternalTokenPhrasesAnalyzerModule<T> extends AbstractPhrasesAnalyzerModule<T>
   {
 
-    protected InternalTokenPhrasesAnalyzerModule( ImmutableList<Element> elements, AbstractPhrase<?> phrase )
+    protected InternalTokenPhrasesAnalyzerModule( ImmutableList<Element> elements, ImmutableAbstractPhrase<T> phrase )
     {
       super( elements, phrase );
       // TODO Auto-generated constructor stub
@@ -296,14 +296,14 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
 
   }
 
-  static final class InternalDslPhrasesBuilderModule extends AbstractPhrasesAnalyzerModule
+  static final class InternalDslPhrasesBuilderModule<T> extends AbstractPhrasesAnalyzerModule<T>
   {
 
-    private final PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder phraseBuilder;
+    private final AbstractEventOrientedPhraseBuilder phraseBuilder;
 
-    InternalDslPhrasesBuilderModule( AbstractPhrase<?> phrase0, List<Element> elements )
+    InternalDslPhrasesBuilderModule( ImmutableAbstractPhrase<T> phrase0, List<Element> elements )
     {
-      super( ImmutableList.copyOf( checkNotNull( elements ) ), phrase0 );
+      super( ImmutableList.<Element>copyOf( checkNotNull( elements ) ), phrase0 );
       this.phraseBuilder = new GuiceEventOrientedPhrasesBuilder( phrase0 );
     }
 
@@ -311,7 +311,7 @@ public abstract class AbstractPhrasesAnalyzerModule extends AbstractModule
     protected void configure()
     {
       // phrase builder class binding
-      bind( PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class ).toInstance( phraseBuilder );
+      bind( AbstractEventOrientedPhraseBuilder.class ).toInstance( phraseBuilder );
       interceptEarlierBinding();
     }
 

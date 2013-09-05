@@ -135,11 +135,16 @@ public class DaggerPredicateModule
         }
 
         @Override
+        public String getVar()
+        {
+          return varName;
+        }
+
+        @Override
         public void setSelector( Selector<T, ?> selector )
         {
           this.selector = selector;
         }
-
       };
     }
   }

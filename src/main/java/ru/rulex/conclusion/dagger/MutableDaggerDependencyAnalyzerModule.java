@@ -6,23 +6,23 @@ import ru.rulex.conclusion.*;
 import java.lang.reflect.Array;
 import ru.rulex.conclusion.dagger.DaggerPredicateModule.UncompletedDaggerPredicateModule;
 
-import ru.rulex.conclusion.PhraseBuildersFacade.DaggerEventOrientedPhrasesBuilder;
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
+import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhraseBuilder;
+import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableBuilder;
 
 @dagger.Module(
-        injects = AbstractEventOrientedPhraseBuilder.class,
+        injects = AbstractMutableEventOrientedPhraseBuilder.class,
         library = true )
-public class UncompletedDaggerDependencyAnalyzerModule
+public class MutableDaggerDependencyAnalyzerModule
 {
   private final MutableAbstractPhrase<?> phrase;
-  private final AbstractEventOrientedPhraseBuilder phraseBuilder;
+  private final AbstractMutableEventOrientedPhraseBuilder<?> phraseBuilder;
 
-  public static UncompletedDaggerDependencyAnalyzerModule $lazyExpression( ObjectGraph graph )
+  public static <T> MutableDaggerDependencyAnalyzerModule $lazyExpression( ObjectGraph graph )
   {
     return compose( graph );
   }
 
-  public static UncompletedDaggerDependencyAnalyzerModule $lazyExpression( ObjectGraph module0, ObjectGraph module1 )
+  public static <T> MutableDaggerDependencyAnalyzerModule $lazyExpression( ObjectGraph module0, ObjectGraph module1 )
   {
     return compose( module0, module1 );
   }
@@ -35,17 +35,17 @@ public class UncompletedDaggerDependencyAnalyzerModule
     );
   }
 
-  private static UncompletedDaggerDependencyAnalyzerModule compose( Object... modules )
+  private static <T> MutableDaggerDependencyAnalyzerModule compose( Object... modules )
   {
     ObjectGraph[] array = ( ObjectGraph[] ) Array.newInstance( ObjectGraph.class, modules.length );
     System.arraycopy( modules, 0, array, 0, modules.length );
-    return new UncompletedDaggerDependencyAnalyzerModule( MutableAbstractPhrase.all(), array );
+    return new MutableDaggerDependencyAnalyzerModule( MutableAbstractPhrase.all(), array );
   }
 
-  private UncompletedDaggerDependencyAnalyzerModule( MutableAbstractPhrase<?> phrase, ObjectGraph[] array )
+  private MutableDaggerDependencyAnalyzerModule( MutableAbstractPhrase<Object> phrase, ObjectGraph[] array )
   {
     this.phrase = phrase;
-    this.phraseBuilder = new DaggerEventOrientedPhrasesBuilder( phrase );
+    this.phraseBuilder = new DaggerMutableBuilder( phrase );
 
     for ( ObjectGraph module : array )
       providePhrases( module );
@@ -57,7 +57,7 @@ public class UncompletedDaggerDependencyAnalyzerModule
   }
 
   @dagger.Provides
-  AbstractEventOrientedPhraseBuilder providePhraseBuilder()
+  AbstractMutableEventOrientedPhraseBuilder providePhraseBuilder()
   {
     return phraseBuilder;
   }

@@ -91,7 +91,7 @@ public final class DaggerDependencyAnalyzerModule
 
   private void providePhrases( ObjectGraph element )
   {
-    phrase.addUnit( create( element ).get( ImmutableAssertionUnit.class ) );
+    phrase.addUnit( element.get( ImmutableAssertionUnit.class ) );
   }
 
   @dagger.Provides

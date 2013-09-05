@@ -17,6 +17,7 @@ package ru.rulex.conclusion;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -36,7 +37,7 @@ import static ru.rulex.conclusion.execution.Callables.*;
  * <pre>
  *                         <b> Classes hierarchy (single object oriented)</b>
  *                            __________________________________________                                  __________________
- *                           |   AbstractEventOrientedPhraseBuilder   |-------------------------------->|  AbstractPhrase |
+ *                           |   AbstractEventOrientedPhraseBuilder    |-------------------------------->|  AbstractPhrase |
  *                           |_________________________________________|                                 |_________________|
  *                                             |                                                      ___________|____________
  *                          ___________________|______________________                               |                       |
@@ -320,21 +321,16 @@ public final class PhraseBuildersFacade
      */
     protected abstract void build();
 
-    public SimpleEventOrientedPhrasesBuilder eval( VarEnvironment environment )
-    {
-      return this;
-    }
-
     public SimpleWithParser as( String description )
     {
       return rule( ParallelStrategy.<Boolean>serial(), description );
     }
 
-    protected SimpleWithParser rule( ParallelStrategy<Boolean> pStrategy,
+    protected <T> SimpleWithParser rule( ParallelStrategy<Boolean> pStrategy,
                                      String description )
     {
       setParallelStrategy( pStrategy );
-      return ParserBuilders.newSimpleWithParser( this.getPhrase(), description );
+      return ParserBuilders.newSimpleWithParser( this.<T>getPhrase(), description );
     }
   }
 
@@ -428,34 +424,44 @@ public final class PhraseBuildersFacade
   /**
    *
    */
-  public static abstract class AbstractMutableEventOrientedPhraseBuilder
+  public static abstract class AbstractMutableEventOrientedPhraseBuilder<T>
   {
-    protected MutableAbstractPhrase<?> phrase;
+    protected MutableAbstractPhrase<T> phrase;
 
     protected ParallelStrategy<Boolean> pStrategy;
 
-    protected abstract <T> MutableAbstractPhrase<T> getPhrase();
+    protected AbstractMutableEventOrientedPhraseBuilder( MutableAbstractPhrase<T> phrase,
+                                                             ParallelStrategy<Boolean> pStrategy)
+    {
+      this.phrase = phrase;
+      this.pStrategy = pStrategy;
+    }
 
-    public abstract <T> CheckedFuture<Boolean, PhraseExecutionException> async( final T event );
+    protected abstract MutableAbstractPhrase<T> getPhrase();
+
+    public abstract Boolean sync( final T event );
+
+    public abstract CheckedFuture<Boolean, PhraseExecutionException> async( final T event );
 
     public abstract <T extends AbstractMutableEventOrientedPhraseBuilder> T eval( VarEnvironment environment );
-
-    public abstract <T> Boolean sync( final T event );
-
-    protected abstract <T> void setEvent( T collection );
 
     protected void setParallelStrategy( ParallelStrategy<Boolean> pStrategy )
     {
       this.pStrategy = pStrategy;
     }
 
-    protected <T, E extends AbstractMutableEventOrientedPhraseBuilder> ConclusionFunction<E, Boolean> makePhraseFunction(
+    private final void setEvent( T event )
+    {
+      getPhrase().setEvent( event );
+    }
+
+    protected <E extends AbstractMutableEventOrientedPhraseBuilder> ConclusionFunction<E, Boolean> makePhraseFunction(
             final T event )
     {
       return new ConclusionFunction<E, Boolean>()
       {
         @Override
-        public Boolean apply( E arg )
+        public Boolean apply( final E arg )
         {
           setEvent( event );
           return getPhrase().evaluate();
@@ -464,41 +470,36 @@ public final class PhraseBuildersFacade
     }
   }
 
-  private static abstract class AbstractMutableEventOrientedPhraseBuilderImpl extends
-          AbstractMutableEventOrientedPhraseBuilder
+  private static abstract class AbstractMutableEventOrientedPhraseBuilderImpl<T> extends
+          AbstractMutableEventOrientedPhraseBuilder<T>
   {
 
     private static final Logger logger = Logger.getLogger( AbstractMutableEventOrientedPhraseBuilderImpl.class );
 
-    <T> AbstractMutableEventOrientedPhraseBuilderImpl( MutableAbstractPhrase<T> phrase,
+    protected AbstractMutableEventOrientedPhraseBuilderImpl( MutableAbstractPhrase<T> phrase,
                                                        ParallelStrategy<Boolean> pStrategy )
     {
-      this.phrase = phrase;
-      this.pStrategy = pStrategy;
+      super( phrase, pStrategy);
     }
 
     @Override
-    public <T> CheckedFuture<Boolean, PhraseExecutionException> async( final T event )
+    public CheckedFuture<Boolean, PhraseExecutionException> async( final T event )
     {
       return pStrategy.lift( makePhraseFunction( event ) ).apply( this );
     }
 
     @Override
-    protected <T> void setEvent( T event )
-    {
-      getPhrase().setEvent( event );
-    }
-
-    @Override
-    public <T> Boolean sync( final T event )
+    public Boolean sync( final T event )
     {
       try
       {
         return call( obtain( pStrategy.lift( makePhraseFunction( event ) ).apply( this ) ) );
-      } catch ( PhraseExecutionException e )
+      }
+      catch ( PhraseExecutionException e )
       {
         logger.error( e.getMessage() );
-      } catch ( Exception e )
+      }
+      catch ( Exception e )
       {
         logger.error( e.getMessage() );
       }
@@ -510,22 +511,33 @@ public final class PhraseBuildersFacade
    *
    *
    */
-  public static class DaggerMutableBuilder extends AbstractMutableEventOrientedPhraseBuilderImpl
+  public static class DaggerMutableBuilder extends
+          AbstractMutableEventOrientedPhraseBuilderImpl<Object>
   {
-    public <T> DaggerMutableBuilder( MutableAbstractPhrase<T> phrase )
+    public DaggerMutableBuilder( MutableAbstractPhrase<Object> phrase )
     {
       super( phrase, ParallelStrategy.<Boolean>serial() );
     }
 
     @Override
-    public <T> MutableAbstractPhrase<T> getPhrase()
+    public MutableAbstractPhrase<Object> getPhrase()
     {
-      return ( MutableAbstractPhrase<T> ) phrase;
+      return ( MutableAbstractPhrase<Object> ) phrase;
     }
 
     @Override
     public DaggerMutableBuilder eval( VarEnvironment environment )
     {
+      for (String varName: environment.varNames())
+      {
+        MutableAssertionUnit unit = phrase.correspondingUnit( varName );
+        Optional<? extends Selector<?,?>> o = environment.get( varName );
+        if (o.isPresent()) {
+          unit.setSelector( o.get() );
+        } else {
+          throw new IllegalArgumentException( "Corresp selecor didn't found " );
+        }
+      }
       return this;
     }
   }
@@ -871,12 +883,12 @@ public final class PhraseBuildersFacade
   {
     return new VarEntry<T, E>()
     {{
-        this.name = pname;
-        this.selector = ProxyUtils.<T, E>toSelector( value );
-      }};
+      this.name = pname;
+      this.selector = ProxyUtils.<T, E>toSelector( value );
+    }};
   }
 
-  static class VarEnvironment
+  static final class VarEnvironment
   {
     ImmutableMap<String, Selector<?, ?>> environmentSelectors =
             ImmutableMap.of();
@@ -893,6 +905,11 @@ public final class PhraseBuildersFacade
     public Optional<? extends Selector<?, ?>> get( String name )
     {
       return Optional.fromNullable( environmentSelectors.get( name ) );
+    }
+
+    public ImmutableSet<String> varNames()
+    {
+      return environmentSelectors.keySet();
     }
   }
 

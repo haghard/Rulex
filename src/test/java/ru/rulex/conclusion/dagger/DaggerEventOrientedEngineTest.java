@@ -1,8 +1,9 @@
 package ru.rulex.conclusion.dagger;
 
 import org.junit.Test;
-import ru.rulex.conclusion.*;
+import ru.rulex.conclusion.Model;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
+import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhraseBuilder;
 
 import javax.inject.Named;
 
@@ -10,52 +11,43 @@ import static dagger.ObjectGraph.create;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static ru.rulex.conclusion.PhraseBuildersFacade.environment;
 import static ru.rulex.conclusion.PhraseBuildersFacade.var;
-import ru.rulex.conclusion.PhraseBuildersFacade.DaggerEventOrientedPhrasesBuilder;
 import static ru.rulex.conclusion.dagger.DaggerDependencyAnalyzerModule.*;
-import static ru.rulex.conclusion.dagger.UncompletedDaggerDependencyAnalyzerModule.*;
+import static ru.rulex.conclusion.dagger.MutableDaggerDependencyAnalyzerModule.*;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 public class DaggerEventOrientedEngineTest
 {
   @Test
-  public void testDaggerBuilderWithDifferentTypes()
+  public void testSimpleDaggerBuilder()
   {
     final AbstractEventOrientedPhraseBuilder builder = create(
       $expression(
         $less( 19, callOn( Model.class ).getInteger() ),
         $less( 19, callOn( Model.class ).getOtherInteger() ),
         $more( 56.78f, callOn( Model.class ).getFloat() ) ))
-      .get( PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class );
+      .get( AbstractEventOrientedPhraseBuilder.class );
 
     assertThat( builder.sync( Model.values( 20, 78 ) ) ).isTrue();
   }
 
   @Test
-  public void testDaggerBuilderWithSameType()
+  public void testMutableDaggerBuilder()
   {
-    /*
-    final AbstractEventOrientedPhraseBuilder builder = create(
-      $expression(
-        $less( 19, callOn( Model.class ).getInteger() ),
-        $more( 79, callOn( Model.class ).getOtherInteger() ),
-        $moreOrEquals( 56.78f, callOn( Model.class ).getFloat() ) ) )
-      .get( AbstractEventOrientedPhraseBuilder.class );
-
-    assertThat( builder.sync( Model.values( 20, 78 ) ) ).isTrue();
-    */
-
     final String val1 = "x1";
     final String val2 = "x2";
 
-    final DaggerEventOrientedPhrasesBuilder lazyBuilder = create(
+    final AbstractMutableEventOrientedPhraseBuilder mutableBuilder = create(
       $lazyExpression(
-        $less0( 12, val1 )
+        $less0( 12, val1 ),
+        $less0( 13, val2 )
       )
-    ).get( DaggerEventOrientedPhrasesBuilder.class );
+    ).get( AbstractMutableEventOrientedPhraseBuilder.class );
 
-    lazyBuilder.eval(
+    mutableBuilder.eval(
       environment(
-        var( val1, callOn( Model.class ).getInteger() ))
+        var( val1, callOn( Model.class ).getInteger() ),
+        var( val2, callOn( Model.class ).getInteger() )
+      )
     ).async( Model.values( 20, 78 ) );
   }
 

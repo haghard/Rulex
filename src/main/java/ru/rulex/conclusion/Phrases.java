@@ -24,25 +24,43 @@ public enum Phrases
 
   ALL_TRUE
   {
-    AbstractPhrase<Object> getConclusionPhrase()
+    @Override
+    public MutableAbstractPhrase<Object> getConclusionPhrase()
     {
-      return AbstractPhrase.all();
+      return MutableAbstractPhrase.all();
+    }
+
+    @Override
+    public ImmutableAbstractPhrase<Object> getImmutableConclusionPhrase()
+    {
+      return ImmutableAbstractPhrase.all();
     }
   },
 
   ANY_TRUE
   {
-    AbstractPhrase<Object> getConclusionPhrase()
+    @Override
+    public MutableAbstractPhrase<Object> getConclusionPhrase()
     {
-      return AbstractPhrase.any();
+      return MutableAbstractPhrase.any();
+    }
+
+    @Override
+    public ImmutableAbstractPhrase<Object> getImmutableConclusionPhrase()
+    {
+      return ImmutableAbstractPhrase.any();
     }
   };
 
-  abstract <T> AbstractPhrase<T> getConclusionPhrase();
+  public abstract <T> MutableAbstractPhrase<T> getConclusionPhrase();
 
-  public <T> AbstractPhrase<T> withNarrowedType()
+  public abstract <T> ImmutableAbstractPhrase<T> getImmutableConclusionPhrase();
+
+  /*
+  public <T, E> AbstractPhrase<T, E> withNarrowedType()
   {
     return (AbstractPhrase<T>) this.<T> getConclusionPhrase();
   }
+  */
 
 }
