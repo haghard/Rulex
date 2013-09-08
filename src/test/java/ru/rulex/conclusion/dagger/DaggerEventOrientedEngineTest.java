@@ -1,8 +1,9 @@
 package ru.rulex.conclusion.dagger;
 
 import javax.inject.Named;
-import org.testng.annotations.Test;
 
+
+import org.junit.Test;
 import ru.rulex.conclusion.Model;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerEventPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableEventPhraseBuilder;
@@ -55,14 +56,14 @@ public class DaggerEventOrientedEngineTest
     assertTrue( result );
   }
 
-  @Test(expectedExceptions = IllegalStateException.class,
-        expectedExceptionsMessageRegExp = "Undefined variables was found: b")
+  @Test(expected = IllegalStateException.class)
   public void testMutableDaggerBuilderWithMissedValue()
   {
     final DaggerMutableEventPhraseBuilder mutableBuilder = create(
       $mutableExpression(
         $less0( 64, "a" ),
-        $less0( 678, "b" )
+        $less0( 678, "b" ),
+        $less0( 6755656, "c" )
       )
     ).get( DaggerMutableEventPhraseBuilder.class );
 

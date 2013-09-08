@@ -12,12 +12,12 @@ import java.lang.reflect.Array;
 import static dagger.ObjectGraph.create;
 
 @dagger.Module(
-        injects = AbstractEventOrientedPhraseBuilder.class,
+        injects = DaggerEventPhrasesBuilder.class,
         library = true )
 public final class DaggerImmutableDependencyAnalyzerModule
 {
   private final ImmutableAbstractPhrase<?> phrase;
-  private final AbstractEventOrientedPhraseBuilder<?> phraseBuilder;
+  private final DaggerEventPhrasesBuilder phraseBuilder;
 
   public static DaggerImmutableDependencyAnalyzerModule $expression( ObjectGraph module )
   {
@@ -95,7 +95,7 @@ public final class DaggerImmutableDependencyAnalyzerModule
 
   @dagger.Provides
   @SuppressWarnings("rawtypes")
-  AbstractEventOrientedPhraseBuilder getPhraseBuilder()
+  DaggerEventPhrasesBuilder getPhraseBuilder()
   {
     return phraseBuilder;
   }

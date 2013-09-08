@@ -12,12 +12,12 @@ import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhra
  *
  */
 @dagger.Module(
-        injects = AbstractMutableEventOrientedPhraseBuilder.class,
+        injects = DaggerMutableEventPhraseBuilder.class,
         library = true )
 public class DaggerMutableDependencyAnalyzerModule
 {
   private final MutableAbstractPhrase<?> phrase;
-  private final AbstractMutableEventOrientedPhraseBuilder<?> phraseBuilder;
+  private final DaggerMutableEventPhraseBuilder phraseBuilder;
 
   public static <T> DaggerMutableDependencyAnalyzerModule $mutableExpression( ObjectGraph graph )
   {
@@ -29,6 +29,11 @@ public class DaggerMutableDependencyAnalyzerModule
     return compose( module0, module1 );
   }
 
+  public static <T> DaggerMutableDependencyAnalyzerModule $mutableExpression( ObjectGraph module0, ObjectGraph module1,
+                                                                              ObjectGraph module2)
+  {
+    return compose( module0, module1, module2 );
+  }
   /**
    * 
    * @param value
@@ -67,7 +72,7 @@ public class DaggerMutableDependencyAnalyzerModule
 
   @dagger.Provides
   @SuppressWarnings("rawtypes")
-  public AbstractMutableEventOrientedPhraseBuilder providePhraseBuilder()
+  DaggerMutableEventPhraseBuilder providePhraseBuilder()
   {
     return phraseBuilder;
   }
