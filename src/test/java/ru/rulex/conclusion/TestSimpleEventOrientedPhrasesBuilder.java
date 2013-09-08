@@ -14,7 +14,7 @@ public class TestSimpleEventOrientedPhrasesBuilder
   @Test
   public void testSimpleEventOrientedPhrasesBuilder() throws PhraseExecutionException
   {
-    final AbstractEventOrientedPhraseBuilder builder = new SimpleEventOrientedPhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder<Model> builder = new SimpleEventOrientedPhrasesBuilder<Model>()
     {
       protected void build()
       {

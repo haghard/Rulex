@@ -1,4 +1,3 @@
-import ru.rulex.conclusion.Model;
 
 println "incoming value ${foo}"
 

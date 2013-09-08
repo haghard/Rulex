@@ -57,11 +57,11 @@ public class DaggerPredicateModule
           addsTo = DaggerPredicateModule.class,
           injects = ImmutableAssertionUnit.class,
           complete = false, library = true )
-  static class CompleteDaggerPredicateModule
+  static class ImmutableDaggerPredicateModule
   {
     private final SelectorPipeline selectorPipeline;
 
-    public CompleteDaggerPredicateModule( SelectorPipeline selectorPipeline )
+    public ImmutableDaggerPredicateModule( SelectorPipeline selectorPipeline )
     {
       this.selectorPipeline = selectorPipeline;
     }

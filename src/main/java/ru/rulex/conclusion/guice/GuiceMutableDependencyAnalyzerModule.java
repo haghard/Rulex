@@ -17,9 +17,9 @@
  */
 package ru.rulex.conclusion.guice;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.*;
 import com.google.inject.name.Named;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.spi.DefaultElementVisitor;
 import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
@@ -42,7 +42,7 @@ import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
  * @author haghard
  * 
  */
-public abstract class AbstractPhrasesAnalyzerModule<T> extends AbstractModule
+public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractModule
 {
   protected final ImmutableList<Element> elements;
 
@@ -51,7 +51,7 @@ public abstract class AbstractPhrasesAnalyzerModule<T> extends AbstractModule
   public static final Key<ConclusionPredicate> OR_KEY = Key.get( ConclusionPredicate.class,
       named( "disjunction" ) );
 
-  protected AbstractPhrasesAnalyzerModule( ImmutableList<Element> elements, ImmutableAbstractPhrase<T> phrase )
+  protected GuiceMutableDependencyAnalyzerModule( ImmutableList<Element> elements, ImmutableAbstractPhrase<T> phrase )
   {
     this.elements = elements;
     this.phrase = phrase;
@@ -273,7 +273,7 @@ public abstract class AbstractPhrasesAnalyzerModule<T> extends AbstractModule
    * TO DO : implement this
    * 
    */
-  static final class InternalTokenPhrasesAnalyzerModule<T> extends AbstractPhrasesAnalyzerModule<T>
+  static final class InternalTokenPhrasesAnalyzerModule<T> extends GuiceMutableDependencyAnalyzerModule<T>
   {
 
     protected InternalTokenPhrasesAnalyzerModule( ImmutableList<Element> elements, ImmutableAbstractPhrase<T> phrase )
@@ -296,10 +296,9 @@ public abstract class AbstractPhrasesAnalyzerModule<T> extends AbstractModule
 
   }
 
-  static final class InternalDslPhrasesBuilderModule<T> extends AbstractPhrasesAnalyzerModule<T>
+  static final class InternalDslPhrasesBuilderModule<T> extends GuiceMutableDependencyAnalyzerModule<T>
   {
-
-    private final AbstractEventOrientedPhraseBuilder phraseBuilder;
+    private final GuiceEventOrientedPhrasesBuilder phraseBuilder;
 
     InternalDslPhrasesBuilderModule( ImmutableAbstractPhrase<T> phrase0, List<Element> elements )
     {
@@ -311,7 +310,7 @@ public abstract class AbstractPhrasesAnalyzerModule<T> extends AbstractModule
     protected void configure()
     {
       // phrase builder class binding
-      bind( AbstractEventOrientedPhraseBuilder.class ).toInstance( phraseBuilder );
+      bind( GuiceEventOrientedPhrasesBuilder.class ).toInstance( phraseBuilder );
       interceptEarlierBinding();
     }
 

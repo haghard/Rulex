@@ -17,17 +17,18 @@
 package ru.rulex.conclusion.guice;
 
 import org.junit.Test;
+
 import com.google.inject.Injector;
 
 import ru.rulex.conclusion.Model;
-import ru.rulex.conclusion.PhraseBuildersFacade;
+import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder;
 import ru.rulex.conclusion.Phrases;
 import ru.rulex.conclusion.delegate.Delegate;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toPredicate;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 import static org.junit.Assert.fail;
-import static ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule.*;
+import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.*;
 import static com.google.inject.Guice.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -75,8 +76,9 @@ public class GuiceEventOrientedEngineModuleTest
           $less( 9, callOn( Model.class ).getInteger(), "9 < en.getInput()" ),
           $eq( "aaaaaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) );
 
-      PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder phraseBuilder = injector
-          .getInstance( PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class );
+      
+      GuiceEventOrientedPhrasesBuilder phraseBuilder = 
+          injector.getInstance( GuiceEventOrientedPhrasesBuilder.class );
       Boolean result = phraseBuilder.async( foo ).checkedGet();
       assertThat( result ).as( "shouldBeValidWithTwoConditionsAsync error !!!" ).isTrue();
     }
@@ -96,8 +98,8 @@ public class GuiceEventOrientedEngineModuleTest
         $less( 22, callOn( Model.class ).getInteger(), "22 < en.getInput()" ),
         $eq( "aaaaaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) );
 
-      PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder phraseBuilder = injector
-          .getInstance( PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class );
+      GuiceEventOrientedPhrasesBuilder phraseBuilder = injector
+          .getInstance( GuiceEventOrientedPhrasesBuilder.class );
       Boolean result = phraseBuilder.async( foo ).checkedGet();
       assertThat( result ).as( "shouldBeValidWithTwoConditionsSync error !!!" )
           .isTrue();
@@ -117,8 +119,8 @@ public class GuiceEventOrientedEngineModuleTest
           $more( 92, callOn( Model.class ).getInteger(), "92 > en.getInput()" ) ),
           $less( 56, callOn( Model.class ).getInteger(), "56 > en.getInput()" ) );
 
-    final PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder phraseBuilder = injector
-        .getInstance( PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class );
+    final GuiceEventOrientedPhrasesBuilder phraseBuilder = injector
+        .getInstance( GuiceEventOrientedPhrasesBuilder.class );
     try
     {
       boolean result = phraseBuilder.async( orFoo ).get();
@@ -140,8 +142,8 @@ public class GuiceEventOrientedEngineModuleTest
         $more( 7, callOn( Model.class ).getInteger(), "7 > en.getInteger()" ),
         $eq( "aaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) ) );
 
-    final PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder enginePhrase = injector
-        .getInstance( PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class );
+    final GuiceEventOrientedPhrasesBuilder enginePhrase = injector
+        .getInstance( GuiceEventOrientedPhrasesBuilder.class );
     try
     {
       boolean result = enginePhrase.async( disjFoo ).checkedGet();
@@ -165,8 +167,8 @@ public class GuiceEventOrientedEngineModuleTest
         $more( 7, callOn( Model.class ).getInteger(), "7 > en.getInteger()" ),
         $eq( "aaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) ) );
 
-    final PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder enginePhrase = injector
-        .getInstance( PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class );
+    final GuiceEventOrientedPhrasesBuilder enginePhrase = injector
+        .getInstance( GuiceEventOrientedPhrasesBuilder.class );
     try
     {
       boolean result = enginePhrase.async( foo ).checkedGet();

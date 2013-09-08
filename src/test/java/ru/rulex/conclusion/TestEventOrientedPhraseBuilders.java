@@ -17,8 +17,6 @@
 package ru.rulex.conclusion;
 
 import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -30,9 +28,6 @@ import ru.rulex.conclusion.ParserBuilders.Consequence;
 import ru.rulex.conclusion.ParserBuilders.ConsequenceSupplier;
 import ru.rulex.conclusion.PhraseBuildersFacade.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
@@ -54,18 +49,17 @@ public class TestEventOrientedPhraseBuilders
   @Test
   public void testEventOrientedPhrasesBuilderWithProxy()
   {
-    final AbstractEventOrientedPhraseBuilder builder0 = new EventOrientedPhrasesBuilder()
-    {
-      protected void build()
-      {
-        through( Model.class, "fact: [getInteger() == 211]" ).shouldMatch(
-            query( callOn( Model.class ).getInteger(), eq( 211 ), Model.class ) );
-      }
-    };
     try
     {
-      assertThat( builder0.async( Model.values( 211 ) ).checkedGet( 1, TimeUnit.SECONDS ) )
-          .isTrue().as( "testEventOrientedPhrasesBuilderWithProxy error !!!" );
+      assertThat( new EventOrientedPhrasesBuilder<Model>()
+      {
+        protected void build()
+        {
+          through( Model.class, "fact: [getInteger() == 211]" ).shouldMatch(
+              query( callOn( Model.class ).getInteger(), eq( 211 ), Model.class ) );
+        }
+      }.async( Model.values( 211 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+          "testEventOrientedPhrasesBuilderWithProxy error !!!" );
     }
     catch (Exception ex)
     {
@@ -81,26 +75,27 @@ public class TestEventOrientedPhraseBuilders
   @Test
   public void testEventOrientedPhrasesBuilderWithTypeSafeSelector()
   {
-    final AbstractEventOrientedPhraseBuilder builder = new EventOrientedPhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder<Model> builder = new EventOrientedPhrasesBuilder<Model>()
     {
       @Override
       protected void build()
       {
-        through( Model.class, "fact: [getInteger() == 11]" ).shouldMatch(
-            typeSafeQuery( number( Model.class, Integer.class, Model.INT_ACCESSOR ), eq( 11 ) ) );
+        through( Model.class, "fact: [getInteger() == 11]" )
+          .shouldMatch(
+              typeSafeQuery( number( Model.class, Integer.class, Model.INT_ACCESSOR ), eq( 11 ) ) );
       }
     };
 
     try
     {
-      assertThat( builder.async( Model.values( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue()
-          .as( "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
+      assertThat( builder.async( Model.values( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+          "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
 
-      assertThat( builder.async( Model.values( 12 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isFalse()
-          .as( "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
+      assertThat( builder.async( Model.values( 12 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isFalse().as(
+          "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
 
-      assertThat( builder.async( Model.values( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue()
-          .as( "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
+      assertThat( builder.async( Model.values( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+          "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
     }
     catch (Exception ex)
     {
@@ -123,19 +118,19 @@ public class TestEventOrientedPhraseBuilders
       }
     };
 
-    final AbstractEventOrientedPhraseBuilder builder = new EventOrientedPhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder<Model> builder = new EventOrientedPhrasesBuilder<Model>()
     {
       protected void build()
       {
-        through( Model.class, "fact: [field:getInteger() == 10]" ).shouldMatch(
-            query( selector, eq( 10 ) ) );
+        through( Model.class, "fact: [field:getInteger() == 10]" )
+          .shouldMatch( query( selector, eq( 10 ) ) );
       }
     };
 
     try
     {
-      assertThat( builder.async( Model.values( 10 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue()
-          .as( "testEventOrientedPhrasesBuilderWithSelector error !!!" );
+      assertThat( builder.async( Model.values( 10 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+          "testEventOrientedPhrasesBuilderWithSelector error !!!" );
     }
     catch (Exception ex)
     {
@@ -151,30 +146,28 @@ public class TestEventOrientedPhraseBuilders
   public void testEventOrientedPhrasesBuilderWithParallelStrategy()
   {
     final Thread mainThread = Thread.currentThread();
-    final ParallelStrategy<Boolean> separateThreadStrategy = ParallelStrategy
-        .separateThreadStrategy();
+    final ParallelStrategy<Boolean> separateThreadStrategy = ParallelStrategy.separateThreadStrategy();
 
     final Selector<Model, Integer> selector = createSameThreadMockSelector( mainThread );
     final ConclusionPredicate<Integer> predicate = createSameThMockPredicate( mainThread );
 
-    AbstractEventOrientedPhraseBuilder sameThreadBuilder = new EventOrientedPhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder<Model> sameThreadBuilder = new EventOrientedPhrasesBuilder<Model>()
     {
       protected void build()
       {
-        through( Model.class, "fact: [field:getInteger() == 10]" ).shouldMatch(
-            query( selector, predicate ) );
+        through( Model.class, "fact: [field:getInteger() == 10]" ).shouldMatch( query( selector, predicate ) );
       }
     };
 
     final Selector<Model, Integer> selector0 = createSeparateTheadMockSelector( mainThread );
     final ConclusionPredicate<Integer> predicate0 = createSeparateThMockPredicate( mainThread );
 
-    AbstractEventOrientedPhraseBuilder separateThreadBuilder = new EventOrientedPhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder<Model> separateThreadBuilder = new EventOrientedPhrasesBuilder<Model>()
     {
       protected void build()
       {
-        rule( separateThreadStrategy, Model.class, "fact: [field:getInteger() == 10]" )
-            .shouldMatch( query( selector0, predicate0 ) );
+        rule( separateThreadStrategy, Model.class, "fact: [field:getInteger() == 10]" ).shouldMatch(
+            query( selector0, predicate0 ) );
       }
     };
 
@@ -190,8 +183,7 @@ public class TestEventOrientedPhraseBuilders
   public void testEventOrientedFactConsequencePhrasesBuilderWithParallelStrategy()
   {
     final Thread mainThread = Thread.currentThread();
-    final ParallelStrategy<Boolean> separateThreadStrategy = ParallelStrategy
-        .separateThreadStrategy();
+    final ParallelStrategy<Boolean> separateThreadStrategy = ParallelStrategy.separateThreadStrategy();
 
     final Selector<Model, Integer> selector = createSeparateTheadMockSelector( mainThread );
 
@@ -213,7 +205,7 @@ public class TestEventOrientedPhraseBuilders
       }
     };
 
-    final AbstractEventOrientedPhraseBuilder sameThreadBuilder = new EventOrientedFactConsequencePhrasesBuilder()
+    final AbstractEventOrientedPhraseBuilder<Model> sameThreadBuilder = new EventOrientedFactConsequencePhrasesBuilder<Model>()
     {
       @Override
       protected void build()
@@ -225,8 +217,7 @@ public class TestEventOrientedPhraseBuilders
     };
     try
     {
-      CheckedFuture<Boolean, PhraseExecutionException> future = sameThreadBuilder.async( Model
-          .values( 10 ) );
+      CheckedFuture<Boolean, PhraseExecutionException> future = sameThreadBuilder.async( Model.values( 10 ) );
       assertThat( future.checkedGet() ).isTrue().as(
           "testEventOrientedFactConsequencePhrasesBuilderWithParallelStrategy error !!!" );
     }
@@ -247,17 +238,15 @@ public class TestEventOrientedPhraseBuilders
   public void testSingleEventFactConsequenceExecutionPhrasesBuilderWithException()
   {
     final Thread mainThread = Thread.currentThread();
-    final ParallelStrategy<Boolean> builderStrategy = ParallelStrategy
-        .separateThreadStrategy();
+    final ParallelStrategy<Boolean> builderStrategy = ParallelStrategy.separateThreadStrategy();
 
-    AbstractEventOrientedPhraseBuilder builder = new EventOrientedFactConsequencePhrasesBuilder()
+    AbstractEventOrientedPhraseBuilder<Model> builder = new EventOrientedFactConsequencePhrasesBuilder<Model>()
     {
       @Override
       protected void build()
       {
-        through( builderStrategy, Model.class,
-            "fact: [field:getInt() < 100] : consequence:consequence" ).fact(
-            query( selector( new Selector<Model, Integer>()
+        through( builderStrategy, Model.class, "fact: [field:getInt() < 100] : consequence:consequence" )
+            .fact( query( selector( new Selector<Model, Integer>()
             {
               public Integer select( Model input )
               {
@@ -274,20 +263,20 @@ public class TestEventOrientedPhraseBuilders
                 return argument < 100;
               }
             } ) ) ).consequence( new ConsequenceSupplier()
-        {
-          public Consequence get()
-          {
-            return new Consequence()
             {
-              public void action()
+              public Consequence get()
               {
-                assertThat( mainThread ).isNotSameAs( Thread.currentThread() ).as(
-                    "This Consequence call should not happens in main thread, but it is !!!" );
-                logger.debug( "consequence:consequence" );
+                return new Consequence()
+                {
+                  public void action()
+                  {
+                    assertThat( mainThread ).isNotSameAs( Thread.currentThread() ).as(
+                        "This Consequence call should not happens in main thread, but it is !!!" );
+                    logger.debug( "consequence:consequence" );
+                  }
+                };
               }
-            };
-          }
-        } );
+            } );
       }
     };
     try
@@ -304,48 +293,6 @@ public class TestEventOrientedPhraseBuilders
     {
       fail( "testSingleEventFactConsequenceExecutionPhrasesBuilderWithException error ex!!!"
           + ex.getMessage() );
-    }
-  }
-
-  /**
-   * 
-   * 
-   */
-  @Test
-  public void testSingleEventValidationExecutionPhrasesWithSettings()
-  {
-    final String methodName = Model.INT_ACCESSOR;
-    ListeningExecutorService executor = MoreExecutors.listeningDecorator( Executors
-        .newFixedThreadPool( 2 ) );
-    final ParallelStrategy<Boolean> pStrategy = ParallelStrategy
-        .listenableFutureStrategy( executor );
-    try
-    {
-      AbstractEventOrientedPhraseBuilder nbuilder = ConclusionPhrase.phrase(
-          "default-phrase",
-          PhraseSettings.<Integer, Model> newBuilder().accessorName( methodName )
-              .pStrategy( pStrategy ).targetClass( Model.class ).value( 11 )
-              .predicate( new ConclusionPredicate<Integer>()
-              {
-                @Override
-                public boolean apply( Integer argument )
-                {
-                  return argument == 11;
-                }
-              } ).build() );
-      List<CheckedFuture<Boolean, ?>> results = new ArrayList<CheckedFuture<Boolean, ?>>();
-      for (int i = 0; i < 50; i++)
-      {
-        results.add( nbuilder.async( Model.values( 11 ) ) );
-      }
-
-      for (CheckedFuture<Boolean, ?> result : results)
-        result.checkedGet();
-
-    }
-    catch (Exception e)
-    {
-      fail( "testSingleEventValidationExecutionPhrasesWithSettings error " + e.getMessage() );
     }
   }
 

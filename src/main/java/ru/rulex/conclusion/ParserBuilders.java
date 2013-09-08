@@ -25,7 +25,6 @@ import ru.rulex.conclusion.delegate.Delegate;
 import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.guice.SimpleAssertionUnit;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
-import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ParserBuilders
@@ -86,10 +85,11 @@ public final class ParserBuilders
 
   private static class SimpleWithParserImpl<T> implements SimpleWithParser
   {
-    private final ImmutableAbstractPhrase<T> phrase;
     private final String description;
+    private final AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase;
+    //private final ImmutableAbstractPhrase<T> phrase;
 
-    SimpleWithParserImpl( ImmutableAbstractPhrase<T> phrase, String description )
+    SimpleWithParserImpl( AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase, String description )
     {
       this.phrase = phrase;
       this.description = description;
@@ -105,37 +105,32 @@ public final class ParserBuilders
     }
   }
 
-  public static <T> SimpleWithParser newSimpleWithParser( ImmutableAbstractPhrase<T> phrase, String desc )
+  public static <T> SimpleWithParser newSimpleWithParser( AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase, String desc )
   {
     return new SimpleWithParserImpl<T>( phrase, desc );
   }
 
-  public static <T> WithParser<T> newWithParser( AbstractPhrase<T, ImmutableAssertionUnit<T>> conclusionTask, Class<T> clazz,
+  public static <T> WithParser<T> newWithParser( AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase, Class<T> clazz,
       String description )
   {
-    return new WithParserBuilder<T>( conclusionTask, clazz, description );
+    return new WithParserBuilder<T>( phrase, clazz, description );
   }
 
   private static class WithParserBuilder<T> implements WithParser<T>
   {
-
     private final String description;
-
     private final AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase;
+    //private final ImmutableAbstractPhrase<T> phrase;
 
     private Class<T> clazz;
 
-    public WithParserBuilder( AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase0, Class<T> clazz, String description )
+    public WithParserBuilder( AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase, Class<T> clazz, String description )
     {
-      this.description = description;
-      this.phrase = phrase0;
       this.clazz = clazz;
+      this.phrase = phrase;
+      this.description = description;
     }
 
-    /**
-     * @param ConclusionPredicate
-     *          <T> predicate - TypeSafeSelectorPredicate instance
-     */
     @Override
     public void shouldMatch( final ConclusionPredicate<T> predicate )
     {
@@ -143,13 +138,6 @@ public final class ParserBuilders
       this.phrase.addUnit( new SimpleAssertionUnit<T>( predicate, description ) );
     }
 
-    /**
-     * 
-     * @param selector
-     *          ,
-     * @param predicate
-     * 
-     */
     @Override
     public void shouldMatch( Map<String, Object> map )
     {

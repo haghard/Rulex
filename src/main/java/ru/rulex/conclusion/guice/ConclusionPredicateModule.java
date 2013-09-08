@@ -195,7 +195,7 @@ public abstract class ConclusionPredicateModule<T extends Comparable<? super T>>
           {
             binder.bind( immutableListOf( ConclusionPredicate.class ) )
                 .toInstance( disjunctionPredicatesList );
-            binder.bind( AbstractPhrasesAnalyzerModule.OR_KEY ).to( InjectableAnyOffConclusionPredicate.class );
+            binder.bind( GuiceMutableDependencyAnalyzerModule.OR_KEY ).to( InjectableAnyOffConclusionPredicate.class );
           }
         } );
   }

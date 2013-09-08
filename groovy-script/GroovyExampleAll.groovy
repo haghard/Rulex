@@ -1,15 +1,13 @@
-import static ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule.$eq;
-import static ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule.$expression;
-import static ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule.$more;
+import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.$expression
+import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.$more
+import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.$less
+import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.$or
 
 import static com.google.inject.Guice.createInjector;
 import ru.rulex.conclusion.*
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder
+import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder
 import ru.rulex.conclusion.PhraseBuildersFacade.EventOrientedPhrasesBuilder
 
-import static ru.rulex.conclusion.FluentConclusionPredicate.fromSelector
-import static ru.rulex.conclusion.FluentConclusionPredicate.selector
-import static ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule.*
 import ru.rulex.conclusion.Model;
 
 println new EventOrientedPhrasesBuilder() {
@@ -42,7 +40,7 @@ def injector = createInjector(
     $more(90, { foo0 -> return foo0.getInteger() }, "(90 > x.getInt() )"),
     $less(56, { foo0 -> return foo0.getInteger() }, "(56 < x.getInt() )",)))
 
-println "All ${injector.getInstance(PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class).async(foo).checkedGet()} "
+println "All ${injector.getInstance(GuiceEventOrientedPhrasesBuilder.class).async(foo).checkedGet()} "
 
 // do the same
 def injector0 = createInjector(
@@ -51,4 +49,4 @@ def injector0 = createInjector(
       $more(90, { foo0 -> return foo0.getInteger() }, "90 > x.getInt()"),
       $less(56, { foo0 -> return foo0.getInteger() }, "56 < x.getInt()"))))
 
-println "All ${injector0.getInstance(PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder.class).async(foo).checkedGet()} "
+println "All ${injector0.getInstance(GuiceEventOrientedPhrasesBuilder.class).async(foo).checkedGet()} "

@@ -3,7 +3,7 @@ package ru.rulex.conclusion.dagger;
 import dagger.ObjectGraph;
 import ru.rulex.conclusion.*;
 import java.lang.reflect.Array;
-import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableBuilder;
+import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableEventPhraseBuilder;
 import ru.rulex.conclusion.dagger.DaggerPredicateModule.MutableDaggerPredicateModule;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhraseBuilder;
 /**
@@ -14,17 +14,17 @@ import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhra
 @dagger.Module(
         injects = AbstractMutableEventOrientedPhraseBuilder.class,
         library = true )
-public class MutableDaggerDependencyAnalyzerModule
+public class DaggerMutableDependencyAnalyzerModule
 {
   private final MutableAbstractPhrase<?> phrase;
   private final AbstractMutableEventOrientedPhraseBuilder<?> phraseBuilder;
 
-  public static <T> MutableDaggerDependencyAnalyzerModule $mutableExpression( ObjectGraph graph )
+  public static <T> DaggerMutableDependencyAnalyzerModule $mutableExpression( ObjectGraph graph )
   {
     return compose( graph );
   }
 
-  public static <T> MutableDaggerDependencyAnalyzerModule $mutableExpression( ObjectGraph module0, ObjectGraph module1 )
+  public static <T> DaggerMutableDependencyAnalyzerModule $mutableExpression( ObjectGraph module0, ObjectGraph module1 )
   {
     return compose( module0, module1 );
   }
@@ -43,17 +43,17 @@ public class MutableDaggerDependencyAnalyzerModule
     );
   }
 
-  private static <T> MutableDaggerDependencyAnalyzerModule compose( Object... modules )
+  private static <T> DaggerMutableDependencyAnalyzerModule compose( Object... modules )
   {
     ObjectGraph[] array = ( ObjectGraph[] ) Array.newInstance( ObjectGraph.class, modules.length );
     System.arraycopy( modules, 0, array, 0, modules.length );
-    return new MutableDaggerDependencyAnalyzerModule( MutableAbstractPhrase.all(), array );
+    return new DaggerMutableDependencyAnalyzerModule( MutableAbstractPhrase.all(), array );
   }
 
-  private MutableDaggerDependencyAnalyzerModule( MutableAbstractPhrase<Object> phrase, ObjectGraph[] array )
+  private DaggerMutableDependencyAnalyzerModule( MutableAbstractPhrase<Object> phrase, ObjectGraph[] array )
   {
     this.phrase = phrase;
-    this.phraseBuilder = new DaggerMutableBuilder( phrase );
+    this.phraseBuilder = new DaggerMutableEventPhraseBuilder( phrase );
 
     for ( ObjectGraph module : array )
       providePhrases( module );

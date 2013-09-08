@@ -1,4 +1,3 @@
-import ru.rulex.conclusion.Model;
 
 println " list size ${list.size()} -- ${value}"
 
