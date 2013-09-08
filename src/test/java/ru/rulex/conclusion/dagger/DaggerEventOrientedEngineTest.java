@@ -9,6 +9,7 @@ import ru.rulex.conclusion.PhraseBuildersFacade.DaggerEventPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableEventPhraseBuilder;
 
 import static dagger.ObjectGraph.create;
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 import static junit.framework.TestCase.assertTrue;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -56,7 +57,7 @@ public class DaggerEventOrientedEngineTest
     assertTrue( result );
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testMutableDaggerBuilderWithMissedValue()
   {
     final DaggerMutableEventPhraseBuilder mutableBuilder = create(
@@ -67,12 +68,17 @@ public class DaggerEventOrientedEngineTest
       )
     ).get( DaggerMutableEventPhraseBuilder.class );
 
-    mutableBuilder.populateFrom(
-      environment(
-        var( "a", callOn( Model.class ).getInteger() )
-      )
-    ).sync( Model.values( 20, 78 ) );
-    fail();
+    try {
+      mutableBuilder.populateFrom(
+        environment(
+          var( "a", callOn( Model.class ).getInteger() )
+        )
+      ).sync( Model.values( 20, 78 ) );
+    } catch (IllegalStateException ex) {
+      assertEquals( ex.getMessage(), "Undefined variables was found: b,c");
+    } catch (Exception e) {
+      fail();
+    }
   }
 
   /*
