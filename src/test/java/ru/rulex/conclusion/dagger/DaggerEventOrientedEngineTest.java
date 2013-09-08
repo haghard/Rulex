@@ -46,10 +46,10 @@ public class DaggerEventOrientedEngineTest
     ).get( AbstractMutableEventOrientedPhraseBuilder.class );
 
     final boolean result = mutableBuilder.populateFrom(
-            environment(
-                    var( val1, callOn( Model.class ).getInteger() ),
-                    var( val2, callOn( Model.class ).getInteger() )
-            )
+      environment(
+        var( val1, callOn( Model.class ).getInteger() ),
+        var( val2, callOn( Model.class ).getInteger() )
+      )
     ).sync( Model.values( 20, 78 ) );
 
     assertTrue( result );
