@@ -422,7 +422,15 @@ public final class PhraseBuildersFacade
   }
 
   /**
-   *
+   * <p>
+   * The class used for creation, configuration and running evaluation using
+   * Guice managed predicates from {@code GuicefyConclusionPredicates}. Main
+   * usage through
+   * {@code ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule} class
+   * static methods.
+   * </p>
+   * 
+   * Root of hierarchy for work with {@link MutableAbstractPhrase} 
    */
   public static abstract class AbstractMutableEventOrientedPhraseBuilder<T>
   {
@@ -535,13 +543,12 @@ public final class PhraseBuildersFacade
         if (o.isPresent()) {
           unit.setSelector( o.get() );
         } else {
-          throw new IllegalArgumentException( "Corresp selecor didn't found " );
+          throw new IllegalArgumentException( "Selector not found ");
         }
       }
       return this;
     }
   }
-
   /**
    * {@code AbstractIterableOrientedPhrasesBuilder} class is a root of class
    * hierarchy define a base abstraction for collection oriented PhraseBuilders

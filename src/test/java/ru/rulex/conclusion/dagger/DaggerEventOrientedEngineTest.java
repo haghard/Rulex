@@ -8,6 +8,7 @@ import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhra
 import javax.inject.Named;
 
 import static dagger.ObjectGraph.create;
+import static junit.framework.TestCase.assertTrue;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static ru.rulex.conclusion.PhraseBuildersFacade.environment;
 import static ru.rulex.conclusion.PhraseBuildersFacade.var;
@@ -37,18 +38,20 @@ public class DaggerEventOrientedEngineTest
     final String val2 = "x2";
 
     final AbstractMutableEventOrientedPhraseBuilder mutableBuilder = create(
-      $lazyExpression(
+      $mutableExpression(
         $less0( 12, val1 ),
         $less0( 13, val2 )
       )
     ).get( AbstractMutableEventOrientedPhraseBuilder.class );
 
-    mutableBuilder.eval(
+    final boolean result = mutableBuilder.eval(
       environment(
         var( val1, callOn( Model.class ).getInteger() ),
         var( val2, callOn( Model.class ).getInteger() )
       )
-    ).async( Model.values( 20, 78 ) );
+    ).sync( Model.values( 20, 78 ) );
+
+    assertTrue( result );
   }
 
   /*

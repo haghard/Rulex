@@ -2,13 +2,15 @@ package ru.rulex.conclusion.dagger;
 
 import dagger.ObjectGraph;
 import ru.rulex.conclusion.*;
-
 import java.lang.reflect.Array;
-import ru.rulex.conclusion.dagger.DaggerPredicateModule.UncompletedDaggerPredicateModule;
-
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhraseBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableBuilder;
-
+import ru.rulex.conclusion.dagger.DaggerPredicateModule.MutableDaggerPredicateModule;
+import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhraseBuilder;
+/**
+ * 
+ * @author haghard
+ *
+ */
 @dagger.Module(
         injects = AbstractMutableEventOrientedPhraseBuilder.class,
         library = true )
@@ -17,21 +19,27 @@ public class MutableDaggerDependencyAnalyzerModule
   private final MutableAbstractPhrase<?> phrase;
   private final AbstractMutableEventOrientedPhraseBuilder<?> phraseBuilder;
 
-  public static <T> MutableDaggerDependencyAnalyzerModule $lazyExpression( ObjectGraph graph )
+  public static <T> MutableDaggerDependencyAnalyzerModule $mutableExpression( ObjectGraph graph )
   {
     return compose( graph );
   }
 
-  public static <T> MutableDaggerDependencyAnalyzerModule $lazyExpression( ObjectGraph module0, ObjectGraph module1 )
+  public static <T> MutableDaggerDependencyAnalyzerModule $mutableExpression( ObjectGraph module0, ObjectGraph module1 )
   {
     return compose( module0, module1 );
   }
 
+  /**
+   * 
+   * @param value
+   * @param varName
+   * @return ObjectGraph
+   */
   public static <T extends Comparable<? super T>> ObjectGraph $less0( final T value, final String varName )
   {
     return ObjectGraph.create(
             new DaggerPredicateModule( value , LogicOperation.lessThan ),
-            new UncompletedDaggerPredicateModule( varName )
+            new MutableDaggerPredicateModule( varName )
     );
   }
 
@@ -51,13 +59,15 @@ public class MutableDaggerDependencyAnalyzerModule
       providePhrases( module );
   }
 
+  @SuppressWarnings("unchecked")
   private void providePhrases( ObjectGraph graph )
   {
     phrase.addUnit( graph.get( MutableAssertionUnit.class ) );
   }
 
   @dagger.Provides
-  AbstractMutableEventOrientedPhraseBuilder providePhraseBuilder()
+  @SuppressWarnings("rawtypes")
+  public AbstractMutableEventOrientedPhraseBuilder providePhraseBuilder()
   {
     return phraseBuilder;
   }

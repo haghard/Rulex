@@ -3,12 +3,14 @@ package ru.rulex.conclusion.dagger;
 import javax.inject.Named;
 
 import ru.rulex.conclusion.*;
-import com.google.common.base.Optional;
-import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessConclusionPredicate;
-import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessOrEqualsConclusionPredicate;
-import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreConclusionPredicate;
-import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreOrEqualsConclusionPredicate;
 
+import com.google.common.base.Optional;
+
+import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessOrEqualsConclusionPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreOrEqualsConclusionPredicate;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 @dagger.Module(
@@ -26,6 +28,7 @@ public class DaggerPredicateModule
     this.value = Optional.of( value );
   }
 
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   @dagger.Provides
   protected <T> ConclusionPredicate providePredicate()
   {
@@ -63,21 +66,23 @@ public class DaggerPredicateModule
       this.selectorPipeline = selectorPipeline;
     }
 
-    @dagger.Provides
+	  @dagger.Provides
+    @SuppressWarnings("rawtypes")
     <T, E> Selector provideSelector()
     {
       return selectorPipeline.cast();
     }
 
-    @dagger.Provides
+	  @dagger.Provides
+    //@SuppressWarnings({"rawtypes", "unchecked"})
     ImmutableAssertionUnit provideAssertionUnit( final ConclusionPredicate conclusionPredicate, final Selector selector )
     {
       return new ImmutableAssertionUnit()
       {
-        @Override
+		@Override
         public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )
         {
-          return new FluentConclusionPredicate.SelectorPredicate( conclusionPredicate, selector )
+          return new SelectorPredicate( conclusionPredicate, selector )
                   .apply( event );
         }
       };
@@ -88,17 +93,24 @@ public class DaggerPredicateModule
           addsTo = DaggerPredicateModule.class,
           injects = MutableAssertionUnit.class,
           complete = false, library = true )
-  static class UncompletedDaggerPredicateModule
+  static class MutableDaggerPredicateModule
   {
     private final String varName;
 
-    public UncompletedDaggerPredicateModule( String varName )
+    public MutableDaggerPredicateModule( String varName )
     {
       this.varName = varName;
     }
 
     @dagger.Provides
+    String provideVarName()
+    {
+      return varName;
+    }
+
+    @dagger.Provides
     @Named( "emptySelector" )
+    @SuppressWarnings("rawtypes")
     <T, E> Selector provideSelector()
     {
       return new Selector<T, E>()
@@ -112,19 +124,22 @@ public class DaggerPredicateModule
     }
 
     @dagger.Provides
+    @SuppressWarnings("rawtypes")
     <T> MutableAssertionUnit provideAssertionUnit(
             final ConclusionPredicate conclusionPredicate,
-            @Named( "emptySelector" ) final Selector pSelector )
+            @Named( "emptySelector" ) final Selector pSelector,
+            final String varName0)
     {
       return new MutableAssertionUnit<T>()
       {
-        String varName;
+        String varName = varName0;
         Selector<T, ?> selector = pSelector;
 
-        @Override
+		    @Override
+		    @SuppressWarnings("unchecked")
         public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )
         {
-          return new FluentConclusionPredicate.SelectorPredicate( conclusionPredicate, selector )
+          return new SelectorPredicate( conclusionPredicate, selector )
                   .apply( event );
         }
 

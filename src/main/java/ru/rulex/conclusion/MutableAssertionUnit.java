@@ -1,6 +1,12 @@
 package ru.rulex.conclusion;
 
-
+/**
+ * 
+ * @author haghard
+ *
+ * @param <T>
+ * 
+ */
 public interface MutableAssertionUnit<T> extends ImmutableAssertionUnit<T>
 {
 
@@ -16,28 +22,29 @@ public interface MutableAssertionUnit<T> extends ImmutableAssertionUnit<T>
     @Override
     public void setVar( String varName )
     {
-
+    	throw new UnsupportedOperationException("");
     }
 
     @Override
     public String getVar()
     {
-      return null;
+    	throw new UnsupportedOperationException("");
     }
 
     @Override
     public void setSelector( Selector<Object, ?> selector )
     {
-
+    	throw new UnsupportedOperationException("");
     }
 
     @Override
     public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, Object event )
     {
-      return false;
+    	throw new UnsupportedOperationException("");
     }
 
-    public <T> MutableAssertionUnit<T> withNarrowType()
+    @SuppressWarnings("unchecked")
+	public <T> MutableAssertionUnit<T> withNarrowType()
     {
       return (MutableAssertionUnit<T>)this;
     }
