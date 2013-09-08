@@ -1,6 +1,6 @@
 package ru.rulex.conclusion.dagger;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 import ru.rulex.conclusion.Model;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhraseBuilder;
@@ -8,6 +8,7 @@ import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhra
 import javax.inject.Named;
 
 import static dagger.ObjectGraph.create;
+import static junit.framework.Assert.fail;
 import static junit.framework.TestCase.assertTrue;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static ru.rulex.conclusion.PhraseBuildersFacade.environment;
@@ -44,14 +45,33 @@ public class DaggerEventOrientedEngineTest
       )
     ).get( AbstractMutableEventOrientedPhraseBuilder.class );
 
-    final boolean result = mutableBuilder.eval(
-      environment(
-        var( val1, callOn( Model.class ).getInteger() ),
-        var( val2, callOn( Model.class ).getInteger() )
-      )
+    final boolean result = mutableBuilder.populateFrom(
+            environment(
+                    var( val1, callOn( Model.class ).getInteger() ),
+                    var( val2, callOn( Model.class ).getInteger() )
+            )
     ).sync( Model.values( 20, 78 ) );
 
     assertTrue( result );
+  }
+
+  @Test(expectedExceptions = IllegalStateException.class,
+        expectedExceptionsMessageRegExp = "Undefined variables was found: b")
+  public void testMutableDaggerBuilderWithMissedValue()
+  {
+    final AbstractMutableEventOrientedPhraseBuilder mutableBuilder = create(
+      $mutableExpression(
+        $less0( 64, "a" ),
+        $less0( 678, "b" )
+      )
+    ).get( AbstractMutableEventOrientedPhraseBuilder.class );
+
+    mutableBuilder.populateFrom(
+      environment(
+        var( "a", callOn( Model.class ).getInteger() )
+      )
+    ).sync( Model.values( 20, 78 ) );
+    fail();
   }
 
   /*

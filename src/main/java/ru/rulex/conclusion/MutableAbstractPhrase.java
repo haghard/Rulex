@@ -4,6 +4,9 @@ package ru.rulex.conclusion;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 import ru.rulex.conclusion.MutableAssertionUnit.DefaultMutableAssertionUnit;
 
 public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, MutableAssertionUnit<T>>
@@ -27,6 +30,16 @@ public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, Muta
   public void addUnit( MutableAssertionUnit<T> ruleEntry )
   {
     units.add( ruleEntry );
+  }
+
+  public ImmutableSet<String> availableVars()
+  {
+    final ImmutableSortedSet.Builder<String> varsBuilder = ImmutableSortedSet.naturalOrder();
+    for( MutableAssertionUnit<T> unit: units )
+    {
+      varsBuilder.add( unit.getVar() );
+    }
+    return varsBuilder.build();
   }
 
   public MutableAssertionUnit<T> correspondingUnit( String varName )

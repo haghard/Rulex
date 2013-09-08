@@ -74,7 +74,7 @@ public class DaggerPredicateModule
     }
 
 	  @dagger.Provides
-    //@SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     ImmutableAssertionUnit provideAssertionUnit( final ConclusionPredicate conclusionPredicate, final Selector selector )
     {
       return new ImmutableAssertionUnit()

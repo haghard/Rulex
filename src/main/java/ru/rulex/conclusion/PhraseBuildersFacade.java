@@ -15,9 +15,11 @@
  */
 package ru.rulex.conclusion;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.*;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -27,6 +29,8 @@ import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.execution.ParallelStrategy;
 
 import java.lang.reflect.Array;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.*;
 
 import org.apache.log4j.Logger;
@@ -402,7 +406,7 @@ public final class PhraseBuildersFacade
    * <p/>
    * <b> Attention !!! </b> Other usages of this class are prohibited
    */
-  public static class GuiceEventOrientedPhrasesBuilder extends AbstractEventOrientedBuilderImpl
+  public static final class GuiceEventOrientedPhrasesBuilder extends AbstractEventOrientedBuilderImpl
   {
     public <T> GuiceEventOrientedPhrasesBuilder( ImmutableAbstractPhrase<T> delegate )
     {
@@ -413,7 +417,7 @@ public final class PhraseBuildersFacade
   /**
    * @author haghard
    */
-  public static class DaggerEventOrientedPhrasesBuilder extends AbstractEventOrientedBuilderImpl
+  public static final class DaggerEventOrientedPhrasesBuilder extends AbstractEventOrientedBuilderImpl
   {
     public <T> DaggerEventOrientedPhrasesBuilder( ImmutableAbstractPhrase<T> delegate )
     {
@@ -451,9 +455,9 @@ public final class PhraseBuildersFacade
 
     public abstract CheckedFuture<Boolean, PhraseExecutionException> async( final T event );
 
-    public abstract <T extends AbstractMutableEventOrientedPhraseBuilder> T eval( VarEnvironment environment );
+    public abstract <T extends AbstractMutableEventOrientedPhraseBuilder> T populateFrom( VarEnvironment environment );
 
-    protected void setParallelStrategy( ParallelStrategy<Boolean> pStrategy )
+    public void setParallelStrategy( ParallelStrategy<Boolean> pStrategy )
     {
       this.pStrategy = pStrategy;
     }
@@ -519,7 +523,7 @@ public final class PhraseBuildersFacade
    *
    *
    */
-  public static class DaggerMutableBuilder extends
+  public static final class DaggerMutableBuilder extends
           AbstractMutableEventOrientedPhraseBuilderImpl<Object>
   {
     public DaggerMutableBuilder( MutableAbstractPhrase<Object> phrase )
@@ -534,16 +538,23 @@ public final class PhraseBuildersFacade
     }
 
     @Override
-    public DaggerMutableBuilder eval( VarEnvironment environment )
+    public DaggerMutableBuilder populateFrom( VarEnvironment environment )
     {
-      for (String varName: environment.varNames())
+      Preconditions.checkNotNull( environment );
+      //it's agly way to do this, fix later
+      final Set<String> undefined = new HashSet<>( phrase.availableVars() );
+      undefined.removeAll( environment.environmentVars() );
+      if( undefined.size() != 0 )
+        throw new IllegalStateException( "Undefined variables was found: " + Joiner.on(',').join( undefined ) );
+
+      for (String varName: environment.environmentVars())
       {
         MutableAssertionUnit unit = phrase.correspondingUnit( varName );
-        Optional<? extends Selector<?,?>> o = environment.get( varName );
-        if (o.isPresent()) {
-          unit.setSelector( o.get() );
+        Optional<? extends Selector<?,?>> op = environment.get( varName );
+        if (op.isPresent()) {
+          unit.setSelector( op.get() );
         } else {
-          throw new IllegalArgumentException( "Selector not found ");
+          throw new IllegalStateException( "Selector for variable not found " + varName);
         }
       }
       return this;
@@ -897,12 +908,13 @@ public final class PhraseBuildersFacade
 
   static final class VarEnvironment
   {
-    ImmutableMap<String, Selector<?, ?>> environmentSelectors =
-            ImmutableMap.of();
+
+    ImmutableSortedMap<String, Selector<?, ?>> environmentSelectors =
+            ImmutableSortedMap.of();
 
     public VarEnvironment( VarEntry[] varEntryList )
     {
-      final ImmutableMap.Builder<String, Selector<?, ?>> builder = ImmutableMap.builder();
+      final ImmutableSortedMap.Builder<String, Selector<?, ?>> builder = ImmutableSortedMap.naturalOrder();
       for ( VarEntry varEntry : varEntryList )
         builder.put( varEntry.name, varEntry.selector );
 
@@ -914,7 +926,7 @@ public final class PhraseBuildersFacade
       return Optional.fromNullable( environmentSelectors.get( name ) );
     }
 
-    public ImmutableSet<String> varNames()
+    public ImmutableSortedSet<String> environmentVars()
     {
       return environmentSelectors.keySet();
     }
