@@ -30,6 +30,7 @@ import ru.rulex.conclusion.execution.ParallelStrategy;
 import java.lang.reflect.Array;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
 
@@ -39,45 +40,55 @@ import static ru.rulex.conclusion.execution.Callables.*;
  * <pre>
  *                         <b> Classes hierarchy (single object oriented)</b>
  *                            __________________________________________                                  __________________
- *                           |   EventOrientedPhraseBuilder            |-------------------------------->|  AbstractPhrase |
+ *                           |   AbstractEventOrientedPhraseBuilder    |-------------------------------->|  AbstractPhrase |
  *                           |_________________________________________|                                 |_________________|
- *                                             |                                                      ___________|____________
- *                          ___________________|______________________                               |                       |
- *                         |    AbstractEventOrientedBuilderImpl     |
+ *                                             |             |                                         ___________|____________
+ *                          ___________________|_____________|_________                               |                       |
+ *                         |    BaseEventOrientedPhraseBuilder       |
  *                         |_________________________________________|
- *                                             |
- *                                             |
- *         ____________________________________|_____________________________________________
- *        |                        |                                |                       |
- *        |        ________________|____________________            |            ___________|_____________________
- *        |       |   GuiceEventOrientedPhrasesBuilder |            |           |DaggerEventOrientedPhrasesBuilder|
- *        |       |____________________________________|            |           |_________________________________|
- *  ______|_______________________    ______________________________|_____________
- * | EventOrientedPhrasesBuilder |   | EventOrientedFactConsequencePhrasesBuilder|
- * |_____________________________|   |___________________________________________|
- *
+ *                                             |             |
+ *                                             |             |
+ *         ____________________________________|_____________|________________________________
+ *        |                        |                         |       |                       |
+ *        |        ________________|____________________     |       |            ___________|_____________________
+ *        |       |   GuiceEventOrientedPhrasesBuilder |     |       |           |    DaggerEventPhrasesBuilder    |
+ *        |       |____________________________________|     |       |           |_________________________________|
+ *  ______|_______________________ |  _______________________|_______|_____________
+ * | EventOrientedPhrasesBuilder | | | EventOrientedFactConsequencePhrasesBuilder|
+ * |_____________________________| | |___________________________________________|
+ *               __________________|__________________       |
+ *              | SimpleEventOrientedPhrasesBuilder  |       |
+ *              |____________________________________|       |
+ *                                                           |
  *                             <b> Classes hierarchy (collection oriented)</b>
- *                             ___________________________________________                            ___________________
+ *                             ______________________________|____________                            ___________________
  *                            |   AbstractIterableOrientedPhrasesBuilder |-------------------------->| IterablePhrases  |
  *                            |__________________________________________|                           |__________________|
- *                                                 |                                              ____________|_____________
- *                         ________________________|___________________                          |                         |
- *   _____________________|______________________________              |
- *  | AbstractConclusionCollectionExecutionPhrasesBuilder|             |
- *  |____________________________________________________|             |
- *                       |                                             |
- *                       |                                             |
- *                       |                                             |
- *                       |                       ______________________|____________________
+ *                                                 |         |                                     ____________|_____________
+ *                         ________________________|_________|__________                          |                         |
+ *   _____________________|______________________________    |         |
+ *  | AbstractConclusionCollectionExecutionPhrasesBuilder|   |         |
+ *  |____________________________________________________|   |         |
+ *                       |                                   |         |
+ *                       |                                   |         |
+ *                       |                                   |         |
+ *                       |                       ____________|_________|____________________
  *                       |                      |AbstractImperativeExecutionPhrasesBuilder |
  *                       |                      |__________________________________________|
- *  _____________________|____________________                       |
- * |IterableValidationCollectionPhrasesBuilder|                      |
- * |__________________________________________|                      |
- *                                                    _______________|___________________
+ *  _____________________|____________________               |        |
+ * |IterableValidationCollectionPhrasesBuilder|              |        |
+ * |__________________________________________|              |        |
+ *                                                    _______|________|___________________
  *                                                   | ImperativeExecutionPhrasesBuilder|
  *                                                   |__________________________________|
- * </pre>
+ *                                                           |
+ *                                       ____________________|_______________________
+ *                                      | AbstractMutableEventOrientedPhraseBuilder |
+ *                                      |___________________________________________|
+ *                                                        |
+ *                                           _____________|__________________
+ *                                          |DaggerMutableEventPhraseBuilder|
+ * </pre>                                   |_______________________________|
  */
 public final class PhraseBuildersFacade
 {
@@ -152,8 +163,19 @@ public final class PhraseBuildersFacade
 
     public Boolean sync( final T event, Runnable callback )
     {
-      return null;
-      //return sync( event, callback, MoreExecutors.sameThreadExecutor() );
+      return sync( event, callback, MoreExecutors.sameThreadExecutor() );
+    }
+
+    public Boolean sync( final T event, Runnable callback, Executor callbackExecutor )
+    {
+      try
+      {
+        return call( obtain( pStrategy.lift( createFunction( event ) ).apply( this ), callback, callbackExecutor ) );
+      } catch ( Exception ex )
+      {
+        logger.error( ex.getMessage() );
+      }
+      return false;
     }
 
     protected <E extends AbstractEventOrientedPhraseBuilder<T>> ConclusionFunction<E, Boolean> createFunction(
