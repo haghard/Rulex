@@ -16,21 +16,27 @@
  */
 package ru.rulex.conclusion.guice;
 
+import com.google.inject.*;
+import com.google.inject.name.Names;
 import org.junit.Test;
 
-import com.google.inject.Injector;
-
+import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.Model;
 import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder;
 import ru.rulex.conclusion.Phrases;
 import ru.rulex.conclusion.delegate.Delegate;
+
+import static com.google.inject.name.Names.named;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toPredicate;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 import static org.junit.Assert.fail;
+import static ru.rulex.conclusion.guice.GuiceGenericTypes.newEnclosedGenericType;
+import static ru.rulex.conclusion.guice.GuiceGenericTypes.newGenericType;
 import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.*;
 import static com.google.inject.Guice.*;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableEqualsConclusionPredicate;
 
 public class GuiceEventOrientedEngineModuleTest
 {
@@ -179,5 +185,32 @@ public class GuiceEventOrientedEngineModuleTest
       ex.printStackTrace();
       fail( "shouldBeValidWithComplexConditionsSync result error ex !!!" );
     }
+  }
+
+  @Test
+  public void injectionTest()
+  {
+    final Injector injector =  Guice.createInjector( new AbstractModule()
+    {
+      @Override
+      protected void configure() { bind( Integer.class ).toInstance( 5 ); }
+    });
+
+    InjectableEqualsConclusionPredicate p =
+    injector.getInstance(
+     new Key<InjectableEqualsConclusionPredicate<Integer>>() {});
+
+    final TypeLiteral<Integer> genericType =TypeLiteral.get(Integer.class);
+    final Injector injector2 = Guice.createInjector( new AbstractModule()
+    {
+      @Override protected void configure() {
+        bind( Integer.class ).toInstance( 5 );
+        bind( newGenericType( ConclusionPredicate.class, genericType ))
+          .annotatedWith( named( "1" ) )
+            .to( newEnclosedGenericType(InjectableEqualsConclusionPredicate.class, genericType ) );
+      }
+    });
+
+    injector2.getInstance(Key.get( newGenericType( ConclusionPredicate.class, genericType ), named( "1" ) ));
   }
 }
