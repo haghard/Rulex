@@ -75,7 +75,7 @@ public class DaggerEventOrientedEngineTest
   {
     final DaggerMutableEventPhraseBuilder mutableBuilder0 = create(
       $mutableExpression(
-        DaggerMutableDependencyAnalyzerModule.varInt( "a" ).$less( 30 )
+        DaggerMutableDependencyAnalyzerModule.varInt( "a" ).$less( 19 )
       )
     ).get( DaggerMutableEventPhraseBuilder.class );
 
