@@ -4,11 +4,12 @@ package ru.rulex.conclusion.dagger;
 import dagger.ObjectGraph;
 import ru.rulex.conclusion.ImmutableAssertionUnit;
 import ru.rulex.conclusion.ImmutableAbstractPhrase;
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerEventPhrasesBuilder;
 import ru.rulex.conclusion.dagger.DaggerPredicateModule.ImmutableDaggerPredicateModule;
 import ru.rulex.conclusion.delegate.ProxyUtils;
 import java.lang.reflect.Array;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 import static dagger.ObjectGraph.create;
 
 @dagger.Module(
@@ -22,6 +23,11 @@ public final class DaggerImmutableDependencyAnalyzerModule
   public static DaggerImmutableDependencyAnalyzerModule $expression( ObjectGraph module )
   {
     return compose( module );
+  }
+
+  public static <T> DaggerImmutableDependencyAnalyzerModule $expression(Object... modules )
+  {
+    return null;
   }
 
   public static DaggerImmutableDependencyAnalyzerModule $expression( ObjectGraph module0, ObjectGraph module1 )
@@ -48,6 +54,13 @@ public final class DaggerImmutableDependencyAnalyzerModule
     return new DaggerImmutableDependencyAnalyzerModule( ImmutableAbstractPhrase.all(), array );
   }
 
+
+  public static <T extends Comparable<? super T>> ObjectGraph $eq( final T value, final T argument )
+  {
+    return create(
+            new DaggerPredicateModule( value, LogicOperation.eq ),
+            new ImmutableDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
+  }
 
   public static <T extends Comparable<? super T>> ObjectGraph $less( final T value, final T argument )
   {
@@ -99,4 +112,42 @@ public final class DaggerImmutableDependencyAnalyzerModule
   {
     return phraseBuilder;
   }
+
+  public static final class NumberExpressionBuilder<T extends Number & Comparable<? super T>>
+    implements ExpressionBuilder<T>
+  {
+    private final T value;
+    private ObjectGraph objectGraph;
+
+    public T getArgumentClazz()
+    {
+      return value;
+    }
+
+    private NumberExpressionBuilder( T value )
+    {
+      this.value = checkNotNull( value );
+    }
+
+    public ObjectGraph $less( final T argument )
+    {
+      return  DaggerImmutableDependencyAnalyzerModule.$less( value, argument );
+    }
+
+    public ObjectGraph $more( final T argument )
+    {
+      return DaggerImmutableDependencyAnalyzerModule.$more( value, argument );
+    }
+
+    public ObjectGraph $eq( final T argument )
+    {
+      return DaggerImmutableDependencyAnalyzerModule.$eq( value, argument );
+    }
+  }
+
+  public static <T extends Number & Comparable<? super T>> ExpressionBuilder<T> val( final T arg )
+  {
+    return new NumberExpressionBuilder<T>( arg );
+  }
+
 }

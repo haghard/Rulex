@@ -36,6 +36,7 @@ import static ru.rulex.conclusion.guice.GuiceGenericTypes.newGenericType;
 import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.*;
 import static com.google.inject.Guice.*;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.$expression;
 import static ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableEqualsConclusionPredicate;
 
 public class GuiceEventOrientedEngineModuleTest
@@ -190,15 +191,14 @@ public class GuiceEventOrientedEngineModuleTest
   @Test
   public void injectionTest()
   {
+    
     final Injector injector =  Guice.createInjector( new AbstractModule()
     {
       @Override
       protected void configure() { bind( Integer.class ).toInstance( 5 ); }
     });
 
-    InjectableEqualsConclusionPredicate p =
-    injector.getInstance(
-     new Key<InjectableEqualsConclusionPredicate<Integer>>() {});
+    InjectableEqualsConclusionPredicate p = injector.getInstance(new Key<InjectableEqualsConclusionPredicate<Integer>>() {});
 
     final TypeLiteral<Integer> genericType =TypeLiteral.get(Integer.class);
     final Injector injector2 = Guice.createInjector( new AbstractModule()

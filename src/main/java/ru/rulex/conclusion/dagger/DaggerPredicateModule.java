@@ -7,6 +7,7 @@ import ru.rulex.conclusion.*;
 import com.google.common.base.Optional;
 
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableEqualsConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessOrEqualsConclusionPredicate;
@@ -35,6 +36,9 @@ public class DaggerPredicateModule
     final Comparable<T> v = ( Comparable<T> ) value.get();
     switch ( operation )
     {
+      case eq:
+        return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
+                new InjectableEqualsConclusionPredicate( v ) ) );
       case lessThan:
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
                 new InjectableLessConclusionPredicate( v ) ) );

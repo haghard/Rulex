@@ -2,7 +2,9 @@ package ru.rulex.conclusion.dagger;
 
 import dagger.ObjectGraph;
 import ru.rulex.conclusion.*;
+
 import java.lang.reflect.Array;
+
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableEventPhraseBuilder;
 import ru.rulex.conclusion.dagger.DaggerPredicateModule.MutableDaggerPredicateModule;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractMutableEventOrientedPhraseBuilder;
@@ -34,13 +36,27 @@ public class DaggerMutableDependencyAnalyzerModule
   {
     return compose( module0, module1, module2 );
   }
+
+  /**
+   *
+   * @param value
+   * @param varName
+   * @return ObjectGraph
+   */
+  public static <T extends Comparable<? super T>> ObjectGraph $more( final T value, final String varName )
+  {
+    return ObjectGraph.create(
+            new DaggerPredicateModule( value , LogicOperation.moreThan ),
+            new MutableDaggerPredicateModule( varName )
+    );
+  }
   /**
    * 
    * @param value
    * @param varName
    * @return ObjectGraph
    */
-  public static <T extends Comparable<? super T>> ObjectGraph $less0( final T value, final String varName )
+  public static <T extends Comparable<? super T>> ObjectGraph $less( final T value, final String varName )
   {
     return ObjectGraph.create(
             new DaggerPredicateModule( value , LogicOperation.lessThan ),
@@ -71,10 +87,53 @@ public class DaggerMutableDependencyAnalyzerModule
   }
 
   @dagger.Provides
-  @SuppressWarnings("rawtypes")
   DaggerMutableEventPhraseBuilder providePhraseBuilder()
   {
     return phraseBuilder;
   }
 
+  public static final class VariableExpressionBuilder<T extends Comparable<? super T>> implements ExpressionBuilder<T>
+  {
+    private final String varName;
+
+    public VariableExpressionBuilder( String varName )
+    {
+      this.varName = varName;
+    }
+
+    @Override
+    public ObjectGraph $eq( T argument )
+    {
+      return null;
+    }
+
+    @Override
+    public ObjectGraph $less( T argument )
+    {
+      return DaggerMutableDependencyAnalyzerModule.$less( argument, varName );
+    }
+
+    @Override
+    public ObjectGraph $more( T argument )
+    {
+      return DaggerMutableDependencyAnalyzerModule.$more( argument, varName );
+    }
+  }
+
+  public static ExpressionBuilder<Integer> varInt( final String varName )
+  {
+    return new VariableExpressionBuilder<Integer>( varName );
+  }
+
+  public static ExpressionBuilder<Float> varFloat( final String varName )
+  {
+    return new VariableExpressionBuilder<Float>( varName );
+  }
+
+  public static ExpressionBuilder<String> varString( final String varName )
+  {
+    return new VariableExpressionBuilder<String>( varName );
+  }
+
+  
 }

@@ -17,6 +17,7 @@ import static ru.rulex.conclusion.PhraseBuildersFacade.environment;
 import static ru.rulex.conclusion.PhraseBuildersFacade.var;
 import static ru.rulex.conclusion.dagger.DaggerImmutableDependencyAnalyzerModule.*;
 import static ru.rulex.conclusion.dagger.DaggerMutableDependencyAnalyzerModule.*;
+import static ru.rulex.conclusion.dagger.DaggerMutableDependencyAnalyzerModule.$less;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 public class DaggerEventOrientedEngineTest
@@ -26,12 +27,24 @@ public class DaggerEventOrientedEngineTest
   {
     final DaggerEventPhrasesBuilder builder = create(
       $expression(
-        $less( 19, callOn( Model.class ).getInteger() ),
-        $less( 19, callOn( Model.class ).getOtherInteger() ),
-        $more( 56.78f, callOn( Model.class ).getFloat() ) ))
+        DaggerImmutableDependencyAnalyzerModule.$less( 19, callOn( Model.class ).getInteger() ),
+        DaggerImmutableDependencyAnalyzerModule.$less( 19, callOn( Model.class ).getOtherInteger() ),
+        DaggerImmutableDependencyAnalyzerModule.$more( 56.78f, callOn( Model.class ).getFloat() ) ))
       .get( DaggerEventPhrasesBuilder.class );
     
     assertThat( builder.sync( Model.values( 20, 78 ) ) ).isTrue();
+  }
+
+  @Test
+  public void testDaggerArgumentBasedApi()
+  {
+    final DaggerEventPhrasesBuilder builder0 = create(
+      $expression(
+        val( 3 ).$less( callOn( Model.class ).getInteger() ),
+        val( 82.89f ).$more( callOn( Model.class ).getFloat() )
+      )).get( DaggerEventPhrasesBuilder.class );
+
+    assertThat( builder0.sync( Model.values( 20, 78.1f ) ) ).isTrue();
   }
 
   @Test
@@ -42,8 +55,8 @@ public class DaggerEventOrientedEngineTest
 
     final DaggerMutableEventPhraseBuilder mutableBuilder = create(
       $mutableExpression(
-        $less0( 12, val1 ),
-        $less0( 13, val2 )
+        $less( 12, val1 ),
+        $less( 13, val2 )
       )
     ).get( DaggerMutableEventPhraseBuilder.class );
 
@@ -58,13 +71,31 @@ public class DaggerEventOrientedEngineTest
   }
 
   @Test
+  public void testMutableDaggerArgumentBaseApi()
+  {
+    final DaggerMutableEventPhraseBuilder mutableBuilder0 = create(
+      $mutableExpression(
+        DaggerMutableDependencyAnalyzerModule.varInt( "a" ).$less( 30 )
+      )
+    ).get( DaggerMutableEventPhraseBuilder.class );
+
+    final boolean result = mutableBuilder0.populateFrom(
+      environment(
+        var( "a", callOn( Model.class ).getInteger() )
+      )
+    ).sync( Model.values( 20, 78 ) );
+
+    assertTrue( result );
+  }
+
+  @Test
   public void testMutableDaggerBuilderWithMissedValue()
   {
     final DaggerMutableEventPhraseBuilder mutableBuilder = create(
       $mutableExpression(
-        $less0( 64, "a" ),
-        $less0( 678, "b" ),
-        $less0( 6755656, "c" )
+        $less( 64, "a" ),
+        $less( 678, "b" ),
+        $less( 6755656, "c" )
       )
     ).get( DaggerMutableEventPhraseBuilder.class );
 

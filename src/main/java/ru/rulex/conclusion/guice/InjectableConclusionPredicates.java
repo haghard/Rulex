@@ -34,7 +34,7 @@ public final class InjectableConclusionPredicates
     private final T parameter;
 
     @Inject
-    InjectableEqualsConclusionPredicate( T parameter )
+    public InjectableEqualsConclusionPredicate( T parameter )
     {
       this.parameter = checkNotNull( parameter );
     }

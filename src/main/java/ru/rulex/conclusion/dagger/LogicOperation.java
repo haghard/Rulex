@@ -6,6 +6,9 @@ package ru.rulex.conclusion.dagger;
  */
 public enum LogicOperation
 {
+
+  eq("eq", OperationType.Binary),
+
   lessThan("less", OperationType.Binary),
 
   lessOrEquals("lessOrEq", OperationType.Binary),
