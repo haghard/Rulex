@@ -80,15 +80,18 @@ class GreetingBuilder extends FactoryBuilderSupport {
 }
 
 
-GreetingBuilder bldr = new GreetingBuilder()
-bldr.using("german") {
+GreetingBuilder builder = new GreetingBuilder()
+
+builder.using("english") {
   greet("Jon")
   greet("David")
   greet("Ella")
 }
 
-bldr.build()
+builder.build()
 
-bldr.using("french") {  greet("Mireille")  }
+builder.using("french") {
+    greet("Mireille")
+}
 
-bldr.build()
+builder.build()

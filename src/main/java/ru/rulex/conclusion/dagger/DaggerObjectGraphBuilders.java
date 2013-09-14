@@ -154,7 +154,7 @@ public final class DaggerObjectGraphBuilders
     {
       return create(
               new DaggerPredicateModule( value, LogicOperation.eq ),
-              new ImmutableDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
+              new ImmutableDaggerPredicateModule( ProxyUtils.toSelector( argument ) ) );
     }
 
     @VisibleForTesting
@@ -162,7 +162,7 @@ public final class DaggerObjectGraphBuilders
     {
       return create(
               new DaggerPredicateModule( value, LogicOperation.lessThan ),
-              new ImmutableDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
+              new ImmutableDaggerPredicateModule( ProxyUtils.toSelector( argument ) ) );
     }
 
     @VisibleForTesting
@@ -170,7 +170,7 @@ public final class DaggerObjectGraphBuilders
     {
       return create(
               new DaggerPredicateModule( value, LogicOperation.moreThan ),
-              new ImmutableDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
+              new ImmutableDaggerPredicateModule( ProxyUtils.toSelector( argument ) ) );
     }
 
     @VisibleForTesting
@@ -178,7 +178,7 @@ public final class DaggerObjectGraphBuilders
     {
       return create(
               new DaggerPredicateModule( value, LogicOperation.lessOrEquals ),
-              new ImmutableDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
+              new ImmutableDaggerPredicateModule( ProxyUtils.toSelector( argument ) ) );
     }
 
     @VisibleForTesting
@@ -186,7 +186,7 @@ public final class DaggerObjectGraphBuilders
     {
       return create(
               new DaggerPredicateModule( value, LogicOperation.moreOrEquals ),
-              new ImmutableDaggerPredicateModule( ProxyUtils.toCastedSelector( argument ) ) );
+              new ImmutableDaggerPredicateModule( ProxyUtils.toSelector( argument ) ) );
     }
 
 

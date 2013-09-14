@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
+import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
 
 import static ru.rulex.conclusion.execution.Callables.*;
 
@@ -208,6 +209,20 @@ public final class PhraseBuildersFacade
     }
   }
 
+  public static abstract class BaseGroovyEventOrientedPhraseBuilder<T> extends AbstractEventOrientedPhraseBuilder<T>
+  {
+    private BaseGroovyEventOrientedPhraseBuilder( AllTrueImmutableGroovyPhrase<T> phrase,
+                                            ParallelStrategy<Boolean> pStrategy )
+    {
+      super( phrase, pStrategy );
+    }
+
+    @Override
+    protected AllTrueImmutableGroovyPhrase<T> getPhrase()
+    {
+      return ( AllTrueImmutableGroovyPhrase<T> ) phrase;
+    }
+  }
   /**
    * <p>
    * The class used for creation, configuration and running evaluation on
@@ -312,6 +327,28 @@ public final class PhraseBuildersFacade
     }
   }
 
+  public static abstract class GroovyEventOrientedPhrasesBuilder<T> extends BaseGroovyEventOrientedPhraseBuilder<T>
+  {
+    public GroovyEventOrientedPhrasesBuilder()
+    {
+      super( ImmutableAbstractPhrase.<T>allGroovy(), ParallelStrategy.<Boolean>serial());
+      build();
+    }
+
+    protected abstract void build();
+
+    protected ScriptParser through( String description )
+    {
+      return rule( ParallelStrategy.<Boolean>serial(), description );
+    }
+
+    protected ScriptParser rule( ParallelStrategy<Boolean> pStrategy, String description )
+    {
+      setParallelStrategy( pStrategy );
+      return ParserBuilders.newScriptParser( getPhrase(), description );
+    }
+  }
+
   /**
    * <p>
    * The class used for creation, configuration and running evaluation using
@@ -363,7 +400,7 @@ public final class PhraseBuildersFacade
       super( delegate, ParallelStrategy.<Boolean>serial() );
     }
   }
-  
+
   /**
    * 
    * @author haghard

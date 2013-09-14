@@ -15,17 +15,18 @@
  */
 package ru.rulex.conclusion;
 
-import java.io.File;
+import java.io.*;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.util.GroovyScriptEngine;
-
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
+import ru.rulex.conclusion.PhraseBuildersFacade.GroovyEventOrientedPhrasesBuilder;
 
-import static org.junit.Assert.*;
+import static org.fest.assertions.api.Assertions.*;
+
 
 public class GroovyScriptEngineTest
 {
@@ -38,8 +39,7 @@ public class GroovyScriptEngineTest
     try
     {
       groovyShell.evaluate( new File( "./groovy-script/GroovyExampleAll.groovy" ) );
-    }
-    catch (Exception ex)
+    } catch ( Exception ex )
     {
       ex.printStackTrace();
       fail( "testRunLocalGuiceBasedScriptsAll error !!!" );
@@ -57,9 +57,8 @@ public class GroovyScriptEngineTest
       final Binding binding = new Binding();
       binding.setVariable( "foo", foo );
       gse.run( "GroovyExample.groovy", binding );
-      assertTrue( "testRunLocalGuiceScripts error !!!", (Boolean) binding.getVariable( "output" ) );
-    }
-    catch (Exception ex)
+      assertThat( ( Boolean ) binding.getVariable( "output" ) ).isTrue();
+    } catch ( Exception ex )
     {
       ex.printStackTrace();
       fail( "testRunLocalGuiceBasedScripts error !!!" );
@@ -77,9 +76,8 @@ public class GroovyScriptEngineTest
       final Binding binding = new Binding();
       binding.setVariable( "foo", foo );
       gse.run( "SingleEventGroovyScript.groovy", binding );
-      assertTrue( "testNativeRunLocalGuiceBasedScripts error !!!", (Boolean) binding.getVariable( "output" ) );
-    }
-    catch (Exception ex)
+      assertThat(( Boolean ) binding.getVariable( "output" ) ).isTrue();
+    } catch ( Exception ex )
     {
       ex.printStackTrace();
       fail( "testNativeRunLocalGuiceBasedScripts error !!!" );
@@ -93,27 +91,60 @@ public class GroovyScriptEngineTest
     {
       int targetId = 128;
       final ImmutableList<Model> list = ImmutableList.of( Model.from( 121 ), Model.from( 122 ),
-          Model.from( targetId ) );
+              Model.from( targetId ) );
 
       final GroovyScriptEngine gse = new GroovyScriptEngine( roots );
       final Binding binding = new Binding();
       binding.setVariable( "list", list );
       binding.setVariable( "value", targetId );
       gse.run( "ListGroovyScript.groovy", binding );
-      assertTrue( "testListRunLocalGuiceBasedScripts null error !!!",
-          (Boolean) binding.getVariable( "output" ) );
+      assertThat( ( Boolean ) binding.getVariable( "output" ) ).isTrue();
 
       binding.setVariable( "list", list );
       binding.setVariable( "value", targetId + 1 );
       gse.run( "ListGroovyScript.groovy", binding );
-      assertFalse( "testListRunLocalGuiceBasedScripts null error !!!",
-          (Boolean) binding.getVariable( "output" ) );
+      assertThat(( Boolean ) binding.getVariable( "output" ) ).isFalse();
 
-    }
-    catch (Exception ex)
+    } catch ( Exception ex )
     {
       ex.printStackTrace();
       fail( "testListRunLocalGuiceBasedScripts error !!!" );
+    }
+  }
+
+  private static String loadScript() throws IOException
+  {
+    final File scriptFile = new File( "./groovy-script/ru/GroovyDslRule.groovy" );
+    BufferedReader reader = new BufferedReader(
+            new InputStreamReader( new FileInputStream( scriptFile ) ) );
+
+    String line;
+    StringBuffer buffer = new StringBuffer();
+    while ( ( line = reader.readLine() ) != null )
+    {
+      buffer.append( line ).append( '\n' );
+    }
+
+    return buffer.toString();
+  }
+
+  @Test
+  public void testGroovyPhraseBuilder()
+  {
+    try
+    {
+      assertThat( new GroovyEventOrientedPhrasesBuilder<Model>()
+      {
+        @Override
+        protected void build()
+        {
+          through( "" ).withFile( new File( "./groovy-script/ru/GroovyDslRule.groovy" ));
+        }
+      }.sync( Model.from( 7, 87.2f ) ) ).isTrue();
+
+    } catch ( Exception ex )
+    {
+      ex.printStackTrace();
     }
   }
 }

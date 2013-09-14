@@ -1,5 +1,10 @@
 package ru.rulex.conclusion;
 
+import groovy.lang.Binding;
+import groovy.lang.Closure;
+import groovy.lang.GroovyShell;
+import ru.rulex.conclusion.groovy.GroovyRuleDslBuilder;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +77,35 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
     }
   }
 
+  public static class AllTrueImmutableGroovyPhrase<T> extends ImmutableAbstractPhrase<T>
+  {
+    private Binding binding;
+    private GroovyRuleDslBuilder builder;
+
+    private static final String EVENT_NAME = "event";
+    private static final String CLOSURE_NAME = "rule";
+
+    void setBinding(Binding binding)
+    {
+      this.binding = binding;
+    }
+
+    void setDslBuilder( GroovyRuleDslBuilder builder)
+    {
+      this.builder = builder;
+    }
+
+    @Override
+    public Boolean evaluate()
+    {
+      binding.setVariable( EVENT_NAME, event );
+      final Closure c = (Closure)binding.getVariable( CLOSURE_NAME );
+      c.setDelegate( builder );
+      c.call();
+
+      return builder.getResult();
+    }
+  }
 
   public static <T> ImmutableAbstractPhrase<T> all()
   {
@@ -81,6 +115,11 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
   public static <T> ImmutableAbstractPhrase<T> any()
   {
     return new AnyTrueImmutablePhrases<T>();
+  }
+
+  public static <T> AllTrueImmutableGroovyPhrase<T> allGroovy()
+  {
+    return new AllTrueImmutableGroovyPhrase<T>();
   }
 
 }

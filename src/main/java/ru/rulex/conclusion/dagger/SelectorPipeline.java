@@ -32,7 +32,7 @@ public enum SelectorPipeline implements Selector<Object, Object>
   public abstract <T, E> void setDelegate( Selector<T, E> delegate );
 
   @SuppressWarnings("unchecked")
-  <E, T> Selector<E, T> cast()
+  public <E, T> Selector<E, T> cast()
   {
     return (Selector<E, T>) this;
   }

@@ -63,18 +63,18 @@ public class DaggerPredicateModule
           complete = false, library = true )
   static class ImmutableDaggerPredicateModule
   {
-    private final SelectorPipeline selectorPipeline;
+    private final Selector selector;
 
-    public ImmutableDaggerPredicateModule( SelectorPipeline selectorPipeline )
+    public ImmutableDaggerPredicateModule( Selector selector )
     {
-      this.selectorPipeline = selectorPipeline;
+      this.selector = selector;
     }
 
 	  @dagger.Provides
     @SuppressWarnings("rawtypes")
     <T, E> Selector provideSelector()
     {
-      return selectorPipeline.cast();
+      return selector;
     }
 
 	  @dagger.Provides

@@ -94,10 +94,9 @@ public final class JvmLanguageUtils
       public boolean apply( Object argument )
       {
         Object result = la.call( predicate, new Object[] { argument } );
-        if (result instanceof Boolean) {
-          boolean res = (Boolean)result;
-          return  res;
-        }
+        if (result instanceof Boolean) 
+          return ((Boolean)result).booleanValue();
+        
         throw new IllegalArgumentException("result should be boolean");
       }
     };
@@ -111,12 +110,11 @@ public final class JvmLanguageUtils
     final JvmBasedLanguageAdapter la = findLanguageAdapter( selector );
     return new Selector<E, U>()
     {
-      @SuppressWarnings("unchecked")
       @Override
+      @SuppressWarnings("unchecked")
       public U select( Object argument )
       {
-        return (U) la.call( selector, new Object[]
-                { argument } );
+        return (U) la.call( selector, new Object[] { argument } );
       }
     };
   }

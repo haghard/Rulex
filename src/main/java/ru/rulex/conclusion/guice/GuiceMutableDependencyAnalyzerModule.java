@@ -90,7 +90,7 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
           ConclusionPredicate<?> conclusionPredicate = internalInjector.getInstance( Key
               .get( GuiceGenericTypes.newGenericType( ConclusionPredicate.class, binding.getLiteral() ) ) );
 
-          phrase.addUnit( new SimpleAssertionUnit( conclusionPredicate, binding.description() ) );
+          phrase.addUnit( new PredicateImmutableAssertionUnit( conclusionPredicate, binding.description() ) );
         }
 
         @Override
@@ -107,7 +107,7 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
             }
           } );
           ConclusionPredicate<?> conclusionPredicate = internalOrInjector.getInstance( OR_KEY );
-          phrase.addUnit( new SimpleAssertionUnit( conclusionPredicate, binding.description() ) );
+          phrase.addUnit( new PredicateImmutableAssertionUnit( conclusionPredicate, binding.description() ) );
         }
       };
     }

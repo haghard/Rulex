@@ -19,13 +19,13 @@ import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.ConclusionStatePathTrace;
 import ru.rulex.conclusion.ImmutableAssertionUnit;
 
-public class SimpleAssertionUnit<T> implements ImmutableAssertionUnit<T>
+public class PredicateImmutableAssertionUnit<T> implements ImmutableAssertionUnit<T>
 {
   
   private final ConclusionPredicate<T> predicate;
   private final String description;
 
-  public SimpleAssertionUnit( ConclusionPredicate<T> conclusionPredicate, String exp )
+  public PredicateImmutableAssertionUnit( ConclusionPredicate<T> conclusionPredicate, String exp )
   {
     this.predicate = conclusionPredicate;
     this.description = exp;

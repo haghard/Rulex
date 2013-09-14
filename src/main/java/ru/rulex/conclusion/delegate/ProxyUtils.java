@@ -19,6 +19,7 @@ package ru.rulex.conclusion.delegate;
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.JavaCglibInvocInterceptor;
 import ru.rulex.conclusion.Selector;
+import ru.rulex.conclusion.dagger.PredicatePipeline;
 import ru.rulex.conclusion.dagger.SelectorPipeline;
 
 import java.lang.reflect.InvocationHandler;
@@ -61,12 +62,20 @@ public class ProxyUtils
     return Invokable.<T, E> invokableSelector( invokable );
   }
 
-  public static <T, E> SelectorPipeline toCastedSelector( E ignoredValue )
+  public static <T, E> Selector<T, E> toSelectorsPipeline( E ignoredValue )
   {
     final Invokable<T, E> invokable = ProxyUtils.<T, E> poolInvokable();
     Preconditions.checkNotNull( invokable );
     SelectorPipeline.PIPELINE_INSTANCE.setDelegate( Invokable.invokableSelector( invokable ) );
-    return SelectorPipeline.PIPELINE_INSTANCE;
+    return SelectorPipeline.PIPELINE_INSTANCE.<T, E>cast();
+  }
+
+  public static <T> ConclusionPredicate<T> toPredicatePipeline( Object ignoredValue )
+  {
+    final Invokable<T, Boolean> invokable = ProxyUtils.<T, Boolean>poolInvokable();
+    Preconditions.checkNotNull( invokable );
+    PredicatePipeline.PIPELINE_INSTANCE.setDelegate( Invokable.invokablePredicate( invokable ) );
+    return PredicatePipeline.PIPELINE_INSTANCE.<T>cast();
   }
 
   public static <T> T callOn( Class<T> clazz, final T original )

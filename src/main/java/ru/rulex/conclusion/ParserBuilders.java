@@ -17,14 +17,19 @@
  */
 package ru.rulex.conclusion;
 
+import java.io.*;
 import java.util.Map;
 import com.google.common.collect.ImmutableSet;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 import ru.rulex.conclusion.delegate.Delegate;
 import ru.rulex.conclusion.delegate.ProxyUtils;
-import ru.rulex.conclusion.guice.SimpleAssertionUnit;
+import ru.rulex.conclusion.groovy.GroovyRuleDslBuilder;
+import ru.rulex.conclusion.guice.PredicateImmutableAssertionUnit;
 import ru.rulex.external.JvmLanguageUtils;
+import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
 
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -45,6 +50,56 @@ public final class ParserBuilders
   public interface SimpleWithParser
   {
     <T> void shouldMatch( T argument, ConclusionPredicate<T> predicate );
+  }
+
+  public interface ScriptParser {
+    ScriptParser withFile(File file);
+  }
+
+  public static class ScriptParserImpl<T> implements ScriptParser
+  {
+    private final AllTrueImmutableGroovyPhrase<T> phrase;
+
+    ScriptParserImpl(AllTrueImmutableGroovyPhrase<T> phrase)
+    {
+      this.phrase = phrase;
+    }
+
+    @Override
+    public ScriptParser withFile( File file )
+    {
+      final Binding binding = new Binding();
+      final GroovyShell shell = new GroovyShell( binding );
+      binding.setVariable( "event", null );
+      shell.evaluate( loadScript( file ) );
+      phrase.setBinding( binding );
+      phrase.setDslBuilder( new GroovyRuleDslBuilder<T>() );
+      return this;
+    }
+
+    private static String loadScript( File scriptFile )
+    {
+      final StringBuffer buffer = new StringBuffer();
+      try {
+        String line;
+        final BufferedReader reader = new BufferedReader(
+                new InputStreamReader( new FileInputStream( scriptFile ) ) );
+        while ( (line = reader.readLine()) != null )
+        {
+          buffer.append( line ).append( '\n' );
+        }
+      }
+      catch (IOException ex)
+      {
+        throw new RuntimeException("IO error groovy script file");
+      }
+      return buffer.toString();
+    }
+  }
+
+  public static <T> ScriptParser newScriptParser( AllTrueImmutableGroovyPhrase<T> phrase, String description )
+  {
+    return new ScriptParserImpl<T>( phrase );
   }
 
   /**
@@ -89,7 +144,6 @@ public final class ParserBuilders
   {
     private final String description;
     private final AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase;
-    //private final ImmutableAbstractPhrase<T> phrase;
 
     SimpleWithParserImpl( AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase, String description )
     {
@@ -103,7 +157,7 @@ public final class ParserBuilders
     {
       Selector<?, T> selector = ProxyUtils.toSelector( argument );
       ConclusionPredicate<?> p = new SelectorPredicate( predicate, selector );
-      this.phrase.addUnit( new SimpleAssertionUnit( p, description ) );
+      this.phrase.addUnit( new PredicateImmutableAssertionUnit( p, description ) );
     }
   }
 
@@ -122,7 +176,6 @@ public final class ParserBuilders
   {
     private final String description;
     private final AbstractPhrase<T, ImmutableAssertionUnit<T>> phrase;
-    //private final ImmutableAbstractPhrase<T> phrase;
 
     private Class<T> clazz;
 
@@ -137,7 +190,7 @@ public final class ParserBuilders
     public void shouldMatch( final ConclusionPredicate<T> predicate )
     {
       this.phrase.setEventClass( clazz );
-      this.phrase.addUnit( new SimpleAssertionUnit<T>( predicate, description ) );
+      this.phrase.addUnit( new PredicateImmutableAssertionUnit<T>( predicate, description ) );
     }
 
     @Override
@@ -170,7 +223,7 @@ public final class ParserBuilders
       final Selector javaSelector = JvmLanguageUtils.toJavaSelector( selector );
       final ConclusionPredicate<?> predicate0 = query( javaSelector, javaPredicate );
       this.phrase.setEventClass( clazz );
-      this.phrase.addUnit( new SimpleAssertionUnit( predicate0, description ) );
+      this.phrase.addUnit( new PredicateImmutableAssertionUnit( predicate0, description ) );
     }
 
     private void checkIncomingParams( final Object selector, Object predicate )
@@ -185,7 +238,7 @@ public final class ParserBuilders
       Selector<T, E> selector = ProxyUtils.toSelector( argument );
       ConclusionPredicate<T> p = new SelectorPredicate<T, E>( predicate, selector );
       this.phrase.setEventClass( clazz );
-      this.phrase.addUnit( new SimpleAssertionUnit<T>( p, description ) );
+      this.phrase.addUnit( new PredicateImmutableAssertionUnit<T>( p, description ) );
     }
   }
 
@@ -360,7 +413,7 @@ public final class ParserBuilders
     {
       this.phrase.setIteratorType( iType );
       this.phrase.setWithout( excepts );
-      this.phrase.addUnit( new SimpleAssertionUnit<T>( predicate, description ) );
+      this.phrase.addUnit( new PredicateImmutableAssertionUnit<T>( predicate, description ) );
     }
   }
 }
