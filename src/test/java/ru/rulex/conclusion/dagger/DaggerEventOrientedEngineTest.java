@@ -122,4 +122,79 @@ public class DaggerEventOrientedEngineTest
 
     assertTrue( result );
   }
+
+   /*
+  //TODO: implement like this API , with AnnotationProcessor
+  static class Model1
+  {
+
+    Object[] v = { callOn( Model.class ).getFloat(), callOn( Model.class ).getFloat() };
+
+    public Integer intOperation() { return callOn( ru.rulex.conclusion.Model.class ).getInteger(); }
+
+    public String strOperation() { return callOn( ru.rulex.conclusion.Model.class ).getString(); }
+
+    @Query(
+      value = {
+              @Operation( value = intOperation() ),
+              @Operation( value = intOperation() ) } )
+    public void method()
+    {
+
+    }
+  }
+  */
+
+  @interface QueryLine
+  {
+    String value();
+  }
+
+  @interface Operation
+  {
+    int value();
+  }
+
+  @interface Query
+  {
+    public Operation[] value() default { };
+  }
+
+  interface HaghardExpression
+  {
+    //May be just add groovy script
+    @QueryLine( "(Model.getInt() > {x}) and (Model.getFloat >= {y})" )
+    <T, E> boolean eval( @Named( "x" ) E value0, @Named( "y" ) T value1 );
+  }
+
+  static abstract class Expression
+  {
+
+    Object[] arguments = {
+            callOn( Model.class ).getFloat(),
+            callOn( Model.class ).getFloat() };
+
+    @Less( "{value}" )
+    abstract <T> void lessThan( @Named( "value" ) T value );
+
+    @More( "{value}" )
+    abstract <T> void moreThan( @Named( "value" ) T value );
+  }
+
+
+  interface HaghardExpression1
+  {
+    @QueryLine( "(Model.getInt() > x) and (Model.getFloat >= y)" )
+    <T, E> boolean eval( @Named( "x" ) E value0, @Named( "y" ) T value1 );
+  }
+
+  interface IQuery<T, E>
+  {
+  }
+
+  static class Query1 implements IQuery<Integer, Float>
+  {
+    Integer a = callOn( Model.class ).getInteger();
+    Float b = callOn( Model.class ).getFloat();
+  }
 }

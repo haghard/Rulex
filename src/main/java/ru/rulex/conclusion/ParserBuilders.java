@@ -24,6 +24,8 @@ import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 import ru.rulex.conclusion.delegate.Delegate;
 import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.guice.SimpleAssertionUnit;
+import ru.rulex.external.JvmLanguageUtils;
+
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -161,12 +163,11 @@ public final class ParserBuilders
       convertToJavaObjectsAndInit( selector, predicate );
     }
 
-    @SuppressWarnings(
-    { "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void convertToJavaObjectsAndInit( final Object selector, Object predicate )
     {
-      final ConclusionPredicate<Object> javaPredicate = toJavaPredicate( predicate );
-      final Selector javaSelector = toJavaSelector( selector );
+      final ConclusionPredicate<Object> javaPredicate = JvmLanguageUtils.toJavaPredicate( predicate );
+      final Selector javaSelector = JvmLanguageUtils.toJavaSelector( selector );
       final ConclusionPredicate<?> predicate0 = query( javaSelector, javaPredicate );
       this.phrase.setEventClass( clazz );
       this.phrase.addUnit( new SimpleAssertionUnit( predicate0, description ) );

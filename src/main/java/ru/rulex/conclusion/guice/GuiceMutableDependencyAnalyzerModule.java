@@ -27,6 +27,7 @@ import com.google.inject.spi.InstanceBinding;
 
 import ru.rulex.conclusion.*;
 import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder;
+import ru.rulex.external.JvmLanguageUtils;
 
 import java.util.List;
 
@@ -149,7 +150,7 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $more(
       final T pvalue, final Object selector, final String conditionName )
   {
-    final Selector<E, T> selector0 = FluentConclusionPredicate.toJavaSelector( selector );
+    final Selector<E, T> selector0 = JvmLanguageUtils.toJavaSelector( selector );
     return new ConclusionPredicateModule<T>()
     {
       @Override
@@ -204,7 +205,7 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $less(
       final T pvalue, final Object selector, final String conditionName )
   {
-    final Selector<E, T> selector0 = FluentConclusionPredicate.toJavaSelector( selector );
+    final Selector<E, T> selector0 = JvmLanguageUtils.toJavaSelector( selector );
     return new ConclusionPredicateModule<T>()
     {
       @Override
@@ -239,7 +240,7 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
   public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq( final T pvalue,
       final Object selector, final String conditionName )
   {
-    final Selector<E, T> selector0 = FluentConclusionPredicate.<E, T> toJavaSelector( selector );
+    final Selector<E, T> selector0 = JvmLanguageUtils.<E, T> toJavaSelector( selector );
     return new ConclusionPredicateModule<T>()
     {
       @Override
