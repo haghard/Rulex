@@ -51,7 +51,7 @@ import static ru.rulex.conclusion.execution.Callables.*;
  *         ____________________________________|_____________|________________________________
  *        |                        |                         |       |                       |
  *        |        ________________|____________________     |       |            ___________|_____________________
- *        |       |   GuiceEventOrientedPhrasesBuilder |     |       |           |    DaggerEventPhrasesBuilder    |
+ *        |       |   GuiceEventOrientedPhrasesBuilder |     |       |           |    DaggerImmutableEventPhrasesBuilder    |
  *        |       |____________________________________|     |       |           |_________________________________|
  *  ______|_______________________ |  _______________________|_______|_____________
  * | EventOrientedPhrasesBuilder | | | EventOrientedFactConsequencePhrasesBuilder|
@@ -353,9 +353,12 @@ public final class PhraseBuildersFacade
     }
   }
 
-  public static final class DaggerEventPhrasesBuilder extends BaseEventOrientedPhraseBuilder<Object>
+  /**
+   *
+   */
+  public static final class DaggerImmutableEventPhrasesBuilder extends BaseEventOrientedPhraseBuilder<Object>
   {
-    public DaggerEventPhrasesBuilder( ImmutableAbstractPhrase<Object> delegate )
+    public DaggerImmutableEventPhrasesBuilder( ImmutableAbstractPhrase<Object> delegate )
     {
       super( delegate, ParallelStrategy.<Boolean>serial() );
     }
@@ -388,9 +391,7 @@ public final class PhraseBuildersFacade
   }
 
   /**
-   * 
-   * 
-   * @author haghard
+   *
    *
    */
   public static final class DaggerMutableEventPhraseBuilder extends

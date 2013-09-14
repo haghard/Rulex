@@ -46,8 +46,8 @@ import ru.rulex.conclusion.PhraseBuildersFacade.ImperativeIterableOrientedPhrase
 public class TestImperativeIterableOrientedPhrasesBuilder
 {
 
-  private final ImmutableList<Model> list = ImmutableList.of( Model.values( 121 ),
-      Model.values( 122 ) );
+  private final ImmutableList<Model> list = ImmutableList.of( Model.from( 121 ),
+      Model.from( 122 ) );
 
   @Test
   @SuppressWarnings("unchecked")
@@ -312,8 +312,8 @@ public class TestImperativeIterableOrientedPhrasesBuilder
   @SuppressWarnings("rawtypes")
   public void testStartContextAndEndContextInImperativeWay()
   {
-    final ImmutableList<Model> list = ImmutableList.of( Model.values( 4 ), Model.values( 6 ),
-        Model.values( 6 ), Model.values( 55 ) );
+    final ImmutableList<Model> list = ImmutableList.of( Model.from( 4 ), Model.from( 6 ),
+        Model.from( 6 ), Model.from( 55 ) );
 
     final ConclusionPredicate<Delegate<FluentConclusionPredicate>> startEndPredicates = DelegateFactory
         .<FluentConclusionPredicate> from(

@@ -16,16 +16,6 @@
 package ru.rulex.conclusion;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -62,7 +52,7 @@ public class GroovyScriptEngineTest
     try
     {
       final GroovyScriptEngine gse = new GroovyScriptEngine( roots );
-      final Model foo = Model.values( 91, 109.90f );
+      final Model foo = Model.from( 91, 109.90f );
 
       final Binding binding = new Binding();
       binding.setVariable( "foo", foo );
@@ -82,7 +72,7 @@ public class GroovyScriptEngineTest
     try
     {
       final GroovyScriptEngine gse = new GroovyScriptEngine( roots );
-      final Model foo = Model.values( 11, 89.49f, "asd" );
+      final Model foo = Model.from( 11, 89.49f, "asd" );
 
       final Binding binding = new Binding();
       binding.setVariable( "foo", foo );
@@ -102,8 +92,8 @@ public class GroovyScriptEngineTest
     try
     {
       int targetId = 128;
-      final ImmutableList<Model> list = ImmutableList.of( Model.values( 121 ), Model.values( 122 ),
-          Model.values( targetId ) );
+      final ImmutableList<Model> list = ImmutableList.of( Model.from( 121 ), Model.from( 122 ),
+          Model.from( targetId ) );
 
       final GroovyScriptEngine gse = new GroovyScriptEngine( roots );
       final Binding binding = new Binding();

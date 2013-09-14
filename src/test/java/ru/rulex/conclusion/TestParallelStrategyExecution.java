@@ -68,7 +68,7 @@ public class TestParallelStrategyExecution
   @Test
   public void testBind() throws Exception
   {
-    Model en = Model.values( 40 );
+    Model en = Model.from( 40 );
     assertTrue( "testBind error !!!",
         Callables.bind( Callables.identity( en ), new ConclusionFunction<Model, Callable<Boolean>>()
         {
@@ -127,7 +127,7 @@ public class TestParallelStrategyExecution
   @Test
   public void testFmap() throws Exception
   {
-    Model en = Model.values( 40 );
+    Model en = Model.from( 40 );
     assertTrue( "testFmap error !!!", Callables.fmap( new ConclusionFunction<Model, Boolean>()
     {
       @Override
@@ -141,7 +141,7 @@ public class TestParallelStrategyExecution
   @Test
   public void testListenableFutureWithParallelStrategy() throws InterruptedException
   {
-    Model en = Model.values( 40 );
+    Model en = Model.from( 40 );
     final CountDownLatch latch = new CountDownLatch( 1 );
     FutureCallback<List<Boolean>> callback = new FutureCallback<List<Boolean>>()
     {
@@ -199,7 +199,7 @@ public class TestParallelStrategyExecution
   @Test
   public void testObtainWithException() throws Exception
   {
-    Model en = Model.values( 40 );
+    Model en = Model.from( 40 );
     ParallelStrategy<Boolean> pStrategy = ParallelStrategy
         .listenableFutureStrategy( service );
     try

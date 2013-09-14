@@ -58,7 +58,7 @@ public class TestEventOrientedPhraseBuilders
           through( Model.class, "fact: [getInteger() == 211]" ).shouldMatch(
               query( callOn( Model.class ).getInteger(), eq( 211 ), Model.class ) );
         }
-      }.async( Model.values( 211 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+      }.async( Model.from( 211 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
           "testEventOrientedPhrasesBuilderWithProxy error !!!" );
     }
     catch (Exception ex)
@@ -88,13 +88,13 @@ public class TestEventOrientedPhraseBuilders
 
     try
     {
-      assertThat( builder.async( Model.values( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+      assertThat( builder.async( Model.from( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
           "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
 
-      assertThat( builder.async( Model.values( 12 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isFalse().as(
+      assertThat( builder.async( Model.from( 12 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isFalse().as(
           "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
 
-      assertThat( builder.async( Model.values( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+      assertThat( builder.async( Model.from( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
           "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
     }
     catch (Exception ex)
@@ -129,7 +129,7 @@ public class TestEventOrientedPhraseBuilders
 
     try
     {
-      assertThat( builder.async( Model.values( 10 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+      assertThat( builder.async( Model.from( 10 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
           "testEventOrientedPhrasesBuilderWithSelector error !!!" );
     }
     catch (Exception ex)
@@ -171,8 +171,8 @@ public class TestEventOrientedPhraseBuilders
       }
     };
 
-    assertThat( sameThreadBuilder.sync( Model.values( 10 ) ) ).isTrue();
-    assertThat( separateThreadBuilder.sync( Model.values( 10 ) ) ).isTrue();
+    assertThat( sameThreadBuilder.sync( Model.from( 10 ) ) ).isTrue();
+    assertThat( separateThreadBuilder.sync( Model.from( 10 ) ) ).isTrue();
   }
 
   /**
@@ -217,7 +217,7 @@ public class TestEventOrientedPhraseBuilders
     };
     try
     {
-      CheckedFuture<Boolean, PhraseExecutionException> future = sameThreadBuilder.async( Model.values( 10 ) );
+      CheckedFuture<Boolean, PhraseExecutionException> future = sameThreadBuilder.async( Model.from( 10 ) );
       assertThat( future.checkedGet() ).isTrue().as(
           "testEventOrientedFactConsequencePhrasesBuilderWithParallelStrategy error !!!" );
     }
@@ -281,7 +281,7 @@ public class TestEventOrientedPhraseBuilders
     };
     try
     {
-      CheckedFuture<Boolean, PhraseExecutionException> future = builder.async( Model.values( 10 ) );
+      CheckedFuture<Boolean, PhraseExecutionException> future = builder.async( Model.from( 10 ) );
       future.checkedGet();
     }
     catch (PhraseExecutionException e)

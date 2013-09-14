@@ -19,7 +19,7 @@ import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuild
 
 import com.google.common.base.Joiner;
 
-@RunWith( OnamiRunner.class )
+@RunWith(OnamiRunner.class)
 public class TestSingleEventRules
 {
 
@@ -32,26 +32,23 @@ public class TestSingleEventRules
   public static Module createEventOrientedPhrasesBuilderWithProxy()
   {
     return new AbstractModule()
+    {
+      @Override
+      protected void configure()
       {
-        @Override
-        protected void configure()
+        bind( Key.get( new TypeLiteral<AbstractEventOrientedPhraseBuilder<Model>>(){} ) ).toInstance( new EventOrientedPhrasesBuilder<Model>()
         {
-          bind( Key.get( new TypeLiteral<AbstractEventOrientedPhraseBuilder<Model>>(){} ) )
-                  .toInstance(
-                          new EventOrientedPhrasesBuilder<Model>()
-                          {
-                            @Override
-                            protected void build()
-                            {
-                              through( Model.class, "fact: [getInteger() == 11]" ).shouldMatch(
-                                      typeSafeQuery( number( Model.class, Integer.class, Model.INT_ACCESSOR ), eq( 11 ) ) );
-                            }
-                          } );
-        }
-      };
+          @Override
+          protected void build()
+          {
+            through( Model.class, "fact: [getInteger() == 11]" ).shouldMatch(
+                typeSafeQuery( number( Model.class, Integer.class, Model.INT_ACCESSOR ), eq( 11 ) ) );
+          }
+        } );
+      }
+    };
 
   }
-
 
   @Test
   public void testEventOrientedPhrasesBuilderWithTypeSafeSelector()
@@ -59,15 +56,16 @@ public class TestSingleEventRules
     final String errorMessage = Joiner.on( "" ).join( NAME1, " error !!!" );
     try
     {
-      assertThat( builder1.async( Model.values( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue()
-              .as( errorMessage );
+      assertThat( builder1.async( Model.from( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+          errorMessage );
 
-      assertThat( builder1.async( Model.values( 12 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isFalse()
-              .as( errorMessage );
+      assertThat( builder1.async( Model.from( 12 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isFalse().as(
+          errorMessage );
 
-      assertThat( builder1.async( Model.values( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue()
-              .as( errorMessage );
-    } catch ( Exception ex )
+      assertThat( builder1.async( Model.from( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+          errorMessage );
+    }
+    catch (Exception ex)
     {
       fail( errorMessage );
     }

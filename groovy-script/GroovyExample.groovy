@@ -1,7 +1,6 @@
 
 import ru.rulex.conclusion.Phrases
 import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder
-
 import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.*
 import static com.google.inject.Guice.createInjector
 

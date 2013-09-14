@@ -16,7 +16,7 @@ println new EventOrientedPhrasesBuilder() {
       through(Model.class, "single-event-predicates-groovy")
         .shouldMatch({ input -> return input.getInteger() }, { argument -> return argument == 11 } );
     }
-  }.sync(Model.values(11));
+  }.sync(Model.from(11));
 
 
 // selector/predicate map
@@ -28,10 +28,10 @@ println new EventOrientedPhrasesBuilder() {
         [ selector: { input -> return input.getInteger() }, 
          predicate: { argument -> return argument == 11 } ]);
   }
-}.sync(Model.values(11));
+}.sync(Model.from(11));
 
 
-def foo = Model.values(91, 100.90f)
+def foo = Model.from(91, 100.90f)
 
 
 // (90 > x.getInt() ) or (56 < x.getInt() )

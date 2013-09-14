@@ -23,8 +23,8 @@ public class TestSimpleEventOrientedPhrasesBuilder
       }
     };
 
-    assertThat( builder.async( Model.values( 999 ) ).checkedGet() ).isTrue();
-    assertThat( builder.async( Model.values( 9991 ) ).checkedGet() ).isFalse();
-    assertThat( builder.sync( Model.values( 999 ) ) ).isTrue();
+    assertThat( builder.async( Model.from( 999 ) ).checkedGet() ).isTrue();
+    assertThat( builder.async( Model.from( 9991 ) ).checkedGet() ).isFalse();
+    assertThat( builder.sync( Model.from( 999 ) ) ).isTrue();
   }
 }

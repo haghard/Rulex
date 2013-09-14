@@ -15,7 +15,7 @@ public class RulexMatchersTest
   @Test
   public void testRulexMatcherChainCalls()
   {
-    final Model model = Model.values( 4, 56.7f );
+    final Model model = Model.from( 4, 56.7f );
 
     final RulexVerb<Model> verb0 = verb(Model.class, callOn(Model.class).getInteger()).lessThan(5)
             .and(verb(Model.class, callOn(Model.class).getInteger()).lessThan(6));
@@ -34,14 +34,14 @@ public class RulexMatchersTest
     final RulexVerb<Model> verb = verb(Model.class, callOn(Model.class).getInteger())
         .isEquals( verb(Model.class, callOn(Model.class).getInteger()) );
 
-    final Model model = Model.values( 4, 5 );
+    final Model model = Model.from( 4, 5 );
     assertThat( verb.matches( model ) ).isTrue();
   }
 
   @Test
   public void oneIntegerShouldBeLessOtherInteger()
   {
-    final Model model = Model.values( 1, 2 );
+    final Model model = Model.from( 1, 2 );
 
     //configure specific verb
     final RulexVerb<Model> verb = modelVerb( callOn(Model.class).getInteger()).lessThan(
@@ -87,8 +87,8 @@ public class RulexMatchersTest
   @Test
   public void oneShouldBePassedSecondShouldBeFiltered()
   {
-    final Model first = Model.values( 121 );
-    final Model second = Model.values( 49 );
+    final Model first = Model.from( 121 );
+    final Model second = Model.from( 49 );
 
     final ImmutableList<Model> list = ImmutableList.of( first, second );
 

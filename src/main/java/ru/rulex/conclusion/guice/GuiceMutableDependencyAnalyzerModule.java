@@ -27,7 +27,6 @@ import com.google.inject.spi.InstanceBinding;
 
 import ru.rulex.conclusion.*;
 import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder;
-import ru.rulex.conclusion.PhraseBuildersFacade.AbstractEventOrientedPhraseBuilder;
 
 import java.util.List;
 

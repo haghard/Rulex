@@ -17,7 +17,6 @@
 package ru.rulex.conclusion.guice;
 
 import com.google.inject.*;
-import com.google.inject.name.Names;
 import org.junit.Test;
 
 import ru.rulex.conclusion.ConclusionPredicate;
@@ -41,9 +40,9 @@ import static ru.rulex.conclusion.guice.InjectableConclusionPredicates.Injectabl
 
 public class GuiceEventOrientedEngineModuleTest
 {
-  final Model orFoo = Model.values( 91, 100.91f );
-  final Model andFoo = Model.values( 6, 0, "aaaaaaa", false );
-  final Model disjFoo = Model.values( 6, 0, "aaaaaaa", false );
+  final Model orFoo = Model.from( 91, 100.91f );
+  final Model andFoo = Model.from( 6, 0, "aaaaaaa", false );
+  final Model disjFoo = Model.from( 6, 0, "aaaaaaa", false );
 
   @Test
   @SuppressWarnings("unchecked")
@@ -76,7 +75,7 @@ public class GuiceEventOrientedEngineModuleTest
   @Test
   public void shouldBeValidWithTwoConditionsAsync()
   {
-    final Model foo = Model.values( 10, 0, "aaaaaaa", false );
+    final Model foo = Model.from( 10, 0, "aaaaaaa", false );
     try
     {
       Injector injector = createInjector( $expression(
@@ -98,7 +97,7 @@ public class GuiceEventOrientedEngineModuleTest
   @Test
   public void shouldBeValidWithTwoConditionsSync()
   {
-    final Model foo = Model.values( 23, 0, "aaaaaaa", false );
+    final Model foo = Model.from( 23, 0, "aaaaaaa", false );
     try
     {
       Injector injector = createInjector( $expression(
@@ -166,7 +165,7 @@ public class GuiceEventOrientedEngineModuleTest
   @Test
   public void shouldBeValidWithComplexConditionsSync()
   {
-    final Model foo = Model.values( 6, 0, "aaaaaaa", false );
+    final Model foo = Model.from( 6, 0, "aaaaaaa", false );
     Injector injector = createInjector( $expression(
         $more( 8f, callOn( Model.class ).getFloat(), "8 > en.getFloat()" ),
           $or( "or test condition",

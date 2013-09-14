@@ -39,10 +39,10 @@ import com.google.common.collect.ImmutableSet;
 public class TestIterablePhrasesBuilder
 {
 
-  private final ImmutableList<Model> list = ImmutableList.of( Model.values( 121 ),
-      Model.values( 122 ) );
-  private final ImmutableList<Model> failList = ImmutableList.of( Model.values( 99 ),
-      Model.values( 1 ) );
+  private final ImmutableList<Model> list = ImmutableList.of( Model.from( 121 ),
+      Model.from( 122 ) );
+  private final ImmutableList<Model> failList = ImmutableList.of( Model.from( 99 ),
+      Model.from( 1 ) );
 
   final ConclusionPredicate<Integer> intPredicate = new ConclusionPredicate<Integer>()
   {
@@ -75,7 +75,7 @@ public class TestIterablePhrasesBuilder
         through( Model.class, "simple-where-engine-with-typeSafeSelector" )
             .shouldMatch(
                 typeSafeQuery( number( Model.class, Integer.class, Model.INT_ACCESSOR ),
-                    intPredicate ) ).except( ImmutableSet.<Model> of( Model.values( 121 ) ) )
+                    intPredicate ) ).except( ImmutableSet.<Model> of( Model.from( 121 ) ) )
             .iteratorType( Iterators.WHERE );
       }
 
@@ -111,7 +111,7 @@ public class TestIterablePhrasesBuilder
       {
         through( Model.class, "simple-where-engine-selector" )
             .shouldMatch( query( intSelector, intPredicate ) )
-            .except( ImmutableSet.<Model> of( Model.values( 121 ) ) )
+            .except( ImmutableSet.<Model> of( Model.from( 121 ) ) )
             .iteratorType( Iterators.WHERE );
       }
     };

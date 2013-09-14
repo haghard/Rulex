@@ -77,14 +77,14 @@ public abstract class Model
 
   public static final String BOOLEAN_ACCESSOR = "getBoolean";
 
-  public static Model values( Integer intValue )
+  public static Model from( Integer intValue )
   {
     Model mock = mock( Model.class );
     when( mock.getInteger() ).thenReturn( intValue );
     return mock;
   }
 
-  public static Model values( int i, int f )
+  public static Model from( int i, int f )
   {
     Model mock = mock( Model.class );
     when( mock.getInteger() ).thenReturn( i );
@@ -92,7 +92,7 @@ public abstract class Model
     return mock;
   }
 
-  public static Model values( int i, float f )
+  public static Model from( int i, float f )
   {
     Model mock = mock( Model.class );
     when( mock.getInteger() ).thenReturn( i );
@@ -100,7 +100,16 @@ public abstract class Model
     return mock;
   }
 
-  public static Model values( int i, float f, String str )
+  public static Model from( int i, int i0, float f )
+  {
+    Model mock = mock( Model.class );
+    when( mock.getInteger() ).thenReturn( i );
+    when( mock.getOtherInteger() ).thenReturn( i );
+    when( mock.getFloat() ).thenReturn( f );
+    return mock;
+  }
+
+  public static Model from( int i, float f, String str )
   {
     Model mock = mock( Model.class );
     when( mock.getInteger() ).thenReturn( i );
@@ -109,7 +118,7 @@ public abstract class Model
     return mock;
   }
 
-  public static Model values( int i, float f, String str, boolean b )
+  public static Model from( int i, float f, String str, boolean b )
   {
     Model mock = mock( Model.class );
     when( mock.getInteger() ).thenReturn( i );
