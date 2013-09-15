@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package ru.rulex.conclusion;
+package ru.rulex.conclusion.groovy;
 
 import java.io.*;
 
@@ -23,12 +23,12 @@ import groovy.util.GroovyScriptEngine;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
-import ru.rulex.conclusion.PhraseBuildersFacade.GroovyEventOrientedPhrasesBuilder;
+import ru.rulex.conclusion.Model;
 
 import static org.fest.assertions.api.Assertions.*;
 
 
-public class GroovyScriptEngineTest
+public class GroovyTestScripts
 {
   final String[] roots = { "./groovy-script" };
 
@@ -109,42 +109,6 @@ public class GroovyScriptEngineTest
     {
       ex.printStackTrace();
       fail( "testListRunLocalGuiceBasedScripts error !!!" );
-    }
-  }
-
-  private static String loadScript() throws IOException
-  {
-    final File scriptFile = new File( "./groovy-script/ru/GroovyDslRule.groovy" );
-    BufferedReader reader = new BufferedReader(
-            new InputStreamReader( new FileInputStream( scriptFile ) ) );
-
-    String line;
-    StringBuffer buffer = new StringBuffer();
-    while ( ( line = reader.readLine() ) != null )
-    {
-      buffer.append( line ).append( '\n' );
-    }
-
-    return buffer.toString();
-  }
-
-  @Test
-  public void testGroovyPhraseBuilder()
-  {
-    try
-    {
-      assertThat( new GroovyEventOrientedPhrasesBuilder<Model>()
-      {
-        @Override
-        protected void build()
-        {
-          through( "" ).withFile( new File( "./groovy-script/ru/GroovyDslRule.groovy" ));
-        }
-      }.sync( Model.from( 7, 87.2f ) ) ).isTrue();
-
-    } catch ( Exception ex )
-    {
-      ex.printStackTrace();
     }
   }
 }

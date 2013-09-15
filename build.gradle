@@ -58,7 +58,7 @@ gradle.taskGraph.beforeTask { Task task ->
   def testTaskList = [
     'test',
     'testGuice',
-    'testGroovyScripts'
+    'testGroovy'
   ]
   if (testTaskList.isCase(task.name)) {
     def jvmArgsLine = "JVM arg for $task  : "
@@ -260,7 +260,7 @@ task testGuice(type: Test) {
   onOutput { descriptor, event -> logger.lifecycle("Test: " + descriptor + " out/err: " + event.message ) }
 }
 
-task testGroovyScripts(type: Test) {
+task testGroovy(type: Test) {
   useJUnit()
   //ignoreFailures = true
   include '**/Groovy*'
@@ -306,7 +306,7 @@ task testTestSet(type: Test) {
 
 test.dependsOn testDagger
 test.dependsOn testGuice
-test.dependsOn testGroovyScripts
+test.dependsOn testGroovy
 
 
 

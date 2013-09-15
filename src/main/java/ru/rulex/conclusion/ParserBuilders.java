@@ -26,7 +26,7 @@ import groovy.lang.GroovyShell;
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 import ru.rulex.conclusion.delegate.Delegate;
 import ru.rulex.conclusion.delegate.ProxyUtils;
-import ru.rulex.conclusion.groovy.GroovyRuleDslBuilder;
+import ru.rulex.conclusion.groovy.GroovyAllTrueRuleDslBuilder;
 import ru.rulex.conclusion.guice.PredicateImmutableAssertionUnit;
 import ru.rulex.external.JvmLanguageUtils;
 import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
@@ -53,7 +53,8 @@ public final class ParserBuilders
   }
 
   public interface ScriptParser {
-    ScriptParser withFile(File file);
+    void withFile( File file );
+    void withScript( String script );
   }
 
   public static class ScriptParserImpl<T> implements ScriptParser
@@ -65,16 +66,26 @@ public final class ParserBuilders
       this.phrase = phrase;
     }
 
-    @Override
-    public ScriptParser withFile( File file )
+    private void process( String script )
     {
       final Binding binding = new Binding();
       final GroovyShell shell = new GroovyShell( binding );
       binding.setVariable( "event", null );
-      shell.evaluate( loadScript( file ) );
+      shell.evaluate( script );
       phrase.setBinding( binding );
-      phrase.setDslBuilder( new GroovyRuleDslBuilder<T>() );
-      return this;
+      phrase.setDslBuilder( new GroovyAllTrueRuleDslBuilder<T>() );
+    }
+
+    @Override
+    public void withFile( File file )
+    {
+      process( loadScript( file ) );
+    }
+
+    @Override
+    public void withScript( String script )
+    {
+      process( script );
     }
 
     private static String loadScript( File scriptFile )

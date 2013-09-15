@@ -2,8 +2,7 @@ package ru.rulex.conclusion;
 
 import groovy.lang.Binding;
 import groovy.lang.Closure;
-import groovy.lang.GroovyShell;
-import ru.rulex.conclusion.groovy.GroovyRuleDslBuilder;
+import ru.rulex.conclusion.groovy.GroovyAllTrueRuleDslBuilder;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -80,7 +79,7 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
   public static class AllTrueImmutableGroovyPhrase<T> extends ImmutableAbstractPhrase<T>
   {
     private Binding binding;
-    private GroovyRuleDslBuilder builder;
+    private GroovyAllTrueRuleDslBuilder builder;
 
     private static final String EVENT_NAME = "event";
     private static final String CLOSURE_NAME = "rule";
@@ -90,7 +89,7 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
       this.binding = binding;
     }
 
-    void setDslBuilder( GroovyRuleDslBuilder builder)
+    void setDslBuilder( GroovyAllTrueRuleDslBuilder builder)
     {
       this.builder = builder;
     }

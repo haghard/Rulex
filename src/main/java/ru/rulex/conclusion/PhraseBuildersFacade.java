@@ -337,7 +337,7 @@ public final class PhraseBuildersFacade
 
     protected abstract void build();
 
-    protected ScriptParser through( String description )
+    protected ScriptParser configure( String description )
     {
       return rule( ParallelStrategy.<Boolean>serial(), description );
     }
