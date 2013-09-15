@@ -2,9 +2,10 @@ package ru.rulex.conclusion.groovy;
 
 import org.junit.Test;
 import ru.rulex.conclusion.Model;
-import ru.rulex.conclusion.PhraseBuildersFacade;
 
 import java.io.File;
+
+import ru.rulex.conclusion.PhraseBuildersFacade.GroovyEventOrientedPhrasesBuilder;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;
@@ -23,8 +24,10 @@ public class GroovyTestEventOrientedPhraseBuilder
             "    from callOn(Model.class).getFloat() less 81.7f\n" +
             "    eval()\n" +
             "}";
-    try {
-      assertThat( new PhraseBuildersFacade.GroovyEventOrientedPhrasesBuilder<Model>() {
+    try
+    {
+      assertThat( new GroovyEventOrientedPhrasesBuilder<Model>()
+      {
         @Override
         protected void build()
         {
@@ -36,7 +39,7 @@ public class GroovyTestEventOrientedPhraseBuilder
     catch ( Exception ex )
     {
       ex.printStackTrace();
-      fail("testGroovyPhraseBuilderWithScript error !!!");
+      fail( "testGroovyPhraseBuilderWithScript error !!!" );
     }
   }
 
@@ -45,7 +48,7 @@ public class GroovyTestEventOrientedPhraseBuilder
   {
     try
     {
-      assertThat( new PhraseBuildersFacade.GroovyEventOrientedPhrasesBuilder<Model>()
+      assertThat( new GroovyEventOrientedPhrasesBuilder<Model>()
       {
         @Override
         protected void build()
@@ -55,7 +58,7 @@ public class GroovyTestEventOrientedPhraseBuilder
         }
       }.sync( Model.from( 7, 87.2f ) ) ).isTrue();
 
-      assertThat( new PhraseBuildersFacade.GroovyEventOrientedPhrasesBuilder<Model>()
+      assertThat( new GroovyEventOrientedPhrasesBuilder<Model>()
       {
         @Override
         protected void build()
@@ -69,7 +72,7 @@ public class GroovyTestEventOrientedPhraseBuilder
     catch ( Exception ex )
     {
       ex.printStackTrace();
-      fail("testGroovyPhraseBuilderWithFile error !!!");
+      fail( "testGroovyPhraseBuilderWithFile error !!!" );
     }
   }
 }
