@@ -9,9 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
-
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
+/**
+ * 
+ * @author haghard
+ *
+ * @param <T>
+ */
 public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
 {
   private T event;
@@ -20,7 +25,7 @@ public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
 
   private final List<ImmutableAssertionUnit<T>> units = new ArrayList<>( 5 );
 
-  public void withEvent( T event )
+  public void onEvent( T event )
   {
     this.event = event;
   }

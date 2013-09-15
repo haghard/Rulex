@@ -48,8 +48,8 @@ public class DaggerEventOrientedEngineTest
 
     final DaggerMutableEventPhraseBuilder mutableBuilder = create(
       mutablePhrase(
-              $less( 12, val1 ),
-              $less( 13, val2 )
+        $less( 12, val1 ),
+        $less( 13, val2 )
       )
     ).get( DaggerMutableEventPhraseBuilder.class );
 
@@ -167,23 +167,12 @@ public class DaggerEventOrientedEngineTest
     <T, E> boolean eval( @Named( "x" ) E value0, @Named( "y" ) T value1 );
   }
 
-  static abstract class Expression
+  interface HaghardExpression1
   {
-
     Object[] arguments = {
             callOn( Model.class ).getFloat(),
             callOn( Model.class ).getFloat() };
 
-    @Less( "{value}" )
-    abstract <T> void lessThan( @Named( "value" ) T value );
-
-    @More( "{value}" )
-    abstract <T> void moreThan( @Named( "value" ) T value );
-  }
-
-
-  interface HaghardExpression1
-  {
     @QueryLine( "(Model.getInt() > x) and (Model.getFloat >= y)" )
     <T, E> boolean eval( @Named( "x" ) E value0, @Named( "y" ) T value1 );
   }

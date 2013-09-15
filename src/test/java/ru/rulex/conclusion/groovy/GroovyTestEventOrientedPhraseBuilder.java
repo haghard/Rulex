@@ -19,7 +19,7 @@ public class GroovyTestEventOrientedPhraseBuilder
             "import static ru.rulex.conclusion.delegate.ProxyUtils.callOn\n" +
             "\n" +
             "rule = {\n" +
-            "    withEvent event\n" +
+            "    onEvent event\n" +
             "    from callOn(Model.class).getInteger() more 8\n" +
             "    from callOn(Model.class).getFloat() less 81.7f\n" +
             "    eval()\n" +
@@ -31,7 +31,7 @@ public class GroovyTestEventOrientedPhraseBuilder
         @Override
         protected void build()
         {
-          configure( "" )
+          configure( "script 1" )
                   .withScript( scriptBody );
         }
       }.sync( Model.from( 6, 90.1f ) ) ).isTrue();
