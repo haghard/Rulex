@@ -17,6 +17,7 @@
 package ru.rulex.conclusion.guice;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import ru.rulex.conclusion.ConclusionPredicate;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -145,6 +146,42 @@ public final class InjectableConclusionPredicates
     public String toString()
     {
       return String.format( "%s $lessOrEquals ", parameter );
+    }
+  }
+
+  public static class InjectableContainsPredicate implements ConclusionPredicate<String> {
+    private final ImmutableSet<String> variants;
+
+    @Inject
+    public InjectableContainsPredicate( ImmutableSet<String> pattern ) {
+      this.variants = ImmutableSet.copyOf(pattern);
+    }
+
+    @Override
+    public boolean apply( String value )
+    {
+      return variants.contains( value  );
+    }
+
+    @Override public String toString()
+    {
+      return String.format(" %s $single-regexp ", variants );
+    }
+  }
+
+  public static class InjectableExactlyMatchConclusionPredicate implements ConclusionPredicate<String>
+  {
+    private final String parameter;
+
+    public InjectableExactlyMatchConclusionPredicate( String parameter )
+    {
+      this.parameter = parameter;
+    }
+
+    @Override
+    public boolean apply( String argument )
+    {
+      return parameter.equals( argument );
     }
   }
 

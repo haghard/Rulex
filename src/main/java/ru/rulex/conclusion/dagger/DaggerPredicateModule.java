@@ -2,16 +2,19 @@ package ru.rulex.conclusion.dagger;
 
 import javax.inject.Named;
 
+import com.google.common.collect.ImmutableSet;
 import ru.rulex.conclusion.*;
 
 import com.google.common.base.Optional;
 
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableContainsPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableEqualsConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessOrEqualsConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreOrEqualsConclusionPredicate;
+
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 @dagger.Module(
@@ -20,10 +23,37 @@ import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 )
 public class DaggerPredicateModule
 {
-  private final Optional<?> value;
+  private final Optional<InjectionArgument> value;
   private final LogicOperation operation;
 
-  public <T extends Comparable<? super T>> DaggerPredicateModule( T value, LogicOperation operation )
+  public static <T extends Comparable<? super T>> InjectionArgument<T> argFor( final T pvalue )
+  {
+    return new InjectionArgument<T>(){{
+      this.value = pvalue;
+    }};
+  }
+
+  public static <T extends Comparable<? super T>> InjectionArgument<ImmutableSet<T>> argFor( final T[] args )
+  {
+    return new InjectionArgument<ImmutableSet<T>>(){{
+      this.value = ImmutableSet.copyOf( args );
+    }};
+  }
+
+  public static <T extends Comparable<? super T>> InjectionArgument<ImmutableSet<T>> argFor( final Iterable<T> list )
+  {
+    return new InjectionArgument<ImmutableSet<T>>(){{
+      this.value = ImmutableSet.copyOf( list );
+    }};
+  }
+
+  public static abstract class InjectionArgument<T>
+  {
+    T value;
+    String argumentName;
+  }
+
+  public DaggerPredicateModule( InjectionArgument value, LogicOperation operation )
   {
     this.operation = operation;
     this.value = Optional.of( value );
@@ -33,25 +63,32 @@ public class DaggerPredicateModule
   @dagger.Provides
   protected <T> ConclusionPredicate providePredicate()
   {
-    final Comparable<T> v = ( Comparable<T> ) value.get();
     switch ( operation )
     {
-      case eq:
+      case eq: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableEqualsConclusionPredicate( v ) ) );
-      case lessThan:
+                new InjectableEqualsConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+      }
+      case lessThan: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableLessConclusionPredicate( v ) ) );
-      case moreThan:
+                new InjectableLessConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+      }
+      case moreThan: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableMoreConclusionPredicate( v ) ) );
-      case moreOrEquals:
+                new InjectableMoreConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+      }
+      case moreOrEquals:  {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableMoreOrEqualsConclusionPredicate( v ) ) );
-      case lessOrEquals:
+                new InjectableMoreOrEqualsConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+      }
+      case lessOrEquals: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableLessOrEqualsConclusionPredicate( v ) ) );
-
+                new InjectableLessOrEqualsConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+      }
+      case matchAnyOff: {
+        return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
+                new InjectableContainsPredicate( (ImmutableSet )value.get().value ) ) );
+      }
       default:
         throw new IllegalArgumentException( "DaggerPredicateModule.providePredicate() unsupported operation " );
     }

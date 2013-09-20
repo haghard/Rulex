@@ -15,8 +15,9 @@ public enum LogicOperation
 
   moreThan("moreThan", OperationType.Binary),
 
-  moreOrEquals("moreOrEquals", OperationType.Binary);
+  moreOrEquals("moreOrEquals", OperationType.Binary),
 
+  matchAnyOff("matchAnyOff", OperationType.Binary);
 
   private final String name;
   private final OperationType operationType;

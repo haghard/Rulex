@@ -33,8 +33,8 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
-import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
 
+import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
 import static ru.rulex.conclusion.execution.Callables.*;
 
 /**
@@ -204,6 +204,7 @@ public final class PhraseBuildersFacade
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected ImmutableAbstractPhrase<T> getPhrase()
     {
       return ( ImmutableAbstractPhrase<T> ) phrase;
@@ -219,6 +220,7 @@ public final class PhraseBuildersFacade
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected AllTrueImmutableGroovyPhrase<T> getPhrase()
     {
       return ( AllTrueImmutableGroovyPhrase<T> ) phrase;
@@ -441,6 +443,7 @@ public final class PhraseBuildersFacade
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes" })
     public DaggerMutableEventPhraseBuilder populateFrom( VarEnvironment environment )
     {
       Preconditions.checkNotNull( environment );
@@ -795,7 +798,7 @@ public final class PhraseBuildersFacade
     if ( !( varEntries[0] instanceof VarEntry ) )
       throw new IllegalArgumentException( "VarEntry type expected" );
 
-    final VarEntry[] params = ( VarEntry[] ) Array.newInstance( VarEntry.class, varEntries.length );
+    final VarEntry<?,?>[] params = ( VarEntry[] ) Array.newInstance( VarEntry.class, varEntries.length );
     System.arraycopy( varEntries, 0, params, 0, varEntries.length );
     return new VarEnvironment( params );
   }
@@ -815,10 +818,10 @@ public final class PhraseBuildersFacade
     ImmutableSortedMap<String, Selector<?, ?>> environmentSelectors =
             ImmutableSortedMap.of();
 
-    public VarEnvironment( VarEntry[] varEntryList )
+    public VarEnvironment( VarEntry<?,?>[] varEntryList )
     {
       final ImmutableSortedMap.Builder<String, Selector<?, ?>> builder = ImmutableSortedMap.naturalOrder();
-      for ( VarEntry varEntry : varEntryList )
+      for ( VarEntry<?,?> varEntry : varEntryList )
         builder.put( varEntry.name, varEntry.selector );
 
       environmentSelectors = builder.build();

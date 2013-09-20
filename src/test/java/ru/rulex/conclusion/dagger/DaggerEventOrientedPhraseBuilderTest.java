@@ -2,6 +2,7 @@ package ru.rulex.conclusion.dagger;
 
 import javax.inject.Named;
 
+import com.google.common.base.CharMatcher;
 import org.junit.Test;
 
 import ru.rulex.conclusion.Model;
@@ -24,7 +25,7 @@ import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerMutable
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.varInt;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
-public class DaggerEventOrientedEngineTest
+public class DaggerEventOrientedPhraseBuilderTest
 {
 
   @Test
@@ -98,11 +99,12 @@ public class DaggerEventOrientedEngineTest
     final DaggerImmutableEventPhrasesBuilder immutableBuilder = create(
     immutablePhrase(
       val( 3 ).less( callOn( Model.class ).getInteger() ),
-      val( 19 ).less( callOn( Model.class ).getOtherInteger() ),
-      val( 82.89f ).more( callOn( Model.class ).getFloat() )
+      val( 82.89f ).more( callOn( Model.class ).getFloat() ),
+      val("milk", "bread", "link").containsAnyOff( callOn( Model.class ).getString() )
+      //val( "milk" ).eq( callOn( Model.class ).getString() )
     ) ).get( DaggerImmutableEventPhrasesBuilder.class );
 
-    assertThat( immutableBuilder.sync( Model.from( 20, 20, 78.1f ) ) ).isTrue();
+    assertThat( immutableBuilder.sync( Model.from( 20, 78.1f, "bread" ) ) ).isTrue();
   }
 
   @Test
@@ -123,6 +125,23 @@ public class DaggerEventOrientedEngineTest
     assertTrue( result );
   }
 
+  @Test
+  public void testCharMatchers()
+  {
+    System.out.println(
+            CharMatcher.anyOf( "m12" ).matchesAnyOf( "vvvvm 1vvvvv 2bbbbb" ) );
+
+
+    //Predicates.contains( Pattern.compile("") ).apply(  )
+    /*
+    System.out.println(
+            CharMatcher.anyOf( "milk" ).matchesAnyOf( "some milk long" ));
+
+    System.out.println(
+      CharMatcher.forPredicate(Predicates.equalTo( 'm' ))
+              .matchesAnyOf( "2346234623472347" ));
+     */
+  }
    /*
   //TODO: implement like this API , with AnnotationProcessor
   static class Model1
