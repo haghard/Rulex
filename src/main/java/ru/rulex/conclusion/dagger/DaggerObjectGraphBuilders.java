@@ -187,6 +187,7 @@ public final class DaggerObjectGraphBuilders
       return null;
     }
 
+    @VisibleForTesting
     static ObjectGraph $eq( String[] values, String argument )
     {
       return BindingBuilder.immutableGraph( argFor( values ), LogicOperation.eq, toSelector( argument ) );
