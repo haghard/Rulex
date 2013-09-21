@@ -6,12 +6,9 @@ import dagger.ObjectGraph;
 import ru.rulex.conclusion.*;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableEventPhraseBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerImmutableEventPhrasesBuilder;
-import ru.rulex.conclusion.dagger.DaggerPredicateModule.MutableDaggerPredicateModule;
-import ru.rulex.conclusion.dagger.DaggerPredicateModule.ImmutableDaggerPredicateModule;
 import java.lang.reflect.Array;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static dagger.ObjectGraph.create;
 import static ru.rulex.conclusion.dagger.DaggerPredicateModule.argFor;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 
@@ -44,45 +41,36 @@ public final class DaggerObjectGraphBuilders
     @VisibleForTesting
     static <T extends Comparable<? super T>> ObjectGraph $eq( final T value, final String varName )
     {
-      return ObjectGraph.create(
-              new DaggerPredicateModule( argFor( value ) , LogicOperation.eq ),
-              new MutableDaggerPredicateModule( varName ));
+      return BindingBuilder.mutableGraph( argFor( value ), LogicOperation.eq, varName );
     }
 
     @VisibleForTesting
     static <T extends Comparable<? super T>> ObjectGraph $more( final T value, final String varName )
     {
-      return ObjectGraph.create(
-              new DaggerPredicateModule( argFor( value ) , LogicOperation.moreThan ),
-              new MutableDaggerPredicateModule( varName ));
+      return BindingBuilder.mutableGraph( argFor( value ), LogicOperation.moreThan, varName );
     }
 
     @VisibleForTesting
     static <T extends Comparable<? super T>> ObjectGraph $less( final T value, final String varName )
     {
-      return ObjectGraph.create(
-              new DaggerPredicateModule( argFor( value ) , LogicOperation.lessThan ),
-              new MutableDaggerPredicateModule( varName ));
+      return BindingBuilder.mutableGraph( argFor( value ), LogicOperation.lessThan, varName );
     }
 
     @VisibleForTesting
     static <T extends Comparable<? super T>> ObjectGraph $lessOrEquals( T value, String varName )
     {
-      return ObjectGraph.create(
-              new DaggerPredicateModule( argFor( value ) , LogicOperation.lessOrEquals ),
-              new MutableDaggerPredicateModule( varName ));
+      return BindingBuilder.mutableGraph( argFor( value ), LogicOperation.lessOrEquals, varName );
     }
 
     @VisibleForTesting
     static <T extends Comparable<? super T>> ObjectGraph $moreOrEquals( T value, String varName )
     {
-      return ObjectGraph.create(
-              new DaggerPredicateModule( argFor( value ) , LogicOperation.moreOrEquals ),
-              new MutableDaggerPredicateModule( varName ));
+      return BindingBuilder.mutableGraph( argFor( value ), LogicOperation.moreOrEquals, varName );
     }
 
     private static DaggerMutablePhraseModule compose( ObjectGraph... graphs )
     {
+      checkNotNull( graphs );
       ObjectGraph[] array = ( ObjectGraph[] ) Array.newInstance( ObjectGraph.class, graphs.length );
       System.arraycopy( graphs, 0, array, 0, graphs.length );
       return new DaggerMutablePhraseModule( MutableAbstractPhrase.all(), array );
@@ -151,6 +139,7 @@ public final class DaggerObjectGraphBuilders
 
     private static DaggerImmutablePhraseModule compose( ObjectGraph... graphs )
     {
+      checkNotNull( graphs );
       ObjectGraph[] array = ( ObjectGraph[] ) Array.newInstance( ObjectGraph.class, graphs.length );
       System.arraycopy( graphs, 0, array, 0, graphs.length );
       return new DaggerImmutablePhraseModule( ImmutableAbstractPhrase.all(), array );
@@ -159,48 +148,37 @@ public final class DaggerObjectGraphBuilders
     @VisibleForTesting
     static <T extends Comparable<? super T>> ObjectGraph $eq( final T value, final T argument )
     {
-      return create(
-              new DaggerPredicateModule( argFor( value ), LogicOperation.eq ),
-              new ImmutableDaggerPredicateModule( toSelector( argument ) ) );
+      return BindingBuilder.immutableGraph( argFor( value ), LogicOperation.eq, toSelector( argument ) );
     }
 
     @VisibleForTesting
     static <T extends Comparable<? super T>> ObjectGraph $less( final T value, final T argument )
     {
-      return create(
-              new DaggerPredicateModule( argFor( value ), LogicOperation.lessThan ),
-              new ImmutableDaggerPredicateModule( toSelector( argument ) ) );
+      return BindingBuilder.immutableGraph( argFor( value ), LogicOperation.lessThan, toSelector( argument ) );
     }
 
     @VisibleForTesting
     public static <T extends Comparable<? super T>> ObjectGraph $more( final T value, final T argument )
     {
-      return create(
-              new DaggerPredicateModule( argFor( value ), LogicOperation.moreThan ),
-              new ImmutableDaggerPredicateModule( toSelector( argument ) ) );
+      return BindingBuilder.immutableGraph( argFor( value ), LogicOperation.moreThan, toSelector( argument ) );
     }
 
     @VisibleForTesting
     static <T extends Comparable<? super T>> ObjectGraph $lessOrEquals( final T value, final T argument )
     {
-      return create(
-              new DaggerPredicateModule( argFor( value ), LogicOperation.lessOrEquals ),
-              new ImmutableDaggerPredicateModule( toSelector( argument ) ) );
+      return BindingBuilder.immutableGraph( argFor( value ), LogicOperation.lessOrEquals, toSelector( argument ) );
     }
 
     @VisibleForTesting
     public static <T extends Comparable<? super T>> ObjectGraph $moreOrEquals( final T value, final T argument )
     {
-      return create(
-              new DaggerPredicateModule( argFor( value ), LogicOperation.moreOrEquals ),
-              new ImmutableDaggerPredicateModule( toSelector( argument ) ) );
+      return BindingBuilder.immutableGraph( argFor( value ), LogicOperation.moreOrEquals, toSelector( argument ) );
     }
 
+    @VisibleForTesting
     static ObjectGraph $containsAnyOff( final String[] values, String argument )
     {
-      return create(
-              new DaggerPredicateModule( argFor( values ), LogicOperation.matchAnyOff ),
-              new ImmutableDaggerPredicateModule( toSelector( argument ) ) );
+      return BindingBuilder.immutableGraph( argFor( values ), LogicOperation.matchAnyOff, toSelector( argument ) );
     }
 
     @VisibleForTesting
@@ -211,20 +189,20 @@ public final class DaggerObjectGraphBuilders
 
     static ObjectGraph $eq( String[] values, String argument )
     {
-      return null;
+      return BindingBuilder.immutableGraph( argFor( values ), LogicOperation.eq, toSelector( argument ) );
     }
 
-    private DaggerImmutablePhraseModule( ImmutableAbstractPhrase<Object> phrase, ObjectGraph[] graph )
+    private DaggerImmutablePhraseModule( ImmutableAbstractPhrase<Object> phrase, ObjectGraph[] graphs )
     {
       this.phrase = phrase;
       this.phraseBuilder = new DaggerImmutableEventPhrasesBuilder( phrase );
 
-      for ( ObjectGraph graph0 : graph )
-        providePhrases( graph0 );
+      for ( ObjectGraph graph : graphs )
+        injectPhrases( graph );
     }
 
     @SuppressWarnings("unchecked")
-    private void providePhrases( ObjectGraph element )
+    private void injectPhrases( ObjectGraph element )
     {
       phrase.addUnit( element.get( ImmutableAssertionUnit.class ) );
     }
@@ -234,155 +212,5 @@ public final class DaggerObjectGraphBuilders
     {
       return phraseBuilder;
     }
-  }
-
-  /**
-   *
-   * @param <T>
-   */
-  public static final class NumberExpressionBuilder<T extends Number & Comparable<? super T>>
-          implements DigitBuilderExpression<T>
-  {
-    private final T value;
-    private ObjectGraph objectGraph;
-
-    public T getArgumentClazz()
-    {
-      return value;
-    }
-
-    private NumberExpressionBuilder( T value )
-    {
-      this.value = checkNotNull( value );
-    }
-
-    @Override
-    public ObjectGraph less( final T argument )
-    {
-      return DaggerImmutablePhraseModule.$less( value, argument );
-    }
-
-    @Override
-    public ObjectGraph more( final T argument )
-    {
-      return DaggerImmutablePhraseModule.$more( value, argument );
-    }
-
-    @Override
-    public ObjectGraph lessOrEquals( T argument )
-    {
-      return DaggerImmutablePhraseModule.$moreOrEquals( value, argument );
-    }
-
-    @Override
-    public ObjectGraph moreOrEquals( T argument )
-    {
-      return DaggerImmutablePhraseModule.$lessOrEquals( value, argument );
-    }
-
-    @Override
-    public ObjectGraph eq( final T argument )
-    {
-      return DaggerImmutablePhraseModule.$eq( value, argument );
-    }
-  }
-
-  public interface DigitBuilderExpression<T extends Comparable<? super T>> extends ExpressionBuilder<T>
-  {
-    ObjectGraph less( final T argument );
-    ObjectGraph more( final T argument );
-    ObjectGraph lessOrEquals ( T argument );
-    ObjectGraph moreOrEquals ( T argument );
-  }
-
-  public static final class StringsBuilderExpression implements ExpressionBuilder<String>
-  {
-    private final String[] values;
-
-    StringsBuilderExpression( final String[] values )
-    {
-      this.values = values;
-    }
-
-    @Override
-    public ObjectGraph eq( String argument )
-    {
-      return DaggerImmutablePhraseModule.$eq( values, argument );
-    }
-
-    public ObjectGraph containsAnyOff( String argument )
-    {
-      return DaggerImmutablePhraseModule.$containsAnyOff( values, argument );
-    }
-
-    public ObjectGraph matchesExp( String argument )
-    {
-      return DaggerImmutablePhraseModule.$matchesExp( values, argument );
-    }
-  }
-
-  public static final class VariableExpressionBuilder<T extends Comparable<? super T>> implements DigitBuilderExpression<T>
-  {
-    private final String varName;
-
-    public VariableExpressionBuilder( String varName )
-    {
-      this.varName = varName;
-    }
-
-    @Override
-    public ObjectGraph eq( T argument )
-    {
-      return DaggerMutablePhraseModule.$eq( argument, varName );
-    }
-
-    @Override
-    public ObjectGraph less( T argument )
-    {
-      return DaggerMutablePhraseModule.$less( argument, varName );
-    }
-
-    @Override
-    public ObjectGraph more( T argument )
-    {
-      return DaggerMutablePhraseModule.$more( argument, varName );
-    }
-
-    @Override
-    public ObjectGraph lessOrEquals ( T argument )
-    {
-      return DaggerMutablePhraseModule.$lessOrEquals( argument, varName );
-    }
-
-    @Override
-    public ObjectGraph moreOrEquals( T argument )
-    {
-      return DaggerMutablePhraseModule.$moreOrEquals( argument, varName );
-    }
-  }
-
-  public static <T extends Number & Comparable<? super T>> NumberExpressionBuilder<T> val( final T arg )
-  {
-    return new NumberExpressionBuilder<T>( arg );
-  }
-
-  public static StringsBuilderExpression val( final String... arg )
-  {
-    return new StringsBuilderExpression( arg );
-  }
-
-  public static VariableExpressionBuilder<Integer> varInt( final String varName )
-  {
-    return new VariableExpressionBuilder<Integer>( varName );
-  }
-
-  public static VariableExpressionBuilder<Float> varFloat( final String varName )
-  {
-    return new VariableExpressionBuilder<Float>( varName );
-  }
-
-  public static VariableExpressionBuilder<String> varString( final String varName )
-  {
-    return new VariableExpressionBuilder<String>( varName );
   }
 }

@@ -9,6 +9,8 @@ import ru.rulex.conclusion.Model;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerImmutableEventPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableEventPhraseBuilder;
 
+import java.math.BigDecimal;
+
 import static dagger.ObjectGraph.create;
 import static junit.framework.TestCase.assertTrue;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -19,10 +21,10 @@ import static ru.rulex.conclusion.PhraseBuildersFacade.var;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerImmutablePhraseModule.$less;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerImmutablePhraseModule.$more;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerImmutablePhraseModule.immutablePhrase;
-import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.val;
+import static ru.rulex.conclusion.dagger.ObjectGraphBuilders.val;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerMutablePhraseModule.$less;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerMutablePhraseModule.mutablePhrase;
-import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.varInt;
+import static ru.rulex.conclusion.dagger.ObjectGraphBuilders.varInt;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 public class DaggerEventOrientedPhraseBuilderTest
@@ -100,8 +102,8 @@ public class DaggerEventOrientedPhraseBuilderTest
     immutablePhrase(
       val( 3 ).less( callOn( Model.class ).getInteger() ),
       val( 82.89f ).more( callOn( Model.class ).getFloat() ),
-      val("milk", "bread", "link").containsAnyOff( callOn( Model.class ).getString() )
-      //val( "milk" ).eq( callOn( Model.class ).getString() )
+      val("milk", "bread", "link").containsAnyOff( callOn( Model.class ).getString() ),
+      val( "bread" ).eq( callOn( Model.class ).getString() )
     ) ).get( DaggerImmutableEventPhrasesBuilder.class );
 
     assertThat( immutableBuilder.sync( Model.from( 20, 78.1f, "bread" ) ) ).isTrue();

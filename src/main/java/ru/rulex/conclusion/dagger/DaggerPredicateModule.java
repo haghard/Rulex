@@ -23,7 +23,7 @@ import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 )
 public class DaggerPredicateModule
 {
-  private final Optional<InjectionArgument> value;
+  private final InjectionArgument<?> value;
   private final LogicOperation operation;
 
   public static <T extends Comparable<? super T>> InjectionArgument<T> argFor( final T pvalue )
@@ -53,10 +53,10 @@ public class DaggerPredicateModule
     String argumentName;
   }
 
-  public DaggerPredicateModule( InjectionArgument value, LogicOperation operation )
+  public DaggerPredicateModule( InjectionArgument<?> value, LogicOperation operation )
   {
     this.operation = operation;
-    this.value = Optional.of( value );
+    this.value = value;
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -67,27 +67,27 @@ public class DaggerPredicateModule
     {
       case eq: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableEqualsConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+                new InjectableEqualsConclusionPredicate(  ( Comparable<T> ) value.value ) ) );
       }
       case lessThan: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableLessConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+                new InjectableLessConclusionPredicate(  ( Comparable<T> ) value.value ) ) );
       }
       case moreThan: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableMoreConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+                new InjectableMoreConclusionPredicate(  ( Comparable<T> ) value.value ) ) );
       }
       case moreOrEquals:  {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableMoreOrEqualsConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+                new InjectableMoreOrEqualsConclusionPredicate(  ( Comparable<T> ) value.value ) ) );
       }
       case lessOrEquals: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableLessOrEqualsConclusionPredicate(  ( Comparable<T> ) value.get().value ) ) );
+                new InjectableLessOrEqualsConclusionPredicate(  ( Comparable<T> ) value.value ) ) );
       }
       case matchAnyOff: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableContainsPredicate( (ImmutableSet )value.get().value ) ) );
+                new InjectableContainsPredicate( (ImmutableSet )value.value ) ) );
       }
       default:
         throw new IllegalArgumentException( "DaggerPredicateModule.providePredicate() unsupported operation " );
