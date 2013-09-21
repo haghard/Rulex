@@ -5,8 +5,6 @@ import javax.inject.Named;
 import com.google.common.collect.ImmutableSet;
 import ru.rulex.conclusion.*;
 
-import com.google.common.base.Optional;
-
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableContainsPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableEqualsConclusionPredicate;
@@ -23,16 +21,10 @@ import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 )
 public class DaggerPredicateModule
 {
-  private final InjectionArgument<?> value;
+  private final AnyArgument<?> value;
   private final LogicOperation operation;
 
-  public static abstract class InjectionArgument<T>
-  {
-    T value;
-    String argumentName;
-  }
-
-  public DaggerPredicateModule( InjectionArgument<?> value, LogicOperation operation )
+  public DaggerPredicateModule( AnyArgument<?> value, LogicOperation operation )
   {
     this.operation = operation;
     this.value = value;

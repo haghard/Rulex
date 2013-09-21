@@ -16,23 +16,23 @@ import ru.rulex.conclusion.dagger.DaggerPredicateModule.MutableDaggerPredicateMo
  */
 public class BindingBuilder
 {
-  public static <T extends Comparable<? super T>> InjectionArgument<T> argFor( final T pvalue )
+  public static <T extends Comparable<? super T>> AnyArgument<T> argFor( final T pvalue )
   {
-    return new InjectionArgument<T>(){{
+    return new AnyArgument<T>(){{
       this.value = pvalue;
     }};
   }
 
-  public static <T extends Comparable<? super T>> InjectionArgument<ImmutableSet<T>> argFor( final T[] args )
+  public static <T extends Comparable<? super T>> AnyArgument<ImmutableSet<T>> argFor( final T[] args )
   {
-    return new InjectionArgument<ImmutableSet<T>>(){{
+    return new AnyArgument<ImmutableSet<T>>(){{
       this.value = ImmutableSet.copyOf( args );
     }};
   }
 
-  public static <T extends Comparable<? super T>> InjectionArgument<ImmutableSet<T>> argFor( final Iterable<T> list )
+  public static <T extends Comparable<? super T>> AnyArgument<ImmutableSet<T>> argFor( final Iterable<T> list )
   {
-    return new InjectionArgument<ImmutableSet<T>>(){{
+    return new AnyArgument<ImmutableSet<T>>(){{
       this.value = ImmutableSet.copyOf( list );
     }};
   }
@@ -44,7 +44,7 @@ public class BindingBuilder
    * @param selector
    * @return
    */
-  public static ObjectGraph immutableGraph( InjectionArgument<?> argument, LogicOperation operation,
+  public static ObjectGraph immutableGraph( AnyArgument<?> argument, LogicOperation operation,
                                             Selector selector )
   {
     return create(
@@ -60,7 +60,7 @@ public class BindingBuilder
    * @param <T>
    * @return
    */
-  public static ObjectGraph mutableGraph( InjectionArgument<?> argument, LogicOperation operation,
+  public static ObjectGraph mutableGraph( AnyArgument<?> argument, LogicOperation operation,
                                           String varName )
   {
     return ObjectGraph.create(
