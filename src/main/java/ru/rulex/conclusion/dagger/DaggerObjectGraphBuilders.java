@@ -9,7 +9,7 @@ import ru.rulex.conclusion.PhraseBuildersFacade.DaggerImmutableEventPhrasesBuild
 import java.lang.reflect.Array;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static ru.rulex.conclusion.dagger.DaggerPredicateModule.argFor;
+import static ru.rulex.conclusion.dagger.BindingBuilder.argFor;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 
 

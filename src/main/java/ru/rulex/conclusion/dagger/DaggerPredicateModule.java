@@ -26,27 +26,6 @@ public class DaggerPredicateModule
   private final InjectionArgument<?> value;
   private final LogicOperation operation;
 
-  public static <T extends Comparable<? super T>> InjectionArgument<T> argFor( final T pvalue )
-  {
-    return new InjectionArgument<T>(){{
-      this.value = pvalue;
-    }};
-  }
-
-  public static <T extends Comparable<? super T>> InjectionArgument<ImmutableSet<T>> argFor( final T[] args )
-  {
-    return new InjectionArgument<ImmutableSet<T>>(){{
-      this.value = ImmutableSet.copyOf( args );
-    }};
-  }
-
-  public static <T extends Comparable<? super T>> InjectionArgument<ImmutableSet<T>> argFor( final Iterable<T> list )
-  {
-    return new InjectionArgument<ImmutableSet<T>>(){{
-      this.value = ImmutableSet.copyOf( list );
-    }};
-  }
-
   public static abstract class InjectionArgument<T>
   {
     T value;
