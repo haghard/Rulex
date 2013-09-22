@@ -89,7 +89,7 @@ abstract class Invokable<T, E>
       }
       catch (Exception ex)
       {
-        throw new RuntimeException( "InvokableSelector invocation error" );
+        throw new RuntimeException( "InvokableSelector invocation error" , ex );
       }
     }
   }

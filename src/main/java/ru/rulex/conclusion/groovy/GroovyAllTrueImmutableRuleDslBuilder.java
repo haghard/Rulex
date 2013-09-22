@@ -1,5 +1,6 @@
 package ru.rulex.conclusion.groovy;
 
+import com.google.common.collect.ImmutableSet;
 import groovy.lang.GroovyObjectSupport;
 import ru.rulex.conclusion.*;
 import ru.rulex.conclusion.delegate.ProxyUtils;
@@ -31,6 +32,12 @@ public class GroovyAllTrueImmutableRuleDslBuilder<T> extends GroovyObjectSupport
 
   public <E extends Comparable<? super E>> GroovyAllTrueImmutableRuleDslBuilder<T> operation( E val )
   {
+    return this;
+  }
+
+  public <E extends Comparable<? super E>> GroovyAllTrueImmutableRuleDslBuilder<T> $( Fields field )
+  {
+    field.eval();
     return this;
   }
 
@@ -73,6 +80,21 @@ public class GroovyAllTrueImmutableRuleDslBuilder<T> extends GroovyObjectSupport
                     new InjectableLessConclusionPredicate<E>( val ) ) ) );
     return this;
   }
+
+  public <E extends Comparable<? super E>> GroovyAllTrueImmutableRuleDslBuilder<T> equalsAnyOff( List<String> values )
+  {
+    capture( ProxyUtils.<T, E>toSelector( null ),
+            callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
+                    new InjectableContainsPredicate( ImmutableSet.copyOf( values ) ))));
+    return this;
+  }
+
+  /*
+   * case equalsAnyOff: {
+   return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
+   new InjectableContainsPredicate( (ImmutableSet )value.value ) ) );
+   }
+   */
 
   public void eval()
   {

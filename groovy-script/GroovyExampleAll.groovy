@@ -7,8 +7,8 @@ import static com.google.inject.Guice.createInjector;
 import ru.rulex.conclusion.*
 import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder
 import ru.rulex.conclusion.PhraseBuildersFacade.EventOrientedPhrasesBuilder
-
 import ru.rulex.conclusion.Model;
+
 
 println new EventOrientedPhrasesBuilder() {
     @Override

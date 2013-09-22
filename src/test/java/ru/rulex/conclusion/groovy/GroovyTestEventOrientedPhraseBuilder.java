@@ -4,6 +4,7 @@ import org.junit.Test;
 import ru.rulex.conclusion.Model;
 
 import java.io.File;
+import java.math.BigDecimal;
 
 import ru.rulex.conclusion.PhraseBuildersFacade.GroovyEventOrientedPhrasesBuilder;
 
@@ -15,18 +16,17 @@ public class GroovyTestEventOrientedPhraseBuilder
   @Test
   public void testGroovyPhraseBuilderWithScript()
   {
-    final String scriptBody = "import ru.rulex.conclusion.Model\n" +
-            "import static ru.rulex.conclusion.delegate.ProxyUtils.callOn\n" +
-            "\n" +
-            "rule = {\n" +
+    final String scriptBody = "rule2 = {\n" +
             "    onEvent event\n" +
-            "    operation callOn(Model.class).getInteger() more 8\n" +
-            "    operation callOn(Model.class).getFloat() less 81.7f\n" +
+            "    $ objectId more 7\n" +
+            "    $ eventType atMost 2\n" +
+            "    $ objectPrice atMost 80.99\n" +
+            "    $ objectName equalsAnyOff( [\"snickers\", \"mars\", \"picnic\"] )\n" +
             "    eval()\n" +
             "}";
     try
     {
-      assertThat( new GroovyEventOrientedPhrasesBuilder<Model>()
+      assertThat( new GroovyEventOrientedPhrasesBuilder<TradeEvent>()
       {
         @Override
         protected void build()
@@ -34,7 +34,7 @@ public class GroovyTestEventOrientedPhraseBuilder
           configure( "script 1" )
                   .withScript( scriptBody );
         }
-      }.sync( Model.from( 6, 9, 90.1f ) ) ).isTrue();
+      }.sync( new TradeEvent( 6, 9, new BigDecimal( 90.1f), "mars") ) ).isTrue();
     }
     catch ( Exception ex )
     {
@@ -48,7 +48,7 @@ public class GroovyTestEventOrientedPhraseBuilder
   {
     try
     {
-      assertThat( new GroovyEventOrientedPhrasesBuilder<Model>()
+      assertThat( new GroovyEventOrientedPhrasesBuilder<TradeEvent>()
       {
         @Override
         protected void build()
@@ -56,9 +56,9 @@ public class GroovyTestEventOrientedPhraseBuilder
           configure( "simple rule 1" )
                   .withFile( new File( "./groovy-script/ru/GroovyDslImmutableRule.groovy" ) );
         }
-      }.sync( Model.from( 7, 8, 87.2f ) ) ).isTrue();
+      }.sync( new TradeEvent(1, 3, new BigDecimal("89.45"), "snickers" )) ).isTrue();
 
-      assertThat( new GroovyEventOrientedPhrasesBuilder<Model>()
+      assertThat( new GroovyEventOrientedPhrasesBuilder<TradeEvent>()
       {
         @Override
         protected void build()
@@ -66,7 +66,7 @@ public class GroovyTestEventOrientedPhraseBuilder
           configure( "simple rule 2" )
                   .withFile( new File( "./groovy-script/ru/GroovyDslImmutableRule.groovy" ) );
         }
-      }.sync( Model.from( 9, 10, 87.2f ) ) ).isFalse();
+      }.sync( new TradeEvent(11, 13, new BigDecimal("89.45"), "mars" ) ) ).isFalse();
 
     }
     catch ( Exception ex )

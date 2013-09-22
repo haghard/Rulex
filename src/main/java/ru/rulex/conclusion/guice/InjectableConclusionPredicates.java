@@ -173,7 +173,7 @@ public final class InjectableConclusionPredicates
 
     @Override public String toString()
     {
-      return String.format(" %s $single-regexp ", variants );
+      return String.format("%s $equalsAny ", variants );
     }
   }
 

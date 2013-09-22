@@ -176,9 +176,9 @@ public final class DaggerObjectGraphBuilders
     }
 
     @VisibleForTesting
-    static ObjectGraph $containsAnyOff( final String[] values, String argument )
+    static ObjectGraph $equalsAnyOff( final String[] values, String argument )
     {
-      return BindingBuilder.immutableGraph( argFor( values ), LogicOperation.matchAnyOff, toSelector( argument ) );
+      return BindingBuilder.immutableGraph( argFor( values ), LogicOperation.equalsAnyOff, toSelector( argument ) );
     }
 
     @VisibleForTesting

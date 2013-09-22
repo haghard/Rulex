@@ -6,8 +6,9 @@ import com.google.common.collect.ImmutableSet;
 import ru.rulex.conclusion.*;
 
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
-import ru.rulex.conclusion.guice.InjectableConclusionPredicates;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableAtMostConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableContainsPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableAtLeastConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableEqualsConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMoreConclusionPredicate;
@@ -49,13 +50,13 @@ public class DaggerPredicateModule
       }
       case moreOrEquals:  {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableConclusionPredicates.InjectableAtLeastConclusionPredicate(  ( Comparable<T> ) value.value ) ) );
+                new InjectableAtLeastConclusionPredicate(  ( Comparable<T> ) value.value ) ) );
       }
       case lessOrEquals: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableConclusionPredicates.InjectableAtMostConclusionPredicate(  ( Comparable<T> ) value.value ) ) );
+                new InjectableAtMostConclusionPredicate(  ( Comparable<T> ) value.value ) ) );
       }
-      case matchAnyOff: {
+      case equalsAnyOff: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
                 new InjectableContainsPredicate( (ImmutableSet )value.value ) ) );
       }

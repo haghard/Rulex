@@ -102,7 +102,7 @@ public class DaggerEventOrientedPhraseBuilderTest
     immutablePhrase(
       val( 3 ).less( callOn( Model.class ).getInteger() ),
       val( 82.89f ).more( callOn( Model.class ).getFloat() ),
-      val("milk", "bread", "link").containsAnyOff( callOn( Model.class ).getString() ),
+      val("milk", "bread", "link").equalsAnyOff( callOn( Model.class ).getString() ),
       val( "bread" ).eq( callOn( Model.class ).getString() )
     ) ).get( DaggerImmutableEventPhrasesBuilder.class );
 

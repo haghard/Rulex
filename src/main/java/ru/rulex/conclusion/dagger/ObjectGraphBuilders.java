@@ -53,9 +53,9 @@ public class ObjectGraphBuilders
       return DaggerImmutablePhraseModule.$eq( values, argument );
     }
 
-    public ObjectGraph containsAnyOff( String argument )
+    public ObjectGraph equalsAnyOff( String argument )
     {
-      return DaggerImmutablePhraseModule.$containsAnyOff( values, argument );
+      return DaggerImmutablePhraseModule.$equalsAnyOff( values, argument );
     }
 
     public ObjectGraph matchesExp( String argument )

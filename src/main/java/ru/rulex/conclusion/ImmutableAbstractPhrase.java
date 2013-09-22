@@ -3,6 +3,8 @@ package ru.rulex.conclusion;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import ru.rulex.conclusion.groovy.GroovyAllTrueImmutableRuleDslBuilder;
 
 import java.text.MessageFormat;
@@ -79,17 +81,27 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
 
   public static class AllTrueImmutableGroovyPhrase<T> extends ImmutableAbstractPhrase<T> {
     private static final String EVENT_NAME = "event";
-    private static final String CLOSURE_NAME = "rule";
+    private static final String CLOSURE_NAME = "rule2";
 
-    String script;
-    GroovyAllTrueImmutableRuleDslBuilder builder;
+    private String script;
+    private GroovyAllTrueImmutableRuleDslBuilder<T> builder;
+    private final Map<String, T> bindingMap = new HashMap<>(1);
+
+    final CompilerConfiguration config = new CompilerConfiguration();
+
+    public AllTrueImmutableGroovyPhrase()
+    {
+      final ImportCustomizer importCustomizer = new ImportCustomizer();
+      importCustomizer.addStaticStars( "ru.rulex.conclusion.groovy.Fields" );
+      config.addCompilationCustomizers( importCustomizer );
+    }
 
     void setScript( String script )
     {
       this.script = script;
     }
 
-    void setDslBuilder( GroovyAllTrueImmutableRuleDslBuilder builder )
+    void setDslBuilder( GroovyAllTrueImmutableRuleDslBuilder<T> builder )
     {
       this.builder = builder;
     }
@@ -97,12 +109,11 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
     @Override
     public Boolean evaluate()
     {
-      Map<String, T> map = new HashMap<>(1);
-      map.put( EVENT_NAME, event );
-      final Binding binding = new Binding( map );
-      new GroovyShell( binding ).evaluate( script );
-      final Closure c = (Closure) binding.getVariable(CLOSURE_NAME);
-      c.setDelegate(builder);
+      bindingMap.put( EVENT_NAME, event );
+      final Binding binding = new Binding( bindingMap );
+      new GroovyShell( binding, config ).evaluate( script );
+      final Closure c = ( Closure ) binding.getVariable( CLOSURE_NAME );
+      c.setDelegate( builder );
       c.call();
       return builder.getResult();
     }
