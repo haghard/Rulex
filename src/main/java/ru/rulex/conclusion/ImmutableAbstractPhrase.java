@@ -2,11 +2,14 @@ package ru.rulex.conclusion;
 
 import groovy.lang.Binding;
 import groovy.lang.Closure;
-import ru.rulex.conclusion.groovy.GroovyAllTrueRuleDslBuilder;
+import groovy.lang.GroovyShell;
+import ru.rulex.conclusion.groovy.GroovyAllTrueImmutableRuleDslBuilder;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, ImmutableAssertionUnit<T>>
 {
@@ -78,15 +81,15 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
     private static final String EVENT_NAME = "event";
     private static final String CLOSURE_NAME = "rule";
 
-    Binding binding;
-    GroovyAllTrueRuleDslBuilder builder;
+    String script;
+    GroovyAllTrueImmutableRuleDslBuilder builder;
 
-    void setBinding( Binding binding )
+    void setScript( String script )
     {
-      this.binding = binding;
+      this.script = script;
     }
 
-    void setDslBuilder( GroovyAllTrueRuleDslBuilder builder )
+    void setDslBuilder( GroovyAllTrueImmutableRuleDslBuilder builder )
     {
       this.builder = builder;
     }
@@ -94,7 +97,10 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
     @Override
     public Boolean evaluate()
     {
-      binding.setVariable(EVENT_NAME, event);
+      Map<String, T> map = new HashMap<>(1);
+      map.put( EVENT_NAME, event );
+      final Binding binding = new Binding( map );
+      new GroovyShell( binding ).evaluate( script );
       final Closure c = (Closure) binding.getVariable(CLOSURE_NAME);
       c.setDelegate(builder);
       c.call();

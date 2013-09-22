@@ -20,8 +20,8 @@ public class GroovyTestEventOrientedPhraseBuilder
             "\n" +
             "rule = {\n" +
             "    onEvent event\n" +
-            "    from callOn(Model.class).getInteger() more 8\n" +
-            "    from callOn(Model.class).getFloat() less 81.7f\n" +
+            "    operation callOn(Model.class).getInteger() more 8\n" +
+            "    operation callOn(Model.class).getFloat() less 81.7f\n" +
             "    eval()\n" +
             "}";
     try
@@ -54,7 +54,7 @@ public class GroovyTestEventOrientedPhraseBuilder
         protected void build()
         {
           configure( "simple rule 1" )
-                  .withFile( new File( "./groovy-script/ru/GroovyDslRule.groovy" ) );
+                  .withFile( new File( "./groovy-script/ru/GroovyDslImmutableRule.groovy" ) );
         }
       }.sync( Model.from( 7, 8, 87.2f ) ) ).isTrue();
 
@@ -64,7 +64,7 @@ public class GroovyTestEventOrientedPhraseBuilder
         protected void build()
         {
           configure( "simple rule 2" )
-                  .withFile( new File( "./groovy-script/ru/GroovyDslRule.groovy" ) );
+                  .withFile( new File( "./groovy-script/ru/GroovyDslImmutableRule.groovy" ) );
         }
       }.sync( Model.from( 9, 10, 87.2f ) ) ).isFalse();
 

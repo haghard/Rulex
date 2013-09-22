@@ -16,7 +16,7 @@ import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
  * @param <T>
  * @author haghard
  */
-public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
+public class GroovyAllTrueImmutableRuleDslBuilder<T> extends GroovyObjectSupport
 {
   private T event;
 
@@ -29,12 +29,12 @@ public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
     this.event = event;
   }
 
-  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> from( E val )
+  public <E extends Comparable<? super E>> GroovyAllTrueImmutableRuleDslBuilder<T> operation( E val )
   {
     return this;
   }
 
-  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> eq( E val )
+  public <E extends Comparable<? super E>> GroovyAllTrueImmutableRuleDslBuilder<T> eq( E val )
   {
     capture( ProxyUtils.<T, E>toSelector( val ),
             callOn( ConclusionPredicate.class,
@@ -42,7 +42,7 @@ public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
     return this;
   }
 
-  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> more( E val )
+  public <E extends Comparable<? super E>> GroovyAllTrueImmutableRuleDslBuilder<T> more( E val )
   {
     capture( ProxyUtils.<T, E>toSelector( val ),
             callOn( ConclusionPredicate.class,
@@ -50,7 +50,7 @@ public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
     return this;
   }
 
-  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> atLeast( E val )
+  public <E extends Comparable<? super E>> GroovyAllTrueImmutableRuleDslBuilder<T> atLeast( E val )
   {
     capture( ProxyUtils.<T, E>toSelector( val ),
             callOn( ConclusionPredicate.class,
@@ -58,7 +58,7 @@ public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
     return this;
   }
 
-  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> atMost( E val )
+  public <E extends Comparable<? super E>> GroovyAllTrueImmutableRuleDslBuilder<T> atMost( E val )
   {
     capture( ProxyUtils.<T, E>toSelector( val ),
             callOn( ConclusionPredicate.class,
@@ -66,7 +66,7 @@ public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
     return this;
   }
 
-  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> less( E val )
+  public <E extends Comparable<? super E>> GroovyAllTrueImmutableRuleDslBuilder<T> less( E val )
   {
     capture( ProxyUtils.<T, E>toSelector( val ),
             callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(

@@ -21,13 +21,11 @@ import java.io.*;
 import java.util.Map;
 import com.google.common.collect.ImmutableSet;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 import ru.rulex.conclusion.delegate.Delegate;
 import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
-import ru.rulex.conclusion.groovy.GroovyAllTrueRuleDslBuilder;
+import ru.rulex.conclusion.groovy.GroovyAllTrueImmutableRuleDslBuilder;
 import ru.rulex.conclusion.guice.PredicateImmutableAssertionUnit;
 import ru.rulex.external.JvmLanguageUtils;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
@@ -67,12 +65,8 @@ public final class ParserBuilders
 
     private void process( String script )
     {
-      final Binding binding = new Binding();
-      final GroovyShell shell = new GroovyShell( binding );
-      binding.setVariable( "event", null );
-      shell.evaluate( script );
-      phrase.setBinding( binding );
-      phrase.setDslBuilder( new GroovyAllTrueRuleDslBuilder<T>() );
+      phrase.setScript( script );
+      phrase.setDslBuilder( new GroovyAllTrueImmutableRuleDslBuilder<T>() );
     }
 
     @Override
