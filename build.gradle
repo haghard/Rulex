@@ -58,7 +58,8 @@ gradle.taskGraph.beforeTask { Task task ->
   def testTaskList = [
     'test',
     'testGuice',
-    'testGroovy'
+    'testGroovy',
+    'testDagger'
   ]
   if (testTaskList.isCase(task.name)) {
     def jvmArgsLine = "JVM arg for $task  : "
@@ -390,3 +391,8 @@ uploadArchives.dependsOn build
 install.dependsOn build
 
 mainClassName = "someClass"
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.7'
+}

@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
-
 import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
 import static ru.rulex.conclusion.execution.Callables.*;
 

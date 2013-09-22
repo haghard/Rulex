@@ -26,11 +26,10 @@ import groovy.lang.GroovyShell;
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 import ru.rulex.conclusion.delegate.Delegate;
 import ru.rulex.conclusion.delegate.ProxyUtils;
+import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
 import ru.rulex.conclusion.groovy.GroovyAllTrueRuleDslBuilder;
 import ru.rulex.conclusion.guice.PredicateImmutableAssertionUnit;
 import ru.rulex.external.JvmLanguageUtils;
-import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
-
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 

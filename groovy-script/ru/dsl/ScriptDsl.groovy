@@ -1,13 +1,8 @@
 package ru.dsl
 
+import groovy.json.JsonBuilder
 import groovy.xml.MarkupBuilder
 
-import groovy.transform.CompileStatic
-
-import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.customizers.*
-
-//@CompileStatic
 class MemoDsl {
 
   def toText
@@ -128,21 +123,36 @@ println MemoDsl.task {
   request "Please vote for me"
   text
 }
-/*
-def binding = new Binding([receiver: 'Nirav Assar', sender: 'Barack Obama'])
 
-def shell = new GroovyShell(binding)
+class Address {
+    int id
+    String line
+}
 
-shell.evaluate '''
-    import static ru.dsl.MemoDsl.task;
+def List address = []
 
-    MemoDsl.task {
-      to receiver
-      from sender
-      body "How are things? We are doing well. Take care"
-      idea "The economy is key"
-      request "Please vote for me"
-      text
-    }
-    '''
-*/
+address << new Address( id: 1, line: "Street1" )
+address << new Address( id: 2, line: "Street2" )
+def range = (0..10)
+
+range.each { print it }
+
+def builder = new JsonBuilder()
+builder.jsonRuleSchema() {
+    name "Rule1"
+
+    "counts" (
+            range.collect {
+                [id: it, line: "desc for " + it ]
+            } )
+
+//    "Address" (
+//        address.each { add ->
+//            "id" add.id
+//            "line" add.line
+//        }
+//    )
+    //addresses( address.collect { Address a -> [id: a.id, title: a.line] } )
+}
+
+println builder.toPrettyString()

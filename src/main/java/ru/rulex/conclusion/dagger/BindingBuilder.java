@@ -5,8 +5,6 @@ import dagger.ObjectGraph;
 import ru.rulex.conclusion.Selector;
 
 import static dagger.ObjectGraph.create;
-
-import ru.rulex.conclusion.dagger.DaggerPredicateModule.InjectionArgument;
 import ru.rulex.conclusion.dagger.DaggerPredicateModule.ImmutableDaggerPredicateModule;
 import ru.rulex.conclusion.dagger.DaggerPredicateModule.MutableDaggerPredicateModule;
 

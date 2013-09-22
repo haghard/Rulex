@@ -101,13 +101,17 @@ public final class InjectableConclusionPredicates
     }
   }
 
-  public static class InjectableMoreOrEqualsConclusionPredicate<T extends Comparable<? super T>> implements
+  /**
+   * moreOrEquals operation
+   * @param <T>
+   */
+  public static class InjectableAtLeastConclusionPredicate<T extends Comparable<? super T>> implements
     ConclusionPredicate<T> 
   {
     private final T parameter;
 
     @Inject
-    public InjectableMoreOrEqualsConclusionPredicate( T parameter )
+    public InjectableAtLeastConclusionPredicate( T parameter )
     {
       this.parameter = parameter;
     }
@@ -121,17 +125,21 @@ public final class InjectableConclusionPredicates
     @Override
     public String toString()
     {
-      return String.format( "%s $moreOrEquals ", parameter );
+      return String.format( "%s $atLeast ", parameter );
     }
   }
 
-  public static class InjectableLessOrEqualsConclusionPredicate<T extends Comparable<? super T>> implements
+  /**
+   * lessOrEquals
+   * @param <T>
+   */
+  public static class InjectableAtMostConclusionPredicate<T extends Comparable<? super T>> implements
     ConclusionPredicate<T> 
   {
     private final T parameter;
 
     @Inject
-    public InjectableLessOrEqualsConclusionPredicate( T parameter )
+    public InjectableAtMostConclusionPredicate( T parameter )
     {
       this.parameter = parameter;
     }
@@ -145,7 +153,7 @@ public final class InjectableConclusionPredicates
     @Override
     public String toString()
     {
-      return String.format( "%s $lessOrEquals ", parameter );
+      return String.format( "%s $atMost ", parameter );
     }
   }
 

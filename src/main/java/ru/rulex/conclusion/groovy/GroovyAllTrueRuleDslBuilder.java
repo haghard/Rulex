@@ -9,13 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
+
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 /**
- * 
- * @author haghard
- *
  * @param <T>
+ * @author haghard
  */
 public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
 {
@@ -35,32 +34,43 @@ public class GroovyAllTrueRuleDslBuilder<T> extends GroovyObjectSupport
     return this;
   }
 
-  @SuppressWarnings( "unchecked" )
-  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> more( E val )
+  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> eq( E val )
   {
-    final Selector<T, E> selector = ProxyUtils.toSelector( val );
-    final ConclusionPredicate<E> predicate = callOn( ConclusionPredicate.class,
-            ConclusionPredicate.class.cast( new InjectableMoreConclusionPredicate<E>( val ) ) );
-
-    capture( selector, predicate );
+    capture( ProxyUtils.<T, E>toSelector( val ),
+            callOn( ConclusionPredicate.class,
+                    ConclusionPredicate.class.cast( new InjectableEqualsConclusionPredicate<E>( val ) ) ) );
     return this;
   }
 
-  @SuppressWarnings( "unchecked" )
+  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> more( E val )
+  {
+    capture( ProxyUtils.<T, E>toSelector( val ),
+            callOn( ConclusionPredicate.class,
+                    ConclusionPredicate.class.cast( new InjectableMoreConclusionPredicate<E>( val ) ) ) );
+    return this;
+  }
+
+  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> atLeast( E val )
+  {
+    capture( ProxyUtils.<T, E>toSelector( val ),
+            callOn( ConclusionPredicate.class,
+                    ConclusionPredicate.class.cast( new InjectableAtLeastConclusionPredicate<E>( val ) ) ) );
+    return this;
+  }
+
+  public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> atMost( E val )
+  {
+    capture( ProxyUtils.<T, E>toSelector( val ),
+            callOn( ConclusionPredicate.class,
+                    ConclusionPredicate.class.cast( new InjectableAtMostConclusionPredicate<E>( val ) ) ) );
+    return this;
+  }
+
   public <E extends Comparable<? super E>> GroovyAllTrueRuleDslBuilder<T> less( E val )
   {
-    final Selector<T, E> selector = ProxyUtils.toSelector( val );
-    final ConclusionPredicate<E> predicate = callOn( ConclusionPredicate.class,
-            ConclusionPredicate.class.cast( new InjectableLessConclusionPredicate<E>( val ) ) );
-
-    units.add( new ImmutableAssertionUnit<T>()
-    {
-      @Override
-      public boolean isSatisfies( ConclusionStatePathTrace conclusionPathTrace, T event )
-      {
-        return new SelectorPredicate<T, E>( predicate, selector ).apply( event );
-      }
-    } );
+    capture( ProxyUtils.<T, E>toSelector( val ),
+            callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
+                    new InjectableLessConclusionPredicate<E>( val ) ) ) );
     return this;
   }
 

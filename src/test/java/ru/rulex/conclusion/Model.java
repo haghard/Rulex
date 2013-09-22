@@ -104,7 +104,7 @@ public abstract class Model
   {
     Model mock = mock( Model.class );
     when( mock.getInteger() ).thenReturn( i );
-    when( mock.getOtherInteger() ).thenReturn( i );
+    when( mock.getOtherInteger() ).thenReturn( i0 );
     when( mock.getFloat() ).thenReturn( f );
     return mock;
   }

@@ -12,7 +12,7 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
 {
   protected T event;
   protected Class<T> clazz;
-  protected List<ImmutableAssertionUnit<T>> units = new ArrayList<ImmutableAssertionUnit<T>>();
+  protected final List<ImmutableAssertionUnit<T>> units = new ArrayList<ImmutableAssertionUnit<T>>();
 
   protected final ConclusionStatePathTrace conclusionPathTrace =
           ConclusionStatePathTrace.defaultInstance();
@@ -47,8 +47,6 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
     @Override
     public Boolean evaluate()
     {
-      if ( units.size() == 0 ) return Boolean.FALSE;
-
       for (ImmutableAssertionUnit<T> unit : units)
       {
         if ( ! unit.isSatisfies( conclusionPathTrace, event ) )
@@ -76,20 +74,19 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
     }
   }
 
-  public static class AllTrueImmutableGroovyPhrase<T> extends ImmutableAbstractPhrase<T>
-  {
-    private Binding binding;
-    private GroovyAllTrueRuleDslBuilder builder;
-
+  public static class AllTrueImmutableGroovyPhrase<T> extends ImmutableAbstractPhrase<T> {
     private static final String EVENT_NAME = "event";
     private static final String CLOSURE_NAME = "rule";
 
-    void setBinding(Binding binding)
+    Binding binding;
+    GroovyAllTrueRuleDslBuilder builder;
+
+    void setBinding( Binding binding )
     {
       this.binding = binding;
     }
 
-    void setDslBuilder( GroovyAllTrueRuleDslBuilder builder)
+    void setDslBuilder( GroovyAllTrueRuleDslBuilder builder )
     {
       this.builder = builder;
     }
@@ -97,14 +94,14 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
     @Override
     public Boolean evaluate()
     {
-      binding.setVariable( EVENT_NAME, event );
-      final Closure c = (Closure)binding.getVariable( CLOSURE_NAME );
-      c.setDelegate( builder );
+      binding.setVariable(EVENT_NAME, event);
+      final Closure c = (Closure) binding.getVariable(CLOSURE_NAME);
+      c.setDelegate(builder);
       c.call();
-
       return builder.getResult();
     }
   }
+
 
   public static <T> ImmutableAbstractPhrase<T> all()
   {

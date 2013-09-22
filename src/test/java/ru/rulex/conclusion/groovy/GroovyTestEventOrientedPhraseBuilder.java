@@ -34,7 +34,7 @@ public class GroovyTestEventOrientedPhraseBuilder
           configure( "script 1" )
                   .withScript( scriptBody );
         }
-      }.sync( Model.from( 6, 90.1f ) ) ).isTrue();
+      }.sync( Model.from( 6, 9, 90.1f ) ) ).isTrue();
     }
     catch ( Exception ex )
     {
@@ -56,7 +56,7 @@ public class GroovyTestEventOrientedPhraseBuilder
           configure( "simple rule 1" )
                   .withFile( new File( "./groovy-script/ru/GroovyDslRule.groovy" ) );
         }
-      }.sync( Model.from( 7, 87.2f ) ) ).isTrue();
+      }.sync( Model.from( 7, 8, 87.2f ) ) ).isTrue();
 
       assertThat( new GroovyEventOrientedPhrasesBuilder<Model>()
       {
@@ -66,7 +66,7 @@ public class GroovyTestEventOrientedPhraseBuilder
           configure( "simple rule 2" )
                   .withFile( new File( "./groovy-script/ru/GroovyDslRule.groovy" ) );
         }
-      }.sync( Model.from( 9, 87.2f ) ) ).isFalse();
+      }.sync( Model.from( 9, 10, 87.2f ) ) ).isFalse();
 
     }
     catch ( Exception ex )
