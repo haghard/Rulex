@@ -80,7 +80,7 @@ class GreetingBuilder extends FactoryBuilderSupport {
 }
 
 
-GreetingBuilder builder = new GreetingBuilder()
+def builder = new GreetingBuilder()
 
 builder.using("english") {
   greet("Jon")

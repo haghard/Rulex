@@ -22,13 +22,9 @@ import static org.junit.Assert.fail;
 import static ru.rulex.conclusion.FluentConclusionPredicate.query;
 import static ru.rulex.conclusion.FluentConclusionPredicate.typeSafeQuery;
 import static ru.rulex.conclusion.FluentConclusionPredicate.number;
-import static ru.rulex.conclusion.RulexMatchersDsl.*;
 
 import org.junit.Test;
 
-import ru.rulex.conclusion.ConclusionPredicate;
-import ru.rulex.conclusion.Iterators;
-import ru.rulex.conclusion.Selector;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractIterableOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.IterableOrientedPhrasesBuilder;
 
@@ -72,7 +68,7 @@ public class TestIterablePhrasesBuilder
       @Override
       protected void build()
       {
-        through( Model.class, "simple-where-engine-with-typeSafeSelector" )
+        configure( Model.class, "simple-where-engine-with-typeSafeSelector" )
             .shouldMatch(
                 typeSafeQuery( number( Model.class, Integer.class, Model.INT_ACCESSOR ),
                     intPredicate ) ).except( ImmutableSet.<Model> of( Model.from( 121 ) ) )
@@ -109,7 +105,7 @@ public class TestIterablePhrasesBuilder
     {
       protected void build()
       {
-        through( Model.class, "simple-where-engine-selector" )
+        configure( Model.class, "simple-where-engine-selector" )
             .shouldMatch( query( intSelector, intPredicate ) )
             .except( ImmutableSet.<Model> of( Model.from( 121 ) ) )
             .iteratorType( Iterators.WHERE );

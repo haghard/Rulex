@@ -41,7 +41,7 @@ public class TestSingleEventRules
           @Override
           protected void build()
           {
-            through( Model.class, "fact: [getInteger() == 11]" ).shouldMatch(
+            configure( Model.class, "fact: [getInteger() == 11]" ).shouldMatch(
                 typeSafeQuery( number( Model.class, Integer.class, Model.INT_ACCESSOR ), eq( 11 ) ) );
           }
         } );

@@ -1,8 +1,7 @@
 package ru.rulex.conclusion.groovy;
 
-import ru.rulex.conclusion.delegate.ProxyUtils;
-
 import java.math.BigDecimal;
+import ru.rulex.conclusion.delegate.ProxyUtils;
 
 public enum Fields
 {

@@ -13,7 +13,7 @@ import ru.rulex.conclusion.Model;
 println new EventOrientedPhrasesBuilder() {
     @Override
     protected void build() {
-      through(Model.class, "single-event-predicates-groovy")
+      configure(Model.class, "single-event-predicates-groovy")
         .shouldMatch({ input -> return input.getInteger() }, { argument -> return argument == 11 } );
     }
   }.sync(Model.from(11));
@@ -23,7 +23,7 @@ println new EventOrientedPhrasesBuilder() {
 println new EventOrientedPhrasesBuilder() {
   @Override
   protected void build() {
-    through(Model.class, "single-event-predicates-groovy")
+    configure(Model.class, "single-event-predicates-groovy")
       .shouldMatch(
         [ selector: { input -> return input.getInteger() }, 
          predicate: { argument -> return argument == 11 } ]);

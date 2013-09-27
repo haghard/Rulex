@@ -37,9 +37,6 @@ import com.google.common.collect.ImmutableList;
 import ru.rulex.conclusion.delegate.Delegate;
 import ru.rulex.conclusion.delegate.DelegateFactory;
 import ru.rulex.conclusion.execution.ParallelStrategy;
-import ru.rulex.conclusion.ConclusionPredicate;
-import ru.rulex.conclusion.FluentConclusionPredicate;
-import ru.rulex.conclusion.PhraseExecutionException;
 import ru.rulex.conclusion.PhraseBuildersFacade.AbstractIterableOrientedPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.ImperativeIterableOrientedPhrasesBuilder;
 
@@ -75,7 +72,7 @@ public class TestImperativeIterableOrientedPhrasesBuilder
       @Override
       protected void build()
       {
-        through( Model.class, Integer.class, "testImperativeExecutionPhrasesBuilderWithMock" )
+        configure( Model.class, Integer.class, "testImperativeExecutionPhrasesBuilderWithMock" )
             .lambda( DelegateFactory.from( 1, 7, 13 ) ).delegate( delegateMock );
       }
     };
@@ -121,7 +118,7 @@ public class TestImperativeIterableOrientedPhrasesBuilder
       @Override
       protected void build()
       {
-        through( Model.class, Integer.class, "testImperativeExecutionPhrasesBuilderWithSpy" )
+        configure( Model.class, Integer.class, "testImperativeExecutionPhrasesBuilderWithSpy" )
             .lambda( DelegateFactory.from( 1, 7, 13 ) ).delegate( filterSpy );
       }
     };
@@ -169,7 +166,7 @@ public class TestImperativeIterableOrientedPhrasesBuilder
       @Override
       protected void build()
       {
-        through( Model.class, FluentConclusionPredicate.class, "never()" ).lambda(
+        configure( Model.class, FluentConclusionPredicate.class, "never()" ).lambda(
             compositionPredicate ).delegate( targetDelegate );
       }
     };
@@ -226,8 +223,8 @@ public class TestImperativeIterableOrientedPhrasesBuilder
       @Override
       protected void build()
       {
-        through( Model.class, FluentConclusionPredicate.class,
-            "testComplexImperativePhrasesBuilder" ).lambda( fluentPredicates ).delegate(
+        configure( Model.class, FluentConclusionPredicate.class,
+                "testComplexImperativePhrasesBuilder" ).lambda( fluentPredicates ).delegate(
             targetDelegate );
       }
     };
@@ -243,8 +240,8 @@ public class TestImperativeIterableOrientedPhrasesBuilder
       @Override
       protected void build()
       {
-        through( Model.class, FluentConclusionPredicate.class,
-            "testImperativeExecutionPhrasesBuilder" ).lambda( fluentPredicates0 ).delegate(
+        configure( Model.class, FluentConclusionPredicate.class,
+                "testImperativeExecutionPhrasesBuilder" ).lambda( fluentPredicates0 ).delegate(
             targetDelegate );
       }
     };
@@ -294,8 +291,8 @@ public class TestImperativeIterableOrientedPhrasesBuilder
             @Override
             protected void build()
             {
-              rule( ParallelStrategy.<Boolean> separateThreadStrategy(),
-                  Model.class, FluentConclusionPredicate.class, "builder" ).lambda(
+              configure( ParallelStrategy.<Boolean>separateThreadStrategy(),
+                      Model.class, FluentConclusionPredicate.class, "builder" ).lambda(
                   compositionPredicate ).delegate( targetDelegate );
             }
           }.async( list ).checkedGet() );
@@ -351,7 +348,7 @@ public class TestImperativeIterableOrientedPhrasesBuilder
             @Override
             protected void build()
             {
-              through( Model.class, FluentConclusionPredicate.class, "ImperativeBuilder" ).lambda(
+              configure( Model.class, FluentConclusionPredicate.class, "ImperativeBuilder" ).lambda(
                   startEndPredicates ).delegate( targetDelegate );
             }
           }.async( list ).checkedGet() );

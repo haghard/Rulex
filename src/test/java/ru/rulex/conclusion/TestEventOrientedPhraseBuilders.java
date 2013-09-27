@@ -55,7 +55,7 @@ public class TestEventOrientedPhraseBuilders
       {
         protected void build()
         {
-          through( Model.class, "fact: [getInteger() == 211]" ).shouldMatch(
+          configure( Model.class, "fact: [getInteger() == 211]" ).shouldMatch(
               query( callOn( Model.class ).getInteger(), eq( 211 ), Model.class ) );
         }
       }.async( Model.from( 211 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
@@ -80,7 +80,7 @@ public class TestEventOrientedPhraseBuilders
       @Override
       protected void build()
       {
-        through( Model.class, "fact: [getInteger() == 11]" )
+        configure( Model.class, "fact: [getInteger() == 11]" )
           .shouldMatch(
               typeSafeQuery( number( Model.class, Integer.class, Model.INT_ACCESSOR ), eq( 11 ) ) );
       }
@@ -122,7 +122,7 @@ public class TestEventOrientedPhraseBuilders
     {
       protected void build()
       {
-        through( Model.class, "fact: [field:getInteger() == 10]" )
+        configure( Model.class, "fact: [field:getInteger() == 10]" )
           .shouldMatch( query( selector, eq( 10 ) ) );
       }
     };
@@ -155,7 +155,7 @@ public class TestEventOrientedPhraseBuilders
     {
       protected void build()
       {
-        through( Model.class, "fact: [field:getInteger() == 10]" ).shouldMatch( query( selector, predicate ) );
+        configure( Model.class, "fact: [field:getInteger() == 10]" ).shouldMatch( query( selector, predicate ) );
       }
     };
 
@@ -166,7 +166,7 @@ public class TestEventOrientedPhraseBuilders
     {
       protected void build()
       {
-        rule( separateThreadStrategy, Model.class, "fact: [field:getInteger() == 10]" ).shouldMatch(
+        configure( separateThreadStrategy, Model.class, "fact: [field:getInteger() == 10]" ).shouldMatch(
             query( selector0, predicate0 ) );
       }
     };
@@ -210,8 +210,8 @@ public class TestEventOrientedPhraseBuilders
       @Override
       protected void build()
       {
-        through( separateThreadStrategy, Model.class,
-            "fact: [field:getInt() < 100] : consequence:consequence" ).fact(
+        configure( separateThreadStrategy, Model.class,
+                "fact: [field:getInt() < 100] : consequence:consequence" ).fact(
             query( selector( selector ), lambda( lambda ) ) ).consequence( cSupplier );
       }
     };
@@ -245,7 +245,7 @@ public class TestEventOrientedPhraseBuilders
       @Override
       protected void build()
       {
-        through( builderStrategy, Model.class, "fact: [field:getInt() < 100] : consequence:consequence" )
+        configure( builderStrategy, Model.class, "fact: [field:getInt() < 100] : consequence:consequence" )
             .fact( query( selector( new Selector<Model, Integer>()
             {
               public Integer select( Model input )

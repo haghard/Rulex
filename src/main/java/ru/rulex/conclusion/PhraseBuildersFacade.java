@@ -228,7 +228,7 @@ public final class PhraseBuildersFacade
   /**
    * <p>
    * The class used for creation, configuration and running evaluation on
-   * manually created predicates. Main usage through anonymous inner class
+   * manually created predicates. Main usage configure anonymous inner class
    * instance.
    * </p>
    * <p/>
@@ -251,13 +251,13 @@ public final class PhraseBuildersFacade
      */
     protected abstract void build();
 
-    protected WithParser<T> through( Class<T> clazz, String description )
+    protected WithParser<T> configure( Class<T> clazz, String description )
     {
-      return rule( ParallelStrategy.<Boolean>serial(), clazz, description );
+      return configure( ParallelStrategy.<Boolean>serial(), clazz, description );
     }
 
-    protected WithParser<T> rule( ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
-                                      String description )
+    protected WithParser<T> configure( ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
+                                       String description )
     {
       setParallelStrategy( pStrategy );
       return ParserBuilders.newWithParser( getPhrase(), clazz, description );
@@ -284,11 +284,11 @@ public final class PhraseBuildersFacade
 
     public SimpleWithParser as( String description )
     {
-      return rule( ParallelStrategy.<Boolean>serial(), description );
+      return configure( ParallelStrategy.<Boolean>serial(), description );
     }
 
-    protected SimpleWithParser rule( ParallelStrategy<Boolean> pStrategy,
-                                     String description )
+    protected SimpleWithParser configure( ParallelStrategy<Boolean> pStrategy,
+                                          String description )
     {
       setParallelStrategy( pStrategy );
       return ParserBuilders.newSimpleWithParser( getPhrase(), description );
@@ -315,15 +315,15 @@ public final class PhraseBuildersFacade
      */
     protected abstract void build();
 
-    protected FactConsequenceParser<T> through(
+    protected FactConsequenceParser<T> configure(
             ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
             String description )
     {
       setParallelStrategy( pStrategy );
-      return rule( clazz, description );
+      return configure( clazz, description );
     }
 
-    protected FactConsequenceParser<T> rule( Class<T> clazz, String description )
+    protected FactConsequenceParser<T> configure( Class<T> clazz, String description )
     {
       return ParserBuilders.newFactConsequenceParser( getPhrase(), clazz, description );
     }
@@ -341,10 +341,10 @@ public final class PhraseBuildersFacade
 
     protected ScriptParser configure( String description )
     {
-      return rule( ParallelStrategy.<Boolean>serial(), description );
+      return configure( ParallelStrategy.<Boolean>serial(), description );
     }
 
-    protected ScriptParser rule( ParallelStrategy<Boolean> pStrategy, String description )
+    protected ScriptParser configure( ParallelStrategy<Boolean> pStrategy, String description )
     {
       setParallelStrategy( pStrategy );
       return ParserBuilders.newScriptParser( getPhrase(), description );
@@ -355,7 +355,7 @@ public final class PhraseBuildersFacade
    * <p>
    * The class used for creation, configuration and running evaluation using
    * Guice managed predicates from {@code GuicefyConclusionPredicates}. Main
-   * usage through
+   * usage configure
    * {@code ru.rulex.conclusion.guice.AbstractPhrasesAnalyzerModule} class
    * static methods.
    * </p>
@@ -642,9 +642,9 @@ public final class PhraseBuildersFacade
 
   /**
    * <p>
-   * Go through Iterate, except defined and and stop after first success.
+   * Go configure Iterate, except defined and and stop after first success.
    * <p>
-   * This class to direct usage through anonymous inner class instance in client
+   * This class to direct usage configure anonymous inner class instance in client
    * code
    * </p>
    * <p/>
@@ -664,7 +664,6 @@ public final class PhraseBuildersFacade
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
     protected <T> AbstractIterablePhrases<T> getIterablePhrase()
     {
       return ( AbstractIterablePhrases<T> ) delegate;
@@ -676,16 +675,16 @@ public final class PhraseBuildersFacade
      */
     protected abstract void build();
 
-    protected <T> IterableParser<T> through( Class<T> clazz, String description )
+    protected <T> IterableParser<T> configure( Class<T> clazz, String description )
     {
       return new IterableParserBuilder<T>( this.<T>getIterablePhrase(), clazz, description );
     }
 
-    protected <T> IterableParser<T> through( ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
-                                             String description )
+    protected <T> IterableParser<T> configure( ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
+                                               String description )
     {
       setParallelStrategy( pStrategy );
-      return through( clazz, description );
+      return configure( clazz, description );
     }
   }
 
@@ -771,22 +770,21 @@ public final class PhraseBuildersFacade
     protected abstract void build();
 
     @Override
-    @SuppressWarnings( "unchecked" )
     protected <T> AbstractImperativePhrases<T> getIterablePhrase()
     {
       return ( AbstractImperativePhrases<T> ) delegate;
     }
 
-    protected <T, E> DelegateParser<T, E> rule(
+    protected <T, E> DelegateParser<T, E> configure(
             ParallelStrategy<Boolean> pStrategy, Class<T> clazz,
             Class<E> argClass, String description )
     {
       setParallelStrategy( pStrategy );
-      return through( clazz, argClass, description );
+      return configure( clazz, argClass, description );
     }
 
-    protected <T, E> DelegateParser<T, E> through( Class<T> clazz, Class<E> argClass,
-                                                   String description )
+    protected <T, E> DelegateParser<T, E> configure( Class<T> clazz, Class<E> argClass,
+                                                     String description )
     {
       return ParserBuilders.newDelegateParser( this.<T>getIterablePhrase(), clazz, description );
     }
@@ -813,8 +811,7 @@ public final class PhraseBuildersFacade
 
   static final class VarEnvironment
   {
-
-    ImmutableSortedMap<String, Selector<?, ?>> environmentSelectors =
+    private ImmutableSortedMap<String, Selector<?, ?>> environmentSelectors =
             ImmutableSortedMap.of();
 
     public VarEnvironment( VarEntry<?,?>[] varEntryList )
