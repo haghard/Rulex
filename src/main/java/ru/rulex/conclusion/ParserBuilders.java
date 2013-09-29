@@ -27,7 +27,8 @@ import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
 import ru.rulex.conclusion.groovy.GroovyAllTrueImmutableRuleDslBuilder;
 import ru.rulex.conclusion.guice.PredicateImmutableAssertionUnit;
-import ru.rulex.external.JvmLanguageUtils;
+import ru.rulex.external.JvmLanguagesSupport;
+
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -223,8 +224,8 @@ public final class ParserBuilders
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void convertToJavaObjectsAndInit( final Object selector, Object predicate )
     {
-      final ConclusionPredicate<Object> javaPredicate = JvmLanguageUtils.toJavaPredicate( predicate );
-      final Selector javaSelector = JvmLanguageUtils.toJavaSelector( selector );
+      final ConclusionPredicate<Object> javaPredicate = JvmLanguagesSupport.convertToJavaPredicate( predicate );
+      final Selector javaSelector = JvmLanguagesSupport.convertToJavaSelector( selector );
       final ConclusionPredicate<?> predicate0 = query( javaSelector, javaPredicate );
       this.phrase.setEventClass( clazz );
       this.phrase.addUnit( new PredicateImmutableAssertionUnit( predicate0, description ) );

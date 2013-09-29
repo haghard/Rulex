@@ -9,11 +9,10 @@ rule = {
 
 rule2 = {
     onEvent event
-
-    $objectId more 7
-    $eventType atMost 2
-    $objectPrice atMost 80.99
-    $objectName equalsAnyOff( ["snickers", "mars", "picnic"] )
+    $(objectId) more 7
+    $(eventType) atMost 2
+    $(objectPrice) atMost 80.99
+    $(objectName) equalsAnyOff( ["snickers", "mars", "picnic"] )
     eval()
 }
 

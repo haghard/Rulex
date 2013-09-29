@@ -6,7 +6,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerImmutablePhraseModule;
 import ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerMutablePhraseModule;
 
-public class ObjectGraphBuilders
+public class ExpressionBuilders
 {
 
   public interface ObjectGraphBuilder<T>

@@ -20,16 +20,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import com.google.common.reflect.Invokable;
 import org.apache.log4j.Logger;
 
 import ru.rulex.conclusion.MoreSelectors.TypeSafeSelector;
-import ru.rulex.external.JvmBasedLanguageAdapter;
 import ru.rulex.conclusion.RulexMatchersDsl.AccessorDescriptor;
 import ru.rulex.conclusion.RulexMatchersDsl.Argument;
 import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
@@ -66,7 +62,7 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
    * write a static factory method to repeatedly dole out the object for each
    * requested type parameterization.
    */
-  private static final FluentConclusionPredicate<Object> ENTRY_POINT = new FluentConclusionPredicate<Object>()
+  public static final FluentConclusionPredicate<Object> dsl = new FluentConclusionPredicate<Object>()
   {
     private final ConclusionPredicate<Object> delegate = ConstantPredicate.FLUENT;
 
@@ -127,7 +123,7 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
   @SuppressWarnings("unchecked")
   public static <T> FluentConclusionPredicate<T> fluent()
   {
-    return (FluentConclusionPredicate<T>) ENTRY_POINT;
+    return (FluentConclusionPredicate<T>) dsl;
   }
 
   public static <T> FluentConclusionPredicate<T> always()
@@ -174,8 +170,8 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
    */
   public FluentConclusionPredicate<T> and( ConclusionPredicate<? super T> predicate )
   {
-    return this == ENTRY_POINT ? (predicate == ENTRY_POINT ? bind( ConstantPredicate.NEVER
-        .<T> withNarrowType() ) : bind( predicate )) : (predicate == ENTRY_POINT) ? bind( this )
+    return this == dsl ? (predicate == dsl ? bind( ConstantPredicate.NEVER
+        .<T> withNarrowType() ) : bind( predicate )) : (predicate == dsl ) ? bind( this )
         : DslFacade.and( this, predicate );
   }
 
@@ -199,8 +195,8 @@ public abstract class FluentConclusionPredicate<T> implements ConclusionPredicat
    */
   public FluentConclusionPredicate<T> or( ConclusionPredicate<? super T> predicate )
   {
-    return this == ENTRY_POINT ? (predicate == ENTRY_POINT ? bind( ConstantPredicate.NEVER
-        .<T> withNarrowType() ) : bind( predicate )) : (predicate == ENTRY_POINT) ? bind( this )
+    return this == dsl ? (predicate == dsl ? bind( ConstantPredicate.NEVER
+        .<T> withNarrowType() ) : bind( predicate )) : (predicate == dsl ) ? bind( this )
         : DslFacade.or( this, predicate );
   }
 

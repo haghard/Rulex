@@ -52,11 +52,11 @@ public class GroovyTestScripts
     try
     {
       final GroovyScriptEngine gse = new GroovyScriptEngine( roots );
-      final Model foo = Model.from( 91, 109.90f );
+      final Model foo = Model.from( 89, 109.90f );
 
       final Binding binding = new Binding();
       binding.setVariable( "foo", foo );
-      gse.run( "GroovyExample.groovy", binding );
+      gse.run( "GroovyGuiceExamples.groovy", binding );
       assertThat( ( Boolean ) binding.getVariable( "output" ) ).isTrue();
     } catch ( Exception ex )
     {

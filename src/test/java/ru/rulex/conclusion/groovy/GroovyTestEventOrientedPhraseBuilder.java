@@ -56,7 +56,7 @@ public class GroovyTestEventOrientedPhraseBuilder
           configure( "simple rule 1" )
                   .withFile( new File( "./groovy-script/ru/GroovyDslImmutableRule.groovy" ) );
         }
-      }.sync( new TradeEvent(1, 3, new BigDecimal("89.45"), "snickers" )) ).isTrue();
+      }.sync( new TradeEvent(1, 3, new BigDecimal("81.45"), "snickers" )) ).isTrue();
 
       assertThat( new GroovyEventOrientedPhrasesBuilder<TradeEvent>()
       {
@@ -66,7 +66,7 @@ public class GroovyTestEventOrientedPhraseBuilder
           configure( "simple rule 2" )
                   .withFile( new File( "./groovy-script/ru/GroovyDslImmutableRule.groovy" ) );
         }
-      }.sync( new TradeEvent(11, 13, new BigDecimal("89.45"), "mars" ) ) ).isFalse();
+      }.sync( new TradeEvent(11, 13, new BigDecimal("81.45"), "mars" ) ) ).isFalse();
 
     }
     catch ( Exception ex )

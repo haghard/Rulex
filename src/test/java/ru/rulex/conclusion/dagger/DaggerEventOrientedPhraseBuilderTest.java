@@ -1,15 +1,11 @@
 package ru.rulex.conclusion.dagger;
 
 import javax.inject.Named;
-
-import com.google.common.base.CharMatcher;
 import org.junit.Test;
 
 import ru.rulex.conclusion.Model;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerImmutableEventPhrasesBuilder;
 import ru.rulex.conclusion.PhraseBuildersFacade.DaggerMutableEventPhraseBuilder;
-
-import java.math.BigDecimal;
 
 import static dagger.ObjectGraph.create;
 import static junit.framework.TestCase.assertTrue;
@@ -21,10 +17,10 @@ import static ru.rulex.conclusion.PhraseBuildersFacade.var;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerImmutablePhraseModule.$less;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerImmutablePhraseModule.$more;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerImmutablePhraseModule.immutablePhrase;
-import static ru.rulex.conclusion.dagger.ObjectGraphBuilders.val;
+import static ru.rulex.conclusion.dagger.ExpressionBuilders.val;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerMutablePhraseModule.$less;
 import static ru.rulex.conclusion.dagger.DaggerObjectGraphBuilders.DaggerMutablePhraseModule.mutablePhrase;
-import static ru.rulex.conclusion.dagger.ObjectGraphBuilders.varInt;
+import static ru.rulex.conclusion.dagger.ExpressionBuilders.varInt;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 public class DaggerEventOrientedPhraseBuilderTest
@@ -127,23 +123,6 @@ public class DaggerEventOrientedPhraseBuilderTest
     assertTrue( result );
   }
 
-  @Test
-  public void testCharMatchers()
-  {
-    System.out.println(
-            CharMatcher.anyOf( "m12" ).matchesAnyOf( "vvvvm 1vvvvv 2bbbbb" ) );
-
-
-    //Predicates.contains( Pattern.compile("") ).apply(  )
-    /*
-    System.out.println(
-            CharMatcher.anyOf( "milk" ).matchesAnyOf( "some milk long" ));
-
-    System.out.println(
-      CharMatcher.forPredicate(Predicates.equalTo( 'm' ))
-              .matchesAnyOf( "2346234623472347" ));
-     */
-  }
    /*
   //TODO: implement like this API , with AnnotationProcessor
   static class Model1
@@ -198,9 +177,7 @@ public class DaggerEventOrientedPhraseBuilderTest
     <T, E> boolean eval( @Named( "x" ) E value0, @Named( "y" ) T value1 );
   }
 
-  interface IQuery<T, E>
-  {
-  }
+  interface IQuery<T, E> {}
 
   static class Query1 implements IQuery<Integer, Float>
   {

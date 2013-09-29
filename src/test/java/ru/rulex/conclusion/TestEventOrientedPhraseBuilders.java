@@ -58,7 +58,7 @@ public class TestEventOrientedPhraseBuilders
           configure( Model.class, "fact: [getInteger() == 211]" ).shouldMatch(
               query( callOn( Model.class ).getInteger(), eq( 211 ), Model.class ) );
         }
-      }.async( Model.from( 211 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+      }.async( Model.from( 211 ) ).checkedGet( 5, TimeUnit.SECONDS ) ).isTrue().as(
           "testEventOrientedPhrasesBuilderWithProxy error !!!" );
     }
     catch (Exception ex)
@@ -88,13 +88,13 @@ public class TestEventOrientedPhraseBuilders
 
     try
     {
-      assertThat( builder.async( Model.from( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+      assertThat( builder.async( Model.from( 11 ) ).checkedGet( 3, TimeUnit.SECONDS ) ).isTrue().as(
           "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
 
-      assertThat( builder.async( Model.from( 12 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isFalse().as(
+      assertThat( builder.async( Model.from( 12 ) ).checkedGet( 3, TimeUnit.SECONDS ) ).isFalse().as(
           "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
 
-      assertThat( builder.async( Model.from( 11 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+      assertThat( builder.async( Model.from( 11 ) ).checkedGet( 3, TimeUnit.SECONDS ) ).isTrue().as(
           "testEventOrientedPhrasesBuilderWithTypeSafeSelector error !!!" );
     }
     catch (Exception ex)
@@ -129,7 +129,7 @@ public class TestEventOrientedPhraseBuilders
 
     try
     {
-      assertThat( builder.async( Model.from( 10 ) ).checkedGet( 1, TimeUnit.SECONDS ) ).isTrue().as(
+      assertThat( builder.async( Model.from( 10 ) ).checkedGet( 3, TimeUnit.SECONDS ) ).isTrue().as(
           "testEventOrientedPhrasesBuilderWithSelector error !!!" );
     }
     catch (Exception ex)

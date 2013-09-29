@@ -22,12 +22,11 @@ import com.google.inject.name.Named;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.spi.DefaultElementVisitor;
 import com.google.inject.spi.Element;
-import com.google.inject.spi.Elements;
 import com.google.inject.spi.InstanceBinding;
 
 import ru.rulex.conclusion.*;
-import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder;
-import ru.rulex.external.JvmLanguageUtils;
+import ru.rulex.conclusion.PhraseBuildersFacade.GuiceImmutablePhrasesBuilder;
+import ru.rulex.external.JvmLanguagesSupport;
 
 import java.util.List;
 
@@ -42,16 +41,15 @@ import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
  * @author haghard
  * 
  */
-public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractModule
+public abstract class AbstractGuiceImmutablePhraseModule<T> extends AbstractModule
 {
   protected final ImmutableList<Element> elements;
 
   protected final ImmutableAbstractPhrase<T> phrase;
 
-  public static final Key<ConclusionPredicate> OR_KEY = Key.get( ConclusionPredicate.class,
-      named( "disjunction" ) );
+  public static final Key<ConclusionPredicate> OR_KEY = Key.get( ConclusionPredicate.class, named( "disjunction" ) );
 
-  protected GuiceMutableDependencyAnalyzerModule( ImmutableList<Element> elements, ImmutableAbstractPhrase<T> phrase )
+  protected AbstractGuiceImmutablePhraseModule( ImmutableList<Element> elements, ImmutableAbstractPhrase<T> phrase )
   {
     this.elements = elements;
     this.phrase = phrase;
@@ -74,11 +72,10 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
       return new BindingVisitor()
       {
         @Override
-        @SuppressWarnings(
-        { "unchecked", "rawtypes" })
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         public void visitBinding( final SinglePredicateInjectionRequest binding )
         {
-          Injector internalInjector = createInjector( new AbstractModule()
+          final Injector internalInjector = createInjector( new AbstractModule()
           {
             @Override
             public void configure()
@@ -87,7 +84,7 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
               binding.run();
             }
           } );
-          ConclusionPredicate<?> conclusionPredicate = internalInjector.getInstance( Key
+          final ConclusionPredicate<?> conclusionPredicate = internalInjector.getInstance( Key
               .get( GuiceGenericTypes.newGenericType( ConclusionPredicate.class, binding.getLiteral() ) ) );
 
           phrase.addUnit( new PredicateImmutableAssertionUnit( conclusionPredicate, binding.description() ) );
@@ -97,16 +94,15 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
         @SuppressWarnings({ "unchecked", "rawtypes" })
         public void visitBinding( final OrPredicatesInjectionRequest binding )
         {
-          Injector internalOrInjector = createInjector( new AbstractModule()
+          final Injector internalOrInjector = createInjector( new AbstractModule()
           {
-            @Override
-            public void configure()
+            @Override public void configure()
             {
               binding.setBinder( binder() );
               binding.run();
             }
           } );
-          ConclusionPredicate<?> conclusionPredicate = internalOrInjector.getInstance( OR_KEY );
+          final ConclusionPredicate<?> conclusionPredicate = internalOrInjector.getInstance( OR_KEY );
           phrase.addUnit( new PredicateImmutableAssertionUnit( conclusionPredicate, binding.description() ) );
         }
       };
@@ -117,16 +113,16 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
    *
    *
    */
-  protected abstract void interceptEarlierBinding();
+  protected abstract void injectBinding();
 
   /**
    * @param modules
-   *          {@code Module...}
+   * {@code Module...}
    * @return {@code Module}
    */
-  public static <T> Module $expression( Module... modules )
+  public static <T> Module immutablePhrase( ConclusionPredicateModule<?>... modules )
   {
-    return new InternalDslPhrasesBuilderModule<T>( ImmutableAbstractPhrase.<T>all(), getElements( modules ) );
+    return new GuiceDslImmutablePhraseModule<T>( ImmutableAbstractPhrase.<T>all(), getElements( modules ) );
   }
 
   /**
@@ -134,49 +130,49 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
    * @param modules
    * @return subclass {@code AbstractPhrasesAnalyzerModule}
    */
-  public static <T> Module $expression( Phrases phrase, Module... modules )
+  public static <T> Module immutablePhrase( Phrases phrase, ConclusionPredicateModule<?>... modules )
   {
-    return new InternalDslPhrasesBuilderModule<T>( phrase.<T>getImmutableConclusionPhrase() , Elements.getElements( modules ) );
+    return new GuiceDslImmutablePhraseModule<T>( phrase.<T>getImmutableConclusionPhrase() , getElements( modules ) );
   }
 
   /**
    * method for use with external language
    * 
    * @param conditionName
-   * @param pvalue
+   * @param value
    * @param selector
    * @return ConclusionPredicateModule<T>
    */
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $more(
-      final T pvalue, final Object selector, final String conditionName )
+      final T value, final Object selector, final String conditionName )
   {
-    final Selector<E, T> selector0 = JvmLanguageUtils.toJavaSelector( selector );
+    final Selector<E, T> selector0 = JvmLanguagesSupport.convertToJavaSelector( selector );
     return new ConclusionPredicateModule<T>()
     {
       @Override
       protected void bindPredicate()
       {
-        majority( conditionName, pvalue, selector0 );
+        bindMajority( conditionName, value, selector0 );
       }
     };
   }
 
   /**
    * 
-   * @param pvalue
+   * @param value
    * @param argument
    * @param conditionName
    * @return
    */
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $more(
-      final T pvalue, final T argument, final String conditionName )
+      final T value, final T argument, final String conditionName )
   {
     return new ConclusionPredicateModule<T>()
     {
       @Override
       protected void bindPredicate()
       {
-        majority( conditionName, pvalue, toSelector( argument ) );
+        bindMajority( conditionName, value, toSelector( argument ) );
       }
     };
   }
@@ -189,7 +185,7 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
       @Override
       protected void bindPredicate()
       {
-        minority( conditionName, pvalue, toSelector( argument ) );
+        bindMinority( conditionName, pvalue, toSelector( argument ) );
       }
     };
   }
@@ -205,13 +201,13 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
   public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $less(
       final T pvalue, final Object selector, final String conditionName )
   {
-    final Selector<E, T> selector0 = JvmLanguageUtils.toJavaSelector( selector );
+    final Selector<E, T> selector0 = JvmLanguagesSupport.convertToJavaSelector( selector );
     return new ConclusionPredicateModule<T>()
     {
       @Override
       protected void bindPredicate()
       {
-        minority( conditionName, pvalue, selector0 );
+        bindMinority( conditionName, pvalue, selector0 );
       }
     };
   }
@@ -224,7 +220,7 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
       @Override
       protected void bindPredicate()
       {
-        equality( conditionName, pvalue, toSelector( argument ) );
+        bindEquality( conditionName, pvalue, toSelector( argument ) );
       }
     };
   }
@@ -240,13 +236,13 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
   public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq( final T pvalue,
       final Object selector, final String conditionName )
   {
-    final Selector<E, T> selector0 = JvmLanguageUtils.<E, T> toJavaSelector( selector );
+    final Selector<E, T> selector0 = JvmLanguagesSupport.<E, T>convertToJavaSelector( selector );
     return new ConclusionPredicateModule<T>()
     {
       @Override
       protected void bindPredicate()
       {
-        equality( conditionName, pvalue, selector0 );
+        bindEquality( conditionName, pvalue, selector0 );
       }
     };
   }
@@ -255,15 +251,15 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
    * @param <T>
    * @return ConclusionPredicateModule<T>
    */
-  public static <T extends Comparable<? super T>> ConclusionPredicateModule<T> $or(
-      final String conditionName, final Module... modules )
+  public static <T extends Comparable<? super T>> ConclusionPredicateModule<T> or(
+          final String conditionName, final ConclusionPredicateModule<?>... modules )
   {
     return new ConclusionPredicateModule<T>()
     {
       @Override
       protected void bindPredicate()
       {
-        disjunction( conditionName, modules );
+        bindDisjunction( conditionName, modules );
       }
     };
   }
@@ -273,17 +269,17 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
    * TO DO : implement this
    * 
    */
-  static final class InternalTokenPhrasesAnalyzerModule<T> extends GuiceMutableDependencyAnalyzerModule<T>
+  static final class GuiceExpressionImmutablePhraseModule<T> extends AbstractGuiceImmutablePhraseModule<T>
   {
 
-    protected InternalTokenPhrasesAnalyzerModule( ImmutableList<Element> elements, ImmutableAbstractPhrase<T> phrase )
+    protected GuiceExpressionImmutablePhraseModule( ImmutableList<Element> elements, ImmutableAbstractPhrase<T> phrase )
     {
       super( elements, phrase );
       // TODO Auto-generated constructor stub
     }
 
     @Override
-    protected void interceptEarlierBinding()
+    protected void injectBinding()
     {
 
     }
@@ -296,26 +292,26 @@ public abstract class GuiceMutableDependencyAnalyzerModule<T> extends AbstractMo
 
   }
 
-  static final class InternalDslPhrasesBuilderModule<T> extends GuiceMutableDependencyAnalyzerModule<T>
+  static final class GuiceDslImmutablePhraseModule<T> extends AbstractGuiceImmutablePhraseModule<T>
   {
-    private final GuiceEventOrientedPhrasesBuilder phraseBuilder;
+    private final GuiceImmutablePhrasesBuilder phraseBuilder;
 
-    InternalDslPhrasesBuilderModule( ImmutableAbstractPhrase<T> phrase0, List<Element> elements )
+    GuiceDslImmutablePhraseModule( ImmutableAbstractPhrase<T> phrase0, List<Element> elements )
     {
       super( ImmutableList.<Element>copyOf( checkNotNull( elements ) ), phrase0 );
-      this.phraseBuilder = new GuiceEventOrientedPhrasesBuilder( phrase0 );
+      this.phraseBuilder = new GuiceImmutablePhrasesBuilder( phrase0 );
     }
 
     @Override
     protected void configure()
     {
       // phrase builder class binding
-      bind( GuiceEventOrientedPhrasesBuilder.class ).toInstance( phraseBuilder );
-      interceptEarlierBinding();
+      bind( GuiceImmutablePhrasesBuilder.class ).toInstance( phraseBuilder );
+      injectBinding();
     }
 
     @Override
-    protected void interceptEarlierBinding()
+    protected void injectBinding()
     {
       final BindingVisitor visitor = PREDICATE_INJECTION_INTERCEPTOR.asVisitor( phrase );
       // element as a

@@ -21,160 +21,119 @@ import org.junit.Test;
 
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.Model;
-import ru.rulex.conclusion.PhraseBuildersFacade.GuiceEventOrientedPhrasesBuilder;
-import ru.rulex.conclusion.Phrases;
-import ru.rulex.conclusion.delegate.Delegate;
+import ru.rulex.conclusion.PhraseBuildersFacade.GuiceImmutablePhrasesBuilder;
 
 import static com.google.inject.name.Names.named;
 import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
-import static ru.rulex.conclusion.delegate.ProxyUtils.toPredicate;
-import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 import static org.junit.Assert.fail;
 import static ru.rulex.conclusion.guice.GuiceGenericTypes.newEnclosedGenericType;
 import static ru.rulex.conclusion.guice.GuiceGenericTypes.newGenericType;
-import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.*;
 import static com.google.inject.Guice.*;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static ru.rulex.conclusion.guice.GuiceMutableDependencyAnalyzerModule.$expression;
+import static ru.rulex.conclusion.guice.AbstractGuiceImmutablePhraseModule.immutablePhrase;
+import static ru.rulex.conclusion.guice.AbstractGuiceImmutablePhraseModule.or;
+import static ru.rulex.conclusion.guice.PhraseDslBuilders.val;
 import static ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableEqualsConclusionPredicate;
 
 public class GuiceEventOrientedEngineModuleTest
 {
-  final Model orFoo = Model.from( 91, 100.91f );
-  final Model andFoo = Model.from( 6, 0, "aaaaaaa", false );
-  final Model disjFoo = Model.from( 6, 0, "aaaaaaa", false );
-
   @Test
-  @SuppressWarnings("unchecked")
-  public void testSelectorPredicateApi() throws Exception
+  public void simpleConditionGuicePhraseAsync()
   {
-    // no works with varargs
-    toPredicate( callOn( Delegate.class ).execute( new Integer[]
-    { 1, 2, 3 } ) ).apply( new Delegate<Integer>()
-    {
-      @Override
-      public void setContent( Iterable<?> collection )
-      {
-      }
-
-      @Override
-      public boolean execute( Integer... arguments )
-      {
-        assertThat( arguments.length ).isEqualTo( 3 );
-        return false;
-      }
-    } );
-
-    assertThat( toPredicate( callOn( Model.class ).getBoolean() ).apply( andFoo ) ).isFalse();
-    assertThat( toSelector( callOn( Model.class ).getInteger() ).select( andFoo ) ).isGreaterThan(
-        5 );
-    assertThat( toSelector( callOn( Model.class ).getString() ).select( andFoo ) ).isEqualTo(
-        "aaaaaaa" );
-  }
-
-  @Test
-  public void shouldBeValidWithTwoConditionsAsync()
-  {
-    final Model foo = Model.from( 10, 0, "aaaaaaa", false );
+    final Model foo = Model.from( 10, 0, "master card", false );
     try
     {
-      Injector injector = createInjector( $expression(
-          $less( 9, callOn( Model.class ).getInteger(), "9 < en.getInput()" ),
-          $eq( "aaaaaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) );
-
+      final Injector injector = createInjector( immutablePhrase(
+        val( 9 ).less( callOn( Model.class ).getInteger() ),
+        val( "master card" ).eq( callOn( Model.class ).getString() ),
+        val( callOn( Model.class ).getInteger() ).isNotNull(),
+        val( callOn( Model.class ).getFloat() ).isNotNull()
+      ));
       
-      GuiceEventOrientedPhrasesBuilder phraseBuilder = 
-          injector.getInstance( GuiceEventOrientedPhrasesBuilder.class );
+      final GuiceImmutablePhrasesBuilder phraseBuilder =
+              injector.getInstance( GuiceImmutablePhrasesBuilder.class );
+
       Boolean result = phraseBuilder.async( foo ).checkedGet();
-      assertThat( result ).as( "shouldBeValidWithTwoConditionsAsync error !!!" ).isTrue();
+      assertThat( result ).as( "simpleConditionGuicePhraseAsync error !!!" ).isTrue();
     }
     catch (Exception ex)
     {
-      fail( "shouldBeValidWithTwoConditionsAsync result error  ex!!!" + ex.getMessage() );
+      fail( "simpleConditionGuicePhraseAsync result error  ex!!!" + ex.getMessage() );
     }
   }
 
   @Test
-  public void shouldBeValidWithTwoConditionsSync()
+  public void simpleConditionGuicePhraseSync()
   {
-    final Model foo = Model.from( 23, 0, "aaaaaaa", false );
+    final Model foo = Model.from( 23, 0, "visa", false );
     try
     {
-      Injector injector = createInjector( $expression(
-        $less( 22, callOn( Model.class ).getInteger(), "22 < en.getInput()" ),
-        $eq( "aaaaaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) );
+      final Injector injector = createInjector( immutablePhrase(
+        val( 22 ).less( callOn( Model.class ).getInteger() ),
+        val( "visa" ).eq( callOn( Model.class ).getString() ),
+        val( "^visa*" ).regExp( callOn( Model.class ).getString() ),
+        val( "^visa*", "^vis*" ).regExps( callOn( Model.class ).getString() ),
+        val( "visa1", "visa", "visa2" ).equalsAnyOff( callOn( Model.class ).getString() )));
 
-      GuiceEventOrientedPhrasesBuilder phraseBuilder = injector
-          .getInstance( GuiceEventOrientedPhrasesBuilder.class );
-      Boolean result = phraseBuilder.async( foo ).checkedGet();
-      assertThat( result ).as( "shouldBeValidWithTwoConditionsSync error !!!" )
+      final GuiceImmutablePhrasesBuilder phraseBuilder = 
+            injector.getInstance( GuiceImmutablePhrasesBuilder.class );
+
+      Boolean result = phraseBuilder.sync( foo );
+      assertThat( result ).as( "simpleConditionGuicePhraseSync error !!!" )
           .isTrue();
     }
     catch (Exception ex)
     {
-      fail( "shouldBeValidWithTwoConditionsSync result error  ex!!!"
+      fail( "simpleConditionGuicePhraseSync result error  ex!!!"
           + ex.getMessage() );
-    }
-  }
-
-  @Test
-  public void shouldBeValidBetweenConditions()
-  {
-    Injector injector = createInjector(
-        $expression( Phrases.ANY_TRUE,
-          $more( 92, callOn( Model.class ).getInteger(), "92 > en.getInput()" ) ),
-          $less( 56, callOn( Model.class ).getInteger(), "56 > en.getInput()" ) );
-
-    final GuiceEventOrientedPhrasesBuilder phraseBuilder = injector
-        .getInstance( GuiceEventOrientedPhrasesBuilder.class );
-    try
-    {
-      boolean result = phraseBuilder.async( orFoo ).get();
-      assertThat( result ).as( "shouldBeValidBetweenConditions error !!!" ).isTrue();
-    }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-      fail( "shouldBeValidBetweenConditions ex error !!!" );
     }
   }
 
   @Test
   public void shouldBeValidWithComplexConditionsAsync()
   {
-    Injector injector = createInjector( $expression(
-        $more( 8f, callOn( Model.class ).getFloat(), "8 > en.getFloat()" ),
-          $or( "or test condition",
-        $more( 7, callOn( Model.class ).getInteger(), "7 > en.getInteger()" ),
-        $eq( "aaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) ) );
+    final Model foo = Model.from( 6, 0, "bread", false );
+    Injector injector = createInjector( immutablePhrase(
+      val( 8f ).more( callOn( Model.class ).getFloat() ),
+      or( "or",
+        val( 7 ).more( callOn( Model.class ).getInteger() ),
+        val( "visa" ).eq( callOn( Model.class ).getString() )
+      ),
+      or( "or",
+        val( "visa" ).eq( callOn( Model.class ).getString()),
+        val( 7 ).more( callOn( Model.class ).getInteger()
+        )
+      )
+    ));
 
-    final GuiceEventOrientedPhrasesBuilder enginePhrase = injector
-        .getInstance( GuiceEventOrientedPhrasesBuilder.class );
+    final GuiceImmutablePhrasesBuilder enginePhrase = injector
+        .getInstance( GuiceImmutablePhrasesBuilder.class );
     try
     {
-      boolean result = enginePhrase.async( disjFoo ).checkedGet();
-      assertThat( result ).as( "shouldBeValidWithComplexConditionsAsync error !!!" ).isTrue();
+      boolean result = enginePhrase.async( foo ).checkedGet();
+      assertThat( result ).as( "shouldBeValidWithComplexConditions error !!!" ).isTrue();
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
-      fail( "shouldBeValidWithComplexConditionsAsync result error ex !!!" );
+      fail( "shouldBeValidWithComplexConditions result error ex !!!" );
     }
   }
 
   @Test
   public void shouldBeValidWithComplexConditionsSync()
   {
-    final Model foo = Model.from( 6, 0, "aaaaaaa", false );
-    Injector injector = createInjector( $expression(
-        $more( 8f, callOn( Model.class ).getFloat(), "8 > en.getFloat()" ),
-          $or( "or test condition",
-        $eq( true, callOn( Model.class ).getBoolean(), "false eq en.getBoolean()" ),
-        $more( 7, callOn( Model.class ).getInteger(), "7 > en.getInteger()" ),
-        $eq( "aaaa", callOn( Model.class ).getString(), "aaaaaaa eq en.getString()" ) ) ) );
+    final Model foo = Model.from( 6, 0, "maestro", false );
+    Injector injector = createInjector( immutablePhrase(
+       val( 8f ).more( callOn( Model.class ).getFloat() ),
+       or( "or test condition",
+        val( 7 ).more( callOn( Model.class ).getInteger() ),
+        val( "maestro" ).eq( callOn( Model.class ).getString() )
+       )
+    ));
 
-    final GuiceEventOrientedPhrasesBuilder enginePhrase = injector
-        .getInstance( GuiceEventOrientedPhrasesBuilder.class );
+    final GuiceImmutablePhrasesBuilder enginePhrase = injector
+        .getInstance( GuiceImmutablePhrasesBuilder.class );
     try
     {
       boolean result = enginePhrase.async( foo ).checkedGet();
@@ -190,7 +149,6 @@ public class GuiceEventOrientedEngineModuleTest
   @Test
   public void injectionTest()
   {
-    
     final Injector injector =  Guice.createInjector( new AbstractModule()
     {
       @Override
@@ -199,7 +157,7 @@ public class GuiceEventOrientedEngineModuleTest
 
     InjectableEqualsConclusionPredicate p = injector.getInstance(new Key<InjectableEqualsConclusionPredicate<Integer>>() {});
 
-    final TypeLiteral<Integer> genericType =TypeLiteral.get(Integer.class);
+    final TypeLiteral<Integer> genericType = TypeLiteral.get(Integer.class);
     final Injector injector2 = Guice.createInjector( new AbstractModule()
     {
       @Override protected void configure() {

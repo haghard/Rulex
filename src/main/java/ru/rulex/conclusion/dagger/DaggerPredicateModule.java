@@ -7,7 +7,7 @@ import ru.rulex.conclusion.*;
 
 import ru.rulex.conclusion.FluentConclusionPredicate.SelectorPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableAtMostConclusionPredicate;
-import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableContainsPredicate;
+import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableMatchAnyOffPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableAtLeastConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableEqualsConclusionPredicate;
 import ru.rulex.conclusion.guice.InjectableConclusionPredicates.InjectableLessConclusionPredicate;
@@ -58,7 +58,7 @@ public class DaggerPredicateModule
       }
       case equalsAnyOff: {
         return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                new InjectableContainsPredicate( (ImmutableSet )value.value ) ) );
+                new InjectableMatchAnyOffPredicate( (ImmutableSet )value.value ) ) );
       }
       default:
         throw new IllegalArgumentException( "DaggerPredicateModule.providePredicate() unsupported operation " );

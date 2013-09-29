@@ -95,3 +95,9 @@ builder.using("french") {
 }
 
 builder.build()
+
+
+def list = [1, 2, 3]
+
+factorial = list.inject(1) { fac, item ->  fac * item }
+assert factorial == 1 * 1 * 2 * 3

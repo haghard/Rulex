@@ -85,16 +85,9 @@ public class GroovyAllTrueImmutableRuleDslBuilder<T> extends GroovyObjectSupport
   {
     capture( ProxyUtils.<T, E>toSelector( null ),
             callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-                    new InjectableContainsPredicate( ImmutableSet.copyOf( values ) ))));
+                    new InjectableMatchAnyOffPredicate( ImmutableSet.copyOf( values ) ))));
     return this;
   }
-
-  /*
-   * case equalsAnyOff: {
-   return callOn( ConclusionPredicate.class, ConclusionPredicate.class.cast(
-   new InjectableContainsPredicate( (ImmutableSet )value.value ) ) );
-   }
-   */
 
   public void eval()
   {

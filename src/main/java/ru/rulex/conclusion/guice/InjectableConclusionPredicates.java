@@ -20,6 +20,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import ru.rulex.conclusion.ConclusionPredicate;
+
+import java.util.regex.Pattern;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class InjectableConclusionPredicates
@@ -27,6 +30,82 @@ public final class InjectableConclusionPredicates
   @Inject
   private InjectableConclusionPredicates()
   {
+  }
+
+  public static class InjectableAlwaysFalsePredicate<T> implements ConclusionPredicate<T>
+  {
+    private final T boolValue;
+
+    @Inject
+    public InjectableAlwaysFalsePredicate( Boolean boolValue )
+    {
+      this.boolValue = ( T ) boolValue;
+    }
+
+    @Override
+    public boolean apply( T value )
+    {
+      return Boolean.FALSE;
+    }
+
+    @Override
+    public java.lang.String toString()
+    {
+      return String.format( " $always false " );
+    }
+  }
+
+  public static class InjectableAlwaysTruePredicate<T> implements ConclusionPredicate<T>
+  {
+    private final T boolValue;
+
+    @Inject
+    public InjectableAlwaysTruePredicate( Boolean boolValue )
+    {
+      this.boolValue = ( T ) boolValue;
+    }
+
+    @Override
+    public boolean apply( T value )
+    {
+      return Boolean.FALSE;
+    }
+
+    @Override
+    public java.lang.String toString()
+    {
+      return String.format( " $always false " );
+    }
+  }
+
+  public static class InjectableIsNullConclusionPredicate<T> implements ConclusionPredicate<T>
+  {
+    @Override
+    public boolean apply( T argument )
+    {
+      return argument == null;
+    }
+
+    @Override
+    public String toString()
+    {
+      return " $IsNull ";
+    }
+  }
+
+  public static class InjectableNotNullConclusionPredicate<T> implements ConclusionPredicate<T>
+  {
+    @Override
+    public boolean apply( T argument )
+    {
+      return argument != null;
+    }
+
+    @Override
+    public String toString()
+    {
+      return " $isNotNull ";
+    }
   }
 
   public static class InjectableEqualsConclusionPredicate<T extends Comparable<? super T>> implements
@@ -157,39 +236,79 @@ public final class InjectableConclusionPredicates
     }
   }
 
-  public static class InjectableContainsPredicate implements ConclusionPredicate<String> {
-    private final ImmutableSet<String> variants;
+  public static class InjectableRegexpPredicate<T> implements  ConclusionPredicate<T>
+  {
+    private final Pattern pattern;
 
     @Inject
-    public InjectableContainsPredicate( ImmutableSet<String> pattern ) {
-      this.variants = ImmutableSet.copyOf(pattern);
+    InjectableRegexpPredicate( String expression )
+    {
+      pattern = Pattern.compile( expression, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE );
     }
 
     @Override
-    public boolean apply( String value )
+    public boolean apply( T argument )
     {
-      return variants.contains( value  );
+      return pattern.matcher((CharSequence) argument).find();
+    }
+
+    @Override public String toString()
+    {
+      return String.format("%s $match ", pattern );
+    }
+  }
+
+  public static class InjectableMultiRegexpPredicate<T> implements  ConclusionPredicate<T>
+  {
+    private ImmutableSet<Pattern> patterns = ImmutableSet.of();
+
+    @Inject
+    InjectableMultiRegexpPredicate( ImmutableSet<String> expressions )
+    {
+      final ImmutableSet.Builder<Pattern> builder = ImmutableSet.builder();
+      for ( String expression : expressions )
+      {
+          builder.add( Pattern.compile( expression, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE ) );
+      }
+      patterns = builder.build();
+    }
+
+    @Override
+    public boolean apply( T argument )
+    {
+      for (Pattern pattern : patterns)
+        if (pattern.matcher((CharSequence) argument).find())
+          return true;
+
+      return false;
+    }
+
+    @Override
+    public String toString()
+    {
+      return String.format("%s $match any ", patterns );
+    }
+  }
+
+  public static class InjectableMatchAnyOffPredicate<T> implements ConclusionPredicate<T>
+  {
+    private final ImmutableSet<String> variants;
+
+    @Inject
+    public InjectableMatchAnyOffPredicate( ImmutableSet<String> variants0 )
+    {
+      this.variants = ImmutableSet.copyOf( variants0 );
+    }
+
+    @Override
+    public boolean apply( T value )
+    {
+      return variants.contains( value );
     }
 
     @Override public String toString()
     {
       return String.format("%s $equalsAny ", variants );
-    }
-  }
-
-  public static class InjectableExactlyMatchConclusionPredicate implements ConclusionPredicate<String>
-  {
-    private final String parameter;
-
-    public InjectableExactlyMatchConclusionPredicate( String parameter )
-    {
-      this.parameter = parameter;
-    }
-
-    @Override
-    public boolean apply( String argument )
-    {
-      return parameter.equals( argument );
     }
   }
 

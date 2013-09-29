@@ -19,9 +19,6 @@ package ru.rulex.conclusion;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import ru.rulex.conclusion.ConclusionPredicate;
-import ru.rulex.conclusion.FluentConclusionPredicate;
-
 import static org.junit.Assert.*;
 import static ru.rulex.conclusion.FluentConclusionPredicate.*;
 import static ru.rulex.conclusion.RulexMatchersDsl.*;
@@ -151,7 +148,7 @@ public class TestFluentConclusionPredicate
 
     assertTrue(
         "testCompositionsFluentPredicates2 (eq AND eq AND eq) OR eq ",
-        fluent().eq( argument( 39 ), descriptor( Model.class, accessor ) )
+        dsl.eq( argument( 39 ), descriptor( Model.class, accessor ) )
             .and( fluent().eq( argument( 39 ), descriptor( Model.class, accessor ) ) )
             .and( fluent().eq( argument( 39 ), descriptor( Model.class, accessor ) ) )
             .or( fluent().eq( argument( 40 ), descriptor( Model.class, accessor ) ) ).apply( mock ) );

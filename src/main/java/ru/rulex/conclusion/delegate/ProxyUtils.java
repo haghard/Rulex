@@ -24,6 +24,7 @@ import ru.rulex.conclusion.dagger.SelectorPipeline;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 
@@ -186,13 +187,46 @@ public class ProxyUtils
     }
   }
 
+  private static <T> Object returnType( final Class<T> clazz )
+  {
+    if ( ( clazz == Integer.class ) || ( clazz == int.class ) )
+    {
+      return Integer.MAX_VALUE;
+    }
+    else if ( ( clazz == Float.class ) || ( clazz == float.class ) )
+    {
+      return Float.MAX_VALUE;
+    }
+    else if ( clazz == String.class )
+    {
+      return "";
+    }
+    else if ( clazz == BigDecimal.class )
+    {
+      return BigDecimal.ZERO;
+    }
+    else if ( ( clazz == Character.class ) || ( clazz == char.class ) )
+    {
+      return Character.LINE_SEPARATOR;
+    }
+    else if ( ( clazz == Double.class ) || ( clazz == double.class ) )
+    {
+      return Double.MAX_VALUE;
+    }
+    else if ( ( clazz == Boolean.class ) || ( clazz == boolean.class ) )
+    {
+      return true;
+    }
+    return null;
+  }
+
   private static class PushableHandler implements InvocationHandler
   {
     @Override
     public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
     {
       pushInvokable( Invokable.invokableMethod( method, args ) );
-      return true;
+      return returnType( method.getReturnType() );
     }
   }
 
@@ -202,7 +236,7 @@ public class ProxyUtils
     public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
     {
       pushInvokable( Invokable.invokableMethod( method, args ) );
-      return null;
+      return returnType( method.getReturnType() );
     }
   }
 }

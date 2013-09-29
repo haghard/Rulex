@@ -1,5 +1,6 @@
 package ru.rulex.external;
 
+import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import ru.rulex.conclusion.ConclusionPredicate;
 import ru.rulex.conclusion.Selector;
@@ -8,10 +9,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class JvmLanguageUtils
+public final class JvmLanguagesSupport
 {
 
-  private static final Logger logger = Logger.getLogger( JvmLanguageUtils.class );
+  private static final Logger logger = Logger.getLogger( JvmLanguagesSupport.class );
 
   private final static Map<Class<?>, JvmBasedLanguageAdapter> languageAdaptors = new HashMap<Class<?>, JvmBasedLanguageAdapter>();
 
@@ -70,51 +71,46 @@ public final class JvmLanguageUtils
   }
 
   // check for language adaptor
-  private static JvmBasedLanguageAdapter findLanguageAdapter( Object closure )
+  private static JvmBasedLanguageAdapter getLanguageAdapter( Object closure )
   {
     for (final Class<?> c : languageAdaptors.keySet())
     {
       if ( c.isInstance( closure ) )
       {
-        final JvmBasedLanguageAdapter la = languageAdaptors.get( c );
-        return la;
+        final JvmBasedLanguageAdapter languageAdapter = languageAdaptors.get( c );
+        return languageAdapter;
       }
     }
     throw new RuntimeException( "Unsupported closure type: " + closure.getClass().getSimpleName() );
   }
 
-  public static <T> ConclusionPredicate<T> toJavaPredicate( final Object predicate )
+  public static <T> ConclusionPredicate<T> convertToJavaPredicate( final Object predicate )
   {
-    if ( predicate == null )
-      throw new RuntimeException( "predicate is null. Can't send arguments to null predicate." );
-    final JvmBasedLanguageAdapter la = findLanguageAdapter( predicate );
+    Preconditions.checkNotNull( predicate, "predicate is null. Can't send arguments to null predicate." );
+    final JvmBasedLanguageAdapter languageAdapter = getLanguageAdapter( predicate );
     return new ConclusionPredicate<T>()
     {
       @Override
       public boolean apply( Object argument )
       {
-        Object result = la.call( predicate, new Object[] { argument } );
-        if (result instanceof Boolean) 
-          return ((Boolean)result).booleanValue();
-        
-        throw new IllegalArgumentException("result should be boolean");
+        return (Boolean)languageAdapter.call( predicate, new Object[] { argument } );
+        //if (result instanceof Boolean)  return ((Boolean)result).booleanValue();
+        //throw new IllegalArgumentException("result should be boolean");
       }
     };
   }
 
-  public static <E, U extends Comparable<? super U>> Selector<E, U> toJavaSelector(
-          final Object selector )
+  public static <E, U extends Comparable<? super U>> Selector<E, U> convertToJavaSelector(final Object selector )
   {
-    if ( selector == null )
-      throw new RuntimeException( "selector is null. Can't send arguments to null selector." );
-    final JvmBasedLanguageAdapter la = findLanguageAdapter( selector );
+    Preconditions.checkNotNull( selector, "selector is null. Can't send arguments to null selector. ");
+    final JvmBasedLanguageAdapter languageAdapter = getLanguageAdapter( selector );
     return new Selector<E, U>()
     {
       @Override
       @SuppressWarnings("unchecked")
       public U select( Object argument )
       {
-        return (U) la.call( selector, new Object[] { argument } );
+        return (U) languageAdapter.call( selector, new Object[] { argument } );
       }
     };
   }

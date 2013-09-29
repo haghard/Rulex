@@ -22,7 +22,7 @@ package ru.rulex.conclusion;
 public enum Phrases
 {
 
-  ALL_TRUE
+  ALL
   {
     @Override
     public MutableAbstractPhrase<Object> getConclusionPhrase()
@@ -37,7 +37,7 @@ public enum Phrases
     }
   },
 
-  ANY_TRUE
+  ANY
   {
     @Override
     public MutableAbstractPhrase<Object> getConclusionPhrase()
@@ -55,12 +55,4 @@ public enum Phrases
   public abstract <T> MutableAbstractPhrase<T> getConclusionPhrase();
 
   public abstract <T> ImmutableAbstractPhrase<T> getImmutableConclusionPhrase();
-
-  /*
-  public <T, E> AbstractPhrase<T, E> withNarrowedType()
-  {
-    return (AbstractPhrase<T>) this.<T> getConclusionPhrase();
-  }
-  */
-
 }

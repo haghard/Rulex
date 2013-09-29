@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
+
 import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
 import static ru.rulex.conclusion.execution.Callables.*;
 
@@ -365,7 +366,7 @@ public final class PhraseBuildersFacade
    * <b>Usage example: </b>
    * {@code
    * Injector injector = Guice.createInjector(
-   *    $expression(Phrases.ANY_TRUE,
+   *    $expression(Phrases.ANY,
    *      $less(9, callOn(Model.class).getInteger(), "9 < en.getInput()"),
    *      $eq("aaaaaaa", callOn(Model.class).getString(), "aaaaaaa eq en.getString()")));
    *
@@ -384,9 +385,9 @@ public final class PhraseBuildersFacade
    * <p/>
    * <b> Attention !!! </b> Other usages of this class are prohibited
    */
-  public static final class GuiceEventOrientedPhrasesBuilder extends BaseEventOrientedPhraseBuilder<Object>
+  public static final class GuiceImmutablePhrasesBuilder extends BaseEventOrientedPhraseBuilder<Object>
   {
-    public <T> GuiceEventOrientedPhrasesBuilder( ImmutableAbstractPhrase<T> delegate )
+    public <T> GuiceImmutablePhrasesBuilder( ImmutableAbstractPhrase<T> delegate )
     {
       super( (ImmutableAbstractPhrase<Object>) delegate, ParallelStrategy.<Boolean>serial() );
     }
