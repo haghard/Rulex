@@ -38,7 +38,7 @@ public class GroovyTestScripts
     final GroovyShell groovyShell = new GroovyShell();
     try
     {
-      groovyShell.evaluate( new File( "./groovy-script/GroovyExampleAll.groovy" ) );
+      groovyShell.evaluate( new File( "./groovy-script/GroovyPhraseBuilders.groovy" ) );
     } catch ( Exception ex )
     {
       ex.printStackTrace();
