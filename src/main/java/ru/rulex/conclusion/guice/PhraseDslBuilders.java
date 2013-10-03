@@ -87,7 +87,6 @@ public class PhraseDslBuilders
    *
    * @param <T>
    */
-  @SuppressWarnings("unchecked")
   static abstract class AbstractModuleBuilder<T extends Comparable<? super T>>
           implements ModuleBuilder<T> , NullableModuleBuilder<T>
   {
@@ -390,6 +389,13 @@ public class PhraseDslBuilders
     }
   }
 
+  /**
+   * Groovy example:
+   * val( { foo0 -> return foo0.getInteger() } ).isNotNull()
+   * 
+   * @param closure
+   * @return
+   */
   public static <T extends Number & Comparable<? super T>> NullableModuleBuilder<T> val( final Object closure )
   {
     return new NullableModuleBuilderDefault<T>( closure );

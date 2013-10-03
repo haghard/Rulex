@@ -35,7 +35,9 @@ import java.util.concurrent.Executor;
 import org.apache.log4j.Logger;
 
 import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
+import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 import static ru.rulex.conclusion.execution.Callables.*;
+import static ru.rulex.conclusion.guice.PhraseDslBuilders.val;
 
 /**
  * <pre>
@@ -366,12 +368,11 @@ public final class PhraseBuildersFacade
    * <b>Usage example: </b>
    * {@code
    * Injector injector = Guice.createInjector(
-   *    $expression(Phrases.ANY,
-   *      $less(9, callOn(Model.class).getInteger(), "9 < en.getInput()"),
-   *      $eq("aaaaaaa", callOn(Model.class).getString(), "aaaaaaa eq en.getString()")));
+   *    val( 8f ).more( callOn( Model.class ).getFloat() ),
+   *    val( "visa1", "visa", "visa2" ).equalsAnyOff( callOn( Model.class ).getString() ));
    *
-   * final AbstractEventOrientedPhraseBuilder phraseBuilder =
-   *       injector.getInstance(AbstractEventOrientedPhraseBuilder.class);
+   * final GuiceImmutablePhrasesBuilder phraseBuilder =
+   *       injector.getInstance(GuiceImmutablePhrasesBuilder.class);
    *
    * Boolean result = phraseBuilder.async(andFoo).checkedGet();
    * }
@@ -448,7 +449,7 @@ public final class PhraseBuildersFacade
     {
       Preconditions.checkNotNull( environment );
       //it's agly way to do this, fix later
-      final Set<String> undefined = new HashSet<>( getPhrase().availableVars() );
+      final Set<String> undefined = new HashSet<String>( getPhrase().availableVars() );
       undefined.removeAll( environment.environmentVars() );
       if( undefined.size() != 0 )
         throw new IllegalStateException( "Undefined variables was found: " + Joiner.on(',').join( undefined ) );

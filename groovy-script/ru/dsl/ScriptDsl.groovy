@@ -156,3 +156,46 @@ builder.jsonRuleSchema() {
 }
 
 println builder.toPrettyString()
+
+
+class Event {
+  def eventId
+  def kkmNumber
+  def price;
+}
+
+
+public interface ListExtractor<T> { List unapply( T source); }
+
+public interface MapExtractor<T> { Map unapply( T source ); }
+
+Closure<Boolean> assertionListClosure = { List list -> list[0] == 6 && list[1] == 56  }
+
+Closure<Boolean> assertionMapClosure = { Map map -> map[1] == 6 && map[2] == 56  }
+
+ListExtractor extractor = { Event event -> [ event.eventId, event.kkmNumber ] } as ListExtractor
+
+MapExtractor mExtractor = { Event event -> [ 1: event.eventId, 2: event.kkmNumber ] } as MapExtractor
+
+
+//println assertionListClosure.call( extractor.unapply( new Event(eventId: 6, kkmNumber: 56, price: 560f )))
+
+//println assertionMapClosure.call( mExtractor.unapply( new Event(eventId: 6, kkmNumber: 56, price: 560f )))
+
+
+
+println( [ new Event(eventId: 1, kkmNumber: 56, price: 560f ), new Event(eventId: 2, kkmNumber: 56, price: 560f )]
+        .inject(true) { boolean acc, Event item -> acc & item.eventId == 2 } )
+
+//println ({ Event event -> event.eventId } as ListExtractor).create(new Event(eventId: 6, kkmNumber: 56, price: 560f))
+//({ int id -> id > 5 } as Closure).call(
+
+
+/*
+Closure<Boolean> curriedAssertion = closure.curry("-item")
+
+Closure<Boolean> assertionClosure = { it.startsWith('XXX') }
+assertionClosure.curry()
+
+println closure { it.startsWith('XXX') }
+*/

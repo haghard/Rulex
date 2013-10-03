@@ -26,7 +26,6 @@ import com.google.inject.spi.InstanceBinding;
 
 import ru.rulex.conclusion.*;
 import ru.rulex.conclusion.PhraseBuildersFacade.GuiceImmutablePhrasesBuilder;
-import ru.rulex.external.JvmLanguagesSupport;
 
 import java.util.List;
 
@@ -34,7 +33,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.inject.name.Names.named;
 import static com.google.inject.spi.Elements.getElements;
 import static com.google.inject.Guice.*;
-import static ru.rulex.conclusion.delegate.ProxyUtils.toSelector;
 
 /**
  * 
@@ -122,7 +120,7 @@ public abstract class AbstractGuiceImmutablePhraseModule<T> extends AbstractModu
    */
   public static <T> Module immutablePhrase( ConclusionPredicateModule<?>... modules )
   {
-    return new GuiceDslImmutablePhraseModule<T>( ImmutableAbstractPhrase.<T>all(), getElements( modules ) );
+    return new GuiceObjectDslImmutablePhraseModule<T>( ImmutableAbstractPhrase.<T>all(), getElements( modules ) );
   }
 
   /**
@@ -132,119 +130,7 @@ public abstract class AbstractGuiceImmutablePhraseModule<T> extends AbstractModu
    */
   public static <T> Module immutablePhrase( Phrases phrase, ConclusionPredicateModule<?>... modules )
   {
-    return new GuiceDslImmutablePhraseModule<T>( phrase.<T>getImmutableConclusionPhrase() , getElements( modules ) );
-  }
-
-  /**
-   * method for use with external language
-   * 
-   * @param conditionName
-   * @param value
-   * @param selector
-   * @return ConclusionPredicateModule<T>
-   */
-  public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $more(
-      final T value, final Object selector, final String conditionName )
-  {
-    final Selector<E, T> selector0 = JvmLanguagesSupport.convertToJavaSelector( selector );
-    return new ConclusionPredicateModule<T>()
-    {
-      @Override
-      protected void bindPredicate()
-      {
-        bindMajority( conditionName, value, selector0 );
-      }
-    };
-  }
-
-  /**
-   * 
-   * @param value
-   * @param argument
-   * @param conditionName
-   * @return
-   */
-  public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $more(
-      final T value, final T argument, final String conditionName )
-  {
-    return new ConclusionPredicateModule<T>()
-    {
-      @Override
-      protected void bindPredicate()
-      {
-        bindMajority( conditionName, value, toSelector( argument ) );
-      }
-    };
-  }
-
-  public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $less(
-      final T pvalue, final T argument, final String conditionName )
-  {
-    return new ConclusionPredicateModule<T>()
-    {
-      @Override
-      protected void bindPredicate()
-      {
-        bindMinority( conditionName, pvalue, toSelector( argument ) );
-      }
-    };
-  }
-
-  /**
-   * method for use with external language
-   * 
-   * @param conditionName
-   * @param pvalue
-   * @param selector
-   * @return
-   */
-  public static <E, T extends Number & Comparable<? super T>> ConclusionPredicateModule<T> $less(
-      final T pvalue, final Object selector, final String conditionName )
-  {
-    final Selector<E, T> selector0 = JvmLanguagesSupport.convertToJavaSelector( selector );
-    return new ConclusionPredicateModule<T>()
-    {
-      @Override
-      protected void bindPredicate()
-      {
-        bindMinority( conditionName, pvalue, selector0 );
-      }
-    };
-  }
-
-  public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq( final T pvalue,
-      final T argument, final String conditionName )
-  {
-    return new ConclusionPredicateModule<T>()
-    {
-      @Override
-      protected void bindPredicate()
-      {
-        bindEquality( conditionName, pvalue, toSelector( argument ) );
-      }
-    };
-  }
-
-  /**
-   * method for use with external language
-   * 
-   * @param conditionName
-   * @param pvalue
-   * @param selector
-   * @return
-   */
-  public static <E, T extends Comparable<? super T>> ConclusionPredicateModule<T> $eq( final T pvalue,
-      final Object selector, final String conditionName )
-  {
-    final Selector<E, T> selector0 = JvmLanguagesSupport.<E, T>convertToJavaSelector( selector );
-    return new ConclusionPredicateModule<T>()
-    {
-      @Override
-      protected void bindPredicate()
-      {
-        bindEquality( conditionName, pvalue, selector0 );
-      }
-    };
+    return new GuiceObjectDslImmutablePhraseModule<T>( phrase.<T>getImmutableConclusionPhrase() , getElements( modules ) );
   }
 
   /**
@@ -292,11 +178,11 @@ public abstract class AbstractGuiceImmutablePhraseModule<T> extends AbstractModu
 
   }
 
-  static final class GuiceDslImmutablePhraseModule<T> extends AbstractGuiceImmutablePhraseModule<T>
+  static final class GuiceObjectDslImmutablePhraseModule<T> extends AbstractGuiceImmutablePhraseModule<T>
   {
     private final GuiceImmutablePhrasesBuilder phraseBuilder;
 
-    GuiceDslImmutablePhraseModule( ImmutableAbstractPhrase<T> phrase0, List<Element> elements )
+    GuiceObjectDslImmutablePhraseModule( ImmutableAbstractPhrase<T> phrase0, List<Element> elements )
     {
       super( ImmutableList.<Element>copyOf( checkNotNull( elements ) ), phrase0 );
       this.phraseBuilder = new GuiceImmutablePhrasesBuilder( phrase0 );

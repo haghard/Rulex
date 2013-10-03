@@ -85,7 +85,7 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
 
     private String script;
     private GroovyAllTrueImmutableRuleDslBuilder<T> builder;
-    private final Map<String, T> bindingMap = new HashMap<>(1);
+    private final Map<String, T> bindingMap = new HashMap<String, T>(1);
 
     final CompilerConfiguration config = new CompilerConfiguration();
 
