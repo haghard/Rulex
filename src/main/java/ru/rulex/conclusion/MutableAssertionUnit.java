@@ -34,7 +34,7 @@ public interface MutableAssertionUnit<T> extends ImmutableAssertionUnit<T>
     @Override
     public void setSelector( Selector<Object, ?> selector )
     {
-    	throw new UnsupportedOperationException("");
+    	throw new UnsupportedOperationException("unsupported operation setSelector for this selector type");
     }
 
     @Override
@@ -44,7 +44,7 @@ public interface MutableAssertionUnit<T> extends ImmutableAssertionUnit<T>
     }
 
     @SuppressWarnings("unchecked")
-	public <T> MutableAssertionUnit<T> withNarrowType()
+	  public <T> MutableAssertionUnit<T> withNarrowType()
     {
       return (MutableAssertionUnit<T>)this;
     }

@@ -81,7 +81,7 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
 
   public static class AllTrueImmutableGroovyPhrase<T> extends ImmutableAbstractPhrase<T> {
     private static final String EVENT_NAME = "event";
-    private static final String CLOSURE_NAME = "rule2";
+    private static final String CLOSURE_NAME = "rule";
 
     private String script;
     private GroovyAllTrueImmutableRuleDslBuilder<T> builder;

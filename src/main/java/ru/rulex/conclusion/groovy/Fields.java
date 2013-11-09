@@ -1,29 +1,29 @@
 package ru.rulex.conclusion.groovy;
 
 import java.math.BigDecimal;
-import ru.rulex.conclusion.delegate.ProxyUtils;
+
+import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
 
 public enum Fields
 {
-
   objectId()
   {
     @Override public Integer eval() {
-      return ProxyUtils.callOn( TradeEvent.class ).objectId();
+      return callOn( TradeEvent.class ).objectId();
     }
   },
 
   eventType()
   {
     @Override public Integer eval() {
-      return ProxyUtils.callOn( TradeEvent.class ).eventType();
+      return callOn( TradeEvent.class ).eventType();
     }
   },
 
   objectPrice()
   {
     @Override public BigDecimal eval() {
-      return ProxyUtils.callOn( TradeEvent.class ).eventPrice();
+      return callOn( TradeEvent.class ).eventPrice();
     }
   },
 
@@ -31,10 +31,9 @@ public enum Fields
   {
     @Override public String eval()
     {
-      return ProxyUtils.callOn( TradeEvent.class ).eventName();
+      return callOn( TradeEvent.class ).eventName();
     }
   };
 
   public abstract <T extends Comparable<? super T>> T eval();
-
 }

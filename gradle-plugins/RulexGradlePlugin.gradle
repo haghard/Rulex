@@ -35,7 +35,7 @@ class ProcessRunTask extends DefaultTask {
 
 task runScript(type: ProcessRunTask) {
   doFailOnNonZeroExitCode false
-  commandScript = ''
+  commandScript = 'java -version'
 
   if (project.hasProperty('scriptBody')) 
     commandScript = scriptBody

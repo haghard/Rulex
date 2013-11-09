@@ -1,3 +1,4 @@
+/*
 rule = {
     onEvent event
     operation callOn(Model.class).getInteger() more 8
@@ -6,8 +7,9 @@ rule = {
     operation callOn(Model.class).getFloat() atMost 9.1f
     eval()
 }
+*/
 
-rule2 = {
+rule = {
     onEvent event
     $(objectId) more 7
     $(eventType) atMost 2
@@ -15,10 +17,3 @@ rule2 = {
     $(objectName) equalsAnyOff( ["snickers", "mars", "picnic"] )
     eval()
 }
-
-/*
-new ExpressionBuilder().using(event) {
-    $( objectId ).more( 7 )
-    $( objectName ).equalsAnyOff( ["snickers", "mars", "picnic"] )
-}
-*/

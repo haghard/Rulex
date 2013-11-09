@@ -18,11 +18,13 @@ package ru.rulex.conclusion;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-
+import org.apache.log4j.Logger;
+import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
 import ru.rulex.conclusion.ParserBuilders.*;
 import ru.rulex.conclusion.delegate.ProxyUtils;
 import ru.rulex.conclusion.execution.ParallelStrategy;
@@ -32,12 +34,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
-import org.apache.log4j.Logger;
-
-import ru.rulex.conclusion.ImmutableAbstractPhrase.AllTrueImmutableGroovyPhrase;
-import static ru.rulex.conclusion.delegate.ProxyUtils.callOn;
-import static ru.rulex.conclusion.execution.Callables.*;
-import static ru.rulex.conclusion.guice.PhraseDslBuilders.val;
+import static ru.rulex.conclusion.execution.Callables.call;
+import static ru.rulex.conclusion.execution.Callables.obtain;
 
 /**
  * <pre>
@@ -83,12 +81,12 @@ import static ru.rulex.conclusion.guice.PhraseDslBuilders.val;
  * |__________________________________________|              |        |
  *                            |                       _______|________|__________________
  * ___________________________|_________             | ImperativeExecutionPhrasesBuilder|
- *|BaseGroovyEventOrientedPhraseBuilder|             |__________________________________|
- *|____________________________________|                     |
+ * |BaseGroovyEventOrientedPhraseBuilder|             |__________________________________|
+ * |____________________________________|                     |
  *             |                          ____________________|_______________________
  * ____________|________________________ | AbstractMutableEventOrientedPhraseBuilder |
- *|GroovyEventOrientedPhrasesBuilder   | |___________________________________________|
- *|____________________________________|                  |
+ * |GroovyEventOrientedPhrasesBuilder   | |___________________________________________|
+ * |____________________________________|                  |
  *                                                        |
  *                                           _____________|__________________
  *                                          |DaggerMutableEventPhraseBuilder|
@@ -120,7 +118,8 @@ public final class PhraseBuildersFacade
    * href="http://en.wikipedia.org/wiki/Bridge_pattern"> Builder Design
    * Pattern</a>.
    */
-  public static abstract class AbstractEventOrientedPhraseBuilder<T> {
+  public static abstract class AbstractEventOrientedPhraseBuilder<T>
+  {
 
     protected final AbstractPhrase<T, ?> phrase;
 
@@ -129,7 +128,7 @@ public final class PhraseBuildersFacade
     private static final Logger logger = Logger.getLogger( AbstractEventOrientedPhraseBuilder.class );
 
     private AbstractEventOrientedPhraseBuilder( AbstractPhrase<T, ?> phrase,
-                                              ParallelStrategy<Boolean> pStrategy )
+                                                ParallelStrategy<Boolean> pStrategy )
     {
       this.phrase = phrase;
       this.pStrategy = pStrategy;
@@ -175,7 +174,8 @@ public final class PhraseBuildersFacade
       try
       {
         return call( obtain( pStrategy.lift( createFunction( event ) ).apply( this ), callback, callbackExecutor ) );
-      } catch ( Exception ex )
+      }
+      catch ( Exception ex )
       {
         logger.error( ex.getMessage() );
       }
@@ -200,13 +200,13 @@ public final class PhraseBuildersFacade
   public static abstract class BaseEventOrientedPhraseBuilder<T> extends AbstractEventOrientedPhraseBuilder<T>
   {
     private BaseEventOrientedPhraseBuilder( ImmutableAbstractPhrase<T> phrase,
-                                              ParallelStrategy<Boolean> pStrategy )
+                                            ParallelStrategy<Boolean> pStrategy )
     {
       super( phrase, pStrategy );
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings ("unchecked")
     protected ImmutableAbstractPhrase<T> getPhrase()
     {
       return ( ImmutableAbstractPhrase<T> ) phrase;
@@ -216,18 +216,19 @@ public final class PhraseBuildersFacade
   public static abstract class BaseGroovyEventOrientedPhraseBuilder<T> extends AbstractEventOrientedPhraseBuilder<T>
   {
     private BaseGroovyEventOrientedPhraseBuilder( AllTrueImmutableGroovyPhrase<T> phrase,
-                                            ParallelStrategy<Boolean> pStrategy )
+                                                  ParallelStrategy<Boolean> pStrategy )
     {
       super( phrase, pStrategy );
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings ("unchecked")
     protected AllTrueImmutableGroovyPhrase<T> getPhrase()
     {
       return ( AllTrueImmutableGroovyPhrase<T> ) phrase;
     }
   }
+
   /**
    * <p>
    * The class used for creation, configuration and running evaluation on
@@ -267,12 +268,8 @@ public final class PhraseBuildersFacade
     }
   }
 
-  /**
-   *
-   */
   public static abstract class SimpleEventOrientedPhrasesBuilder<T> extends BaseEventOrientedPhraseBuilder<T>
   {
-
     public SimpleEventOrientedPhrasesBuilder()
     {
       super( ImmutableAbstractPhrase.<T>all(), ParallelStrategy.<Boolean>serial() );
@@ -336,7 +333,7 @@ public final class PhraseBuildersFacade
   {
     public GroovyEventOrientedPhrasesBuilder()
     {
-      super( ImmutableAbstractPhrase.<T>allGroovy(), ParallelStrategy.<Boolean>serial());
+      super( ImmutableAbstractPhrase.<T>allGroovy(), ParallelStrategy.<Boolean>serial() );
       build();
     }
 
@@ -365,7 +362,7 @@ public final class PhraseBuildersFacade
    * <p/>
    * <p/>
    * <pre>
-   * <b>Usage example: </b>
+   * <b>Usage: </b>
    * {@code
    * Injector injector = Guice.createInjector(
    *    val( 8f ).more( callOn( Model.class ).getFloat() ),
@@ -384,13 +381,13 @@ public final class PhraseBuildersFacade
    * href="http://code.google.com/p/google-guice/"> Google Guice DI framework
    * </a>.
    * <p/>
-   * <b> Attention !!! </b> Other usages of this class are prohibited
+   * <b> Attention !!! </b> Other usages for this class are prohibited
    */
   public static final class GuiceImmutablePhrasesBuilder extends BaseEventOrientedPhraseBuilder<Object>
   {
     public <T> GuiceImmutablePhrasesBuilder( ImmutableAbstractPhrase<T> delegate )
     {
-      super( (ImmutableAbstractPhrase<Object>) delegate, ParallelStrategy.<Boolean>serial() );
+      super( ( ImmutableAbstractPhrase<Object> ) delegate, ParallelStrategy.<Boolean>serial() );
     }
   }
 
@@ -406,28 +403,26 @@ public final class PhraseBuildersFacade
   }
 
   /**
-   * 
-   * @author haghard
-   *
    * @param <T>
+   * @author haghard
    */
-  public static abstract class AbstractMutableEventOrientedPhraseBuilder<T> 
-  										extends AbstractEventOrientedPhraseBuilder<T>
+  public static abstract class AbstractMutableEventOrientedPhraseBuilder<T>
+          extends AbstractEventOrientedPhraseBuilder<T>
   {
 
-    private AbstractMutableEventOrientedPhraseBuilder(MutableAbstractPhrase<T> phrase,
-                                                      ParallelStrategy<Boolean> pStrategy)
+    private AbstractMutableEventOrientedPhraseBuilder( MutableAbstractPhrase<T> phrase,
+                                                       ParallelStrategy<Boolean> pStrategy )
     {
-      super(phrase, pStrategy);
+      super( phrase, pStrategy );
     }
 
-  	@Override
-  	@SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings ("unchecked")
     protected MutableAbstractPhrase<T> getPhrase()
     {
       return ( MutableAbstractPhrase<T> ) phrase;
     }
-  
+
     public abstract <E extends AbstractMutableEventOrientedPhraseBuilder<T>> E populateFrom( VarEnvironment environment );
   }
 
@@ -436,7 +431,7 @@ public final class PhraseBuildersFacade
    *
    */
   public static final class DaggerMutableEventPhraseBuilder extends
-          							AbstractMutableEventOrientedPhraseBuilder<Object>
+          AbstractMutableEventOrientedPhraseBuilder<Object>
   {
     public DaggerMutableEventPhraseBuilder( MutableAbstractPhrase<Object> phrase )
     {
@@ -444,29 +439,33 @@ public final class PhraseBuildersFacade
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes" })
+    @SuppressWarnings ({ "unchecked", "rawtypes" })
     public DaggerMutableEventPhraseBuilder populateFrom( VarEnvironment environment )
     {
       Preconditions.checkNotNull( environment );
       //it's agly way to do this, fix later
       final Set<String> undefined = new HashSet<String>( getPhrase().availableVars() );
       undefined.removeAll( environment.environmentVars() );
-      if( undefined.size() != 0 )
-        throw new IllegalStateException( "Undefined variables was found: " + Joiner.on(',').join( undefined ) );
+      if ( undefined.size() != 0 )
+        throw new IllegalStateException( "Undefined variables was found: " + Joiner.on( ',' ).join( undefined ) );
 
-      for (String varName: environment.environmentVars())
+      for ( String varName : environment.environmentVars() )
       {
-        MutableAssertionUnit unit = getPhrase().correspondingUnit( varName );
-        Optional<? extends Selector<?,?>> op = environment.get( varName );
-        if (op.isPresent()) {
+        final MutableAssertionUnit unit = getPhrase().correspondingUnit( varName );
+        final Optional<? extends Selector<?, ?>> op = environment.get( varName );
+        if ( op.isPresent() )
+        {
           unit.setSelector( op.get() );
-        } else {
-          throw new IllegalStateException( "Selector for variable not found " + varName);
+        }
+        else
+        {
+          throw new IllegalStateException( "Selector for variable not found " + varName );
         }
       }
       return this;
     }
   }
+
   /**
    * {@code AbstractIterableOrientedPhrasesBuilder} class is a root of class
    * hierarchy define a base abstraction for collection oriented PhraseBuilders
@@ -589,7 +588,7 @@ public final class PhraseBuildersFacade
             .getLogger( AbstractIterableOrientedPhrasesBuilderImpl.class );
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     public <T> void setIterable( Iterable<T> collection )
     {
       getIterablePhrase().setIterable( ( Iterable<Object> ) collection );
@@ -613,10 +612,12 @@ public final class PhraseBuildersFacade
       try
       {
         return call( obtain( pStrategy.lift( makePhraseFunction( iterable ) ).apply( this ) ) );
-      } catch ( PhraseExecutionException e )
+      }
+      catch ( PhraseExecutionException e )
       {
         logger.error( e.getMessage() );
-      } catch ( Exception e )
+      }
+      catch ( Exception e )
       {
         logger.error( e.getMessage() );
       }
@@ -631,10 +632,12 @@ public final class PhraseBuildersFacade
       {
         return call( obtain( pStrategy.lift( makePhraseFunction( iterable ) ).apply( this ),
                 callback, service ) );
-      } catch ( PhraseExecutionException e )
+      }
+      catch ( PhraseExecutionException e )
       {
         logger.error( e.getMessage() );
-      } catch ( Exception e )
+      }
+      catch ( Exception e )
       {
         logger.error( e.getMessage() );
       }
@@ -794,19 +797,19 @@ public final class PhraseBuildersFacade
 
   public static VarEnvironment environment( Object... varEntries )
   {
-    if ( !( varEntries[0] instanceof VarEntry ) )
-      throw new IllegalArgumentException( "VarEntry type expected" );
+    if ( !( varEntries[0] instanceof Var ) )
+      throw new IllegalArgumentException( "Var type expected" );
 
-    final VarEntry<?,?>[] params = ( VarEntry[] ) Array.newInstance( VarEntry.class, varEntries.length );
+    final Var<?, ?>[] params = ( Var[] ) Array.newInstance( Var.class, varEntries.length );
     System.arraycopy( varEntries, 0, params, 0, varEntries.length );
     return new VarEnvironment( params );
   }
 
-  public static <T, E> VarEntry<T, E> var( final String pname, final E value )
+  public static <T, E> Var<T, E> var( final String varName, final E value )
   {
-    return new VarEntry<T, E>()
+    return new Var<T, E>()
     {{
-      this.name = pname;
+      this.name = varName;
       this.selector = ProxyUtils.<T, E>toSelector( value );
     }};
   }
@@ -816,11 +819,11 @@ public final class PhraseBuildersFacade
     private ImmutableSortedMap<String, Selector<?, ?>> environmentSelectors =
             ImmutableSortedMap.of();
 
-    public VarEnvironment( VarEntry<?,?>[] varEntryList )
+    public VarEnvironment( Var<?, ?>[] varList )
     {
       final ImmutableSortedMap.Builder<String, Selector<?, ?>> builder = ImmutableSortedMap.naturalOrder();
-      for ( VarEntry<?,?> varEntry : varEntryList )
-        builder.put( varEntry.name, varEntry.selector );
+      for ( Var<?, ?> var : varList )
+        builder.put( var.name, var.selector );
 
       environmentSelectors = builder.build();
     }
@@ -836,7 +839,7 @@ public final class PhraseBuildersFacade
     }
   }
 
-  static class VarEntry<T, E>
+  static class Var<T, E>
   {
     String name;
     Selector<T, E> selector;

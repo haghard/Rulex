@@ -23,7 +23,7 @@ public class GroovyAllTrueImmutableRuleDslBuilder<T> extends GroovyObjectSupport
 
   private boolean result = true;
 
-  private final List<ImmutableAssertionUnit<T>> units = new ArrayList<ImmutableAssertionUnit<T>>( 5 );
+  private final List<ImmutableAssertionUnit<T>> units = new ArrayList<ImmutableAssertionUnit<T>>();
 
   public void onEvent( T event )
   {

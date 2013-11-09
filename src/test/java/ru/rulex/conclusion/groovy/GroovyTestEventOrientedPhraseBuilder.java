@@ -16,7 +16,7 @@ public class GroovyTestEventOrientedPhraseBuilder
   @Test
   public void testGroovyPhraseBuilderWithScript()
   {
-    final String scriptBody = "rule2 = {\n" +
+    final String scriptBody = "rule = {\n" +
             "    onEvent event\n" +
             "    $ objectId more 7\n" +
             "    $ eventType atMost 2\n" +

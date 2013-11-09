@@ -1,6 +1,7 @@
 package ru.dsl
 
 import groovy.json.JsonBuilder
+import groovy.sql.Sql
 import groovy.xml.MarkupBuilder
 
 class MemoDsl {
@@ -199,3 +200,4 @@ assertionClosure.curry()
 
 println closure { it.startsWith('XXX') }
 */
+
