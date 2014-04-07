@@ -15,8 +15,7 @@ public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, Muta
 
   protected Class<T> clazz;
 
-  protected List<MutableAssertionUnit<T>> units =
-          new ArrayList<MutableAssertionUnit<T>>();
+  protected List<MutableAssertionUnit<T>> units = new ArrayList<MutableAssertionUnit<T>>();
 
   protected final ConclusionStatePathTrace conclusionPathTrace =
           ConclusionStatePathTrace.defaultInstance();
@@ -27,9 +26,9 @@ public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, Muta
   }
 
   @Override
-  public void addUnit( MutableAssertionUnit<T> ruleEntry )
+  public void addUnit( MutableAssertionUnit<T> assertionUnit)
   {
-    units.add( ruleEntry );
+    units.add(assertionUnit);
   }
 
   public ImmutableSet<String> availableVars()
@@ -66,7 +65,6 @@ public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, Muta
 
   private static final class AllTrueMutablePhrase<T> extends MutableAbstractPhrase<T>
   {
-
     @Override public Boolean evaluate()
     {
       if ( units.size() == 0 ) return Boolean.FALSE;
@@ -84,7 +82,6 @@ public abstract class MutableAbstractPhrase<T> implements AbstractPhrase<T, Muta
 
   private static final class AnyTrueMutablePhrases<T> extends MutableAbstractPhrase<T>
   {
-
     @Override public Boolean evaluate()
     {
       for (ImmutableAssertionUnit<T> unit : units)

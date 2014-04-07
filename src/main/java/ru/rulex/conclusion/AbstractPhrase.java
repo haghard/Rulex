@@ -27,13 +27,11 @@ package ru.rulex.conclusion;
  */
 public interface AbstractPhrase<T, E extends ImmutableAssertionUnit<T>>
 {
-
   Boolean evaluate();
 
-  void addUnit( E ruleEntry );
+  void addUnit( E assertionUnit );
 
   void setEventClass( Class<T> clazz );
 
   void setEvent( T event );
-
 }

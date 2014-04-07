@@ -29,9 +29,9 @@ public abstract class ImmutableAbstractPhrase<T> implements AbstractPhrase<T, Im
   }
 
   @Override
-  public void addUnit( ImmutableAssertionUnit<T> ruleEntry )
+  public void addUnit( ImmutableAssertionUnit<T> assertionUnit)
   {
-    units.add( ruleEntry );
+    units.add(assertionUnit);
   }
 
   @Override

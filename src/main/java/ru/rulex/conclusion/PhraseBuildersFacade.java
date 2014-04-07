@@ -43,17 +43,17 @@ import static ru.rulex.conclusion.execution.Callables.obtain;
  *                            __________________________________________                                  __________________
  *                           |   AbstractEventOrientedPhraseBuilder    |-------------------------------->|  AbstractPhrase |
  *                           |_________________________________________|                                 |_________________|
- *                              |                |             |                                         ___________|____________
- *                          ____|________________|_____________|______                                  |                       |
- *                         |    BaseEventOrientedPhraseBuilder       |
- *                         |_________________________________________|
- *                              |  |             |             |
- *                              |  |             |             |
- *         _____________________|__|_____________|_____________|________________________________
- *        |                     |  |                         |       |                       |
- *        |        _____________|__|____________________     |       |            ___________|_____________________
- *        |       |   GuiceEventOrientedPhrasesBuilder |     |       |           |    DaggerImmutableEventPhrasesBuilder    |
- *        |       |____________________________________|     |       |           |_________________________________|
+ *                              |                |             |                                         ___________|____________________________
+ *                          ____|________________|_____________|______                                  |                                        |
+ *                         |    BaseEventOrientedPhraseBuilder       |                          MutableAbstractPhrase                   ImmutableAbstractPhrase
+ *                         |_________________________________________|                           _______|________                         _______|
+ *                              |  |             |             |                                 |              |                        |       |
+ *                              |  |             |             |                    MutableAbstractPhrase   MutableAbstractPhrase  AllTrueImmutablePhrase
+ *         _____________________|__|_____________|_____________|____________________                                                     |       |
+ *        |                     |  |                         |       |             |                                              AnyTrueImmutablePhrases
+ *        |        _____________|__|____________________     |       |  ___________|________________________                                    |
+ *        |       |   GuiceImmutablePhrasesBuilder     |     |       | |DaggerImmutableEventPhrasesBuilder |                          AllTrueImmutableGroovyPhrase
+ *        |       |____________________________________|     |       | |___________________________________|
  *  ______|_____________________|_ |  _______________________|_______|_____________
  * | EventOrientedPhrasesBuilder | | | EventOrientedFactConsequencePhrasesBuilder|
  * |_____________________________| | |___________________________________________|
@@ -81,14 +81,14 @@ import static ru.rulex.conclusion.execution.Callables.obtain;
  * |__________________________________________|              |        |
  *                            |                       _______|________|__________________
  * ___________________________|_________             | ImperativeExecutionPhrasesBuilder|
- * |BaseGroovyEventOrientedPhraseBuilder|             |__________________________________|
+ * |BaseGroovyEventOrientedPhraseBuilder|            |__________________________________|
  * |____________________________________|                     |
  *             |                          ____________________|_______________________
- * ____________|________________________ | AbstractMutableEventOrientedPhraseBuilder |
+ * ____________|________________________  | AbstractMutableEventOrientedPhraseBuilder |
  * |GroovyEventOrientedPhrasesBuilder   | |___________________________________________|
  * |____________________________________|                  |
- *                                                        |
- *                                           _____________|__________________
+ *                                                         |
+ *                                           ______________|_________________
  *                                          |DaggerMutableEventPhraseBuilder|
  * </pre>                                   |_______________________________|
  */
@@ -120,7 +120,6 @@ public final class PhraseBuildersFacade
    */
   public static abstract class AbstractEventOrientedPhraseBuilder<T>
   {
-
     protected final AbstractPhrase<T, ?> phrase;
 
     protected ParallelStrategy<Boolean> pStrategy;
@@ -150,7 +149,7 @@ public final class PhraseBuildersFacade
     {
       try
       {
-        return call( obtain( pStrategy.lift( createFunction( event ) ).apply( this ) ) );
+        return call( obtain( pStrategy.lift( consumer(event) ).apply( this ) ) );
       }
       catch ( Exception e )
       {
@@ -161,7 +160,7 @@ public final class PhraseBuildersFacade
 
     public CheckedFuture<Boolean, PhraseExecutionException> async( final T event )
     {
-      return pStrategy.lift( this.createFunction( event ) ).apply( this );
+      return pStrategy.lift( this.consumer(event) ).apply(this);
     }
 
     public Boolean sync( final T event, Runnable callback )
@@ -173,7 +172,7 @@ public final class PhraseBuildersFacade
     {
       try
       {
-        return call( obtain( pStrategy.lift( createFunction( event ) ).apply( this ), callback, callbackExecutor ) );
+        return call( obtain( pStrategy.lift( consumer(event) ).apply( this ), callback, callbackExecutor ) );
       }
       catch ( Exception ex )
       {
@@ -182,8 +181,7 @@ public final class PhraseBuildersFacade
       return false;
     }
 
-    protected <E extends AbstractEventOrientedPhraseBuilder<T>> ConclusionFunction<E, Boolean> createFunction(
-            final T event )
+    protected <E extends AbstractEventOrientedPhraseBuilder<T>> ConclusionFunction<E, Boolean> consumer(T event)
     {
       return new ConclusionFunction<E, Boolean>()
       {
@@ -553,8 +551,8 @@ public final class PhraseBuildersFacade
      * @return ConclusionFunction<? extends
      *         AbstractConclusionCollectionPhrasesBuilder, Boolean>
      */
-    protected <T, E extends AbstractIterableOrientedPhrasesBuilder> ConclusionFunction<E, Boolean> makePhraseFunction(
-            final Iterable<T> iterable )
+    protected <T, E extends AbstractIterableOrientedPhrasesBuilder> ConclusionFunction<E, Boolean> consumer(
+        final Iterable<T> iterable)
     {
       return new ConclusionFunction<E, Boolean>()
       {
@@ -604,14 +602,14 @@ public final class PhraseBuildersFacade
     @Override
     public <T> CheckedFuture<Boolean, PhraseExecutionException> async( final Iterable<T> iterable )
     {
-      return pStrategy.lift( makePhraseFunction( iterable ) ).apply( this );
+      return pStrategy.lift( consumer(iterable) ).apply( this );
     }
 
     public <T> Boolean sync( final Iterable<T> iterable )
     {
       try
       {
-        return call( obtain( pStrategy.lift( makePhraseFunction( iterable ) ).apply( this ) ) );
+        return call( obtain( pStrategy.lift( consumer(iterable) ).apply( this ) ) );
       }
       catch ( PhraseExecutionException e )
       {
@@ -630,7 +628,7 @@ public final class PhraseBuildersFacade
     {
       try
       {
-        return call( obtain( pStrategy.lift( makePhraseFunction( iterable ) ).apply( this ),
+        return call( obtain( pStrategy.lift( consumer(iterable) ).apply( this ),
                 callback, service ) );
       }
       catch ( PhraseExecutionException e )
